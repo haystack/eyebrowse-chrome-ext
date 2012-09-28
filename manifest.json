@@ -1,0 +1,12 @@
+{
+  "name": "EyeBrowse",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "EyeBrowse Transparent Web Browsing Plugin. MIT CSAIL Haystack Group",
+  "browser_action": {
+    "default_icon": "img/icon-pulse.gif",
+  },
+  "permissions": [
+    "tabs"
+  ]
+}
