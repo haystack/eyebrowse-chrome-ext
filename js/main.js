@@ -1,9 +1,9 @@
 function login() {
-    //TODO
+    //TODO -- implement after server code is in place
 }
 
 function logout() {
-    //TODO
+    //TODO -- implement after server code is in place
 }
 
 function focus() {

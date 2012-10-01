@@ -19,6 +19,7 @@
         <!--  javascript -->
         <script type="text/javascript" src="../libs/jquery-1.8.2.js">
         </script>
+        
         <script type="text/javascript">
             $(document).ready(function() {
                 tabs = chrome.tabs;
@@ -29,9 +30,10 @@
                 }
 
                 chrome.tabs.onSelectionChanged.addListener(function handleSelectionChange(tabId, selectInfo) {
-                        var requestObject = {"backgroundKey": "backgroundValue"};
-                        chrome.tabs.sendRequest(tabId, requestObject, 
-                                responseCallback);
+                        var requestObject = {
+                            "backgroundKey": "backgroundValue"
+                        };
+                        chrome.tabs.sendRequest(tabId,requestObject, responseCallback);
                     }
                 );
             };
