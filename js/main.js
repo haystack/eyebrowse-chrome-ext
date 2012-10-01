@@ -33,3 +33,12 @@ function inactive() {
 function active() {
     //TODO
 }
+
+//tmp for dev
+function update_badge() {
+
+    chrome.browserAction.setBadgeText(
+        {
+            text: String(visited.length + 1)
+        });
+}
