@@ -5,7 +5,8 @@
   "description" : "Eyebrowse by CSAIL",
   "browser_action" : {
     "default_icon" : "img/eye.png",
-    "default_popup" : "popup.html"
+    "default_popup" : "popup.html",
+    "default_title" : "Eyebrowse"
   },
   "background" : {
       "scripts" : ["js/background.js", "js/main.js"]
