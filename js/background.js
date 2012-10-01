@@ -1,9 +1,9 @@
 //In background.js:
 // React when a browser action's icon is clicked.
 visited = []
-chrome.tabs.onActivated.addListener(function(info) {
-    console.log(info.tabId);
-    chrome.tabs.get(info.tabId, function (tab) {
+chrome.tabs.onActivated.addListener(function(activeInfo) {
+    console.log(activeInfo.tabId);
+    chrome.tabs.get(activeInfo.tabId, function (tab) {
         console.log(tab.url);
         visited.push(tab.url);
         console.log(visited.length)
@@ -14,8 +14,8 @@ chrome.tabs.onActivated.addListener(function(info) {
         });
 });
 
-chrome.tabs.onActivated.addListener(function(object activeInfo) {
-    chrome.tabs.get(info.tabId, function (tab) {
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    chrome.tabs.get(tabId, function (tab) {
             console.log(tab.url);
             visited.push(tab.url);
             console.log(visited.length)
