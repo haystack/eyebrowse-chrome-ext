@@ -1,12 +1,17 @@
 {
-  "name": "EyeBrowse",
-  "version": "1.0",
   "manifest_version": 2,
-  "description": "EyeBrowse Transparent Web Browsing Plugin. MIT CSAIL Haystack Group",
+  "name": "Eyebrowse",
+  "version": "1.0",
+  "description": "Eyebrowse by CSAIL",
   "browser_action": {
-    "default_icon": "img/icon-pulse.gif",
+    "default_icon": "img/eye.png",
+    "default_popup":"popup.html"
   },
-  "permissions": [
-    "tabs"
-  ]
+  "background": {
+      "scripts": ["js/background.js"]
+    },
+    "permissions": [
+      "notifications",
+      "tabs"
+    ]
 }

@@ -1,0 +1,31 @@
+<html>
+
+  <head>
+    <script type="text/javascript" src="../libs/jquery-1.8.2.js"></script>
+  </head>
+  
+  <body>
+    <div id="main">
+      HELLO WORLD
+    </div>
+    <script type="text/javascript" src="../libs/jquery-1.8.2.js">
+    $(document).ready(function() {
+      tabs = chrome.tabs;
+      alert("HELLO FROM EXTENSION");
+      console.log(tabs);
+      function responseCallback(value) { // used below
+          console.log(value); 
+      }
+
+      chrome.tabs.onSelectionChanged.addListener(
+          function handleSelectionChange(tabId, selectInfo) {
+              var requestObject = {"backgroundKey": "backgroundValue"};
+              chrome.tabs.sendRequest(tabId, requestObject, 
+                  responseCallback);
+          }
+      );
+    };
+    </script>
+  </body>
+
+</html>
