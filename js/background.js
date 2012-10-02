@@ -7,29 +7,42 @@
 
 
 ///////////////Event listeners/////////////// 
-//Specific to Chrome. Each calls the data processer function in main.js to be process and recorded if necessary. These functions should check things like incognito windows, the handler checks for things like restricted sites and user permissions that are set. This allows firefox to use the same main. 
-
-visited = []
+//Specific to Chrome. Each calls the data processer function in main.js to be process and recorded if necessary. The handler checks for things like restricted sites and user permissions that are set. This allows firefox to use the same main. 
 
 //Fires when the active tab in a window changes. Note that the tab's URL may not be set at the time this event fired, but you can listen to onUpdated events to be notified when a URL is set.
-//We need to listen for both (so we know when new tabs/windows appear). But no double counting. 
-chrome.tabs.onActivated.addListener(function(activeInfo) {
-    chrome.tabs.get(activeInfo.tabId, function (tab) {
-        record_history(activeInfo.tabId, tab.url, tab.title)
+//We need to listen for both (so we know when new tabs/windows appear). But no double counting.
+function activeTabListener() {
+    chrome.tabs.onActivated.addListener(function(activeInfo) {
+        var event_type = 'focus';
+        chrome.tabs.get(activeInfo.tabId, function (tab) {
+            open_item(activeInfo.tabId, tab.url, tab.title, event_type)
+        });
     });
-});
+}
 
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    chrome.tabs.get(tabId, function (tab) {
-        record_history(tabId, tab.url, tab.title)
+//Fired when a tab is updated.
+function updatedTabListener() {
+   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+        var event_type = 'update';
+        chrome.tabs.get(tabId, function (tab) {
+            open_item(tabId, tab.url, tab.title, event_type);
+        });
+        
+    }); 
+}
+
+//Fired when a tab is closed. Note: A listener can be registered for this event without requesting the 'tabs' permission in the manifest.
+function removedTabListener() {
+    chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+        var event_type = 'destroy';
+        chrome.tabs.get(tabId, function (tab) {
+            close_item(tabId, tab.url, tab.title, event_type)
+        });
     });
-    
-});
-
-chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
-    chrome.tabs.get(tabId, function (tab) {
-        record_history(tabId, tab.url, tab.title)
-    });
-});
+}
 
 
+// run each listener
+activeTabListener();
+updatedTabListener();
+removedTabListener();

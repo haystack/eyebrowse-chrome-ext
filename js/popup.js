@@ -1,11 +1,12 @@
 $(document).ready(function() {
     window.backpage = chrome.extension.getBackgroundPage();
-    var v = backpage.visited;
-    for (var i =0; i < v.length; i++) {
-        $('#main').append('<div>' + (i+1) + ". " + v[i] + '</div>');
-    }
+    var items = backpage.open_items;
+    $.each(items, function(key, value) {
+        $('.visited-items').append(sprintf('<li>%s, %s, %s, %s</li>', value.tabId, value.url, value.title, value.event_type));
+        });
+
     $('#reset').click(function (e) {
         $('#main').html("Pages Visited:");
-        backpage.visited = [];
+        backpage.open_items = [];
     });
 });
