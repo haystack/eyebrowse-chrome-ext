@@ -48,7 +48,6 @@ function close_item(tabId, event_type) {
     }
 }
 
-
 //tmp for dev
 function update_badge() {
 
@@ -56,4 +55,8 @@ function update_badge() {
         {
             text: String(open_items.length + 1)
         });
+}
+
+function submit_to_server(item) {
+    null;
 }
