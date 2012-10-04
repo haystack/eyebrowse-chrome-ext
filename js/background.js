@@ -7,7 +7,7 @@
 
 
 ///////////////Event listeners/////////////// 
-//Specific to Chrome. Each calls the data processer function in main.js to be process and recorded if necessary. The handler checks for things like restricted sites and user permissions that are set. This allows firefox to use the same main. 
+//Specific to Chrome. Each calls the data processor function in main.js to be processed and recorded if necessary. The handler checks for things like restricted sites and user permissions that are set. This allows firefox to use the same main. 
 
 //Fires when the active tab in a window changes. Note that the tab's URL may not be set at the time this event fired, but you can listen to onUpdated events to be notified when a URL is set.
 //We need to listen for both (so we know when new tabs/windows appear). But no double counting.

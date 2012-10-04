@@ -1,4 +1,4 @@
-// dicitonary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
+// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
 open_items = [];
 var active_item;
 open_items_dict = {};
