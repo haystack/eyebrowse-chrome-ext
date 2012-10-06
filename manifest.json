@@ -7,13 +7,14 @@
         "default_icon" : "img/eye.png",
         "default_popup" : "popup.html",
         "default_title" : "Eyebrowse"
-    },
-    "background" : {
-            "page": "background.html"
         },
-        "permissions" : [
+    "background" : {
+        "page": "background.html"
+        },
+     "permissions" : [
             "notifications",
             "tabs",
-            "background"
-        ]
+            "background",
+            "http://vivid-meadow-7063.herokuapp.com/"
+            ]
 }

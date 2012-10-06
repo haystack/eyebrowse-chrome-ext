@@ -28,6 +28,7 @@ function open_item(tabId, url, title, event_type) {
 
     open_items.push(active_item); // tmp for dev/testing
     update_badge();
+    submit_to_server(active_item);
 }
 
 
@@ -58,5 +59,58 @@ function update_badge() {
 }
 
 function submit_to_server(item) {
-    null;
+    var xhr = new XMLHttpRequest();
+    var url = "http://vivid-meadow-7063.herokuapp.com/visits/myCreate?site="+encodeURI(item.title)+"&URL="+encodeURI(item.url);
+    xhr.open("GET",url,true);
+    xhr.send();
+    // the url is "http://vivid-meadow-7063.herokuapp.com/visits/myCreate?site="+encodeURI(pageInfo[2])+"&URL="+encodeURI(pageInfo[0]),
+    // in this case, the args should be item.title and item.url
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
