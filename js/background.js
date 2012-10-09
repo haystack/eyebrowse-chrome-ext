@@ -36,7 +36,7 @@ function removedTabListener() {
     chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
         var event_type = 'destroy';
         chrome.tabs.get(tabId, function (tab) {
-            close_item(tabId, event_type);
+            close_item(tabId, tab.url, event_type);
         });
     });
 }

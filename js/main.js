@@ -22,13 +22,32 @@ var User = Backbone.Model.extend({
 
     isLoggedIn : function() {
         return this.get('loggedIn')
-    }
+    },
+
     //when the user is logged in set the boolean to give logged in views.
     setLogin : function(status) {
         this.set({ 
             'loggedIn': status,
         });
     },
+
+    //check if a url is in the blacklist
+    inBlackList : function(url) {
+        return inSet('blacklist', url)
+    },
+
+    //check if a url is in the whitelise
+    inWhitelist : function(url) {
+        return inSet('whitelist', url)
+    },
+
+    //check if url is in a set (either whitelist or blacklist)
+    // documentation for URL.js : http://medialize.github.com/URI.js/docs.html
+    inSet : function(setType, url) {
+        var set = this.get(setType);
+        var hostname = new URI(url).hostname();
+        return set[hostname] != undefined
+    }
 
     //type is whitelist or blacklist which calls update method on FilterSet object
     updateSet : function(listType, item, action) {
@@ -37,7 +56,7 @@ var User = Backbone.Model.extend({
         } else if (action == 'rm') {
             this.get(listType).rmItem(item);
         }
-    }
+    },
 });
 
 
@@ -127,35 +146,35 @@ var FilterSet = Backbone.Model.extend({
 function open_item(tabId, url, faviconUrl, title, event_type) {
 
     //if event type is focus we need to close out the current tab
-    var host = getHost(url)
-    if (event_type === "focus" && active_item != undefined) {
-        if(user.getBlackList().url)
-        close_item(active_item.tabId, 'blur');
-    }
-    
-    //reassign the active item to be the current tab
-    active_item = {
-        'tabId' : tabId,
-        'url' : url,
-        'faviconUrl' : faviconUrl,
-        'title' : title,
-        'start_event' : event_type,
-        'start_time' : new Date().getTime(), // milliseconds
-    }
+    if(!user.inBlackList(url)) {
+        if (event_type === "focus" && active_item != undefined) {
+            close_item(active_item.tabId, 'blur');
+        }
+        
+        //reassign the active item to be the current tab
+        active_item = {
+            'tabId' : tabId,
+            'url' : url,
+            'faviconUrl' : faviconUrl,
+            'title' : title,
+            'start_event' : event_type,
+            'start_time' : new Date().getTime(), // milliseconds
+        };
 
-    open_items.push(active_item); // tmp for dev/testing
-    update_badge();
+        open_items.push(active_item); // tmp for dev/testing
+        update_badge();
+    }
 }
 
 
 local_storage = [] //tmp tmp tmp
-function close_item(tabId, event_type) {
-    /* 
-        There is only ever one active_item at a time so only close out the active one. 
-        This event will be fired when a tab is closed or unfocused but we would have already 'closed' the item so we don't want to do it again.
-    */
+/* 
+    There is only ever one active_item at a time so only close out the active one. 
+    This event will be fired when a tab is closed or unfocused but we would have already 'closed' the item so we don't want to do it again.
+*/
+function close_item(tabId, url, event_type) {
 
-    if (active_item.tabId === tabId) {
+    if (active_item.tabId === tabId && !user.inBlackList(url)) {
         //write to local storage
         var item = $.extend({}, active_item); //copy active_item
         item.end_event = event_type
