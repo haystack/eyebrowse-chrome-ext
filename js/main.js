@@ -1,7 +1,108 @@
-// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
-open_items = [];
-var active_item;
-open_items_dict = {};
+///////////Models//////////////
+
+//User object holds the status of the user, the cookie from the server, preferences for eyebrowse, whitelist, blacklist, etc
+var User = Backbone.Model.extend({
+    defaults: {
+        'loggedIn' : false,
+        'whitelist' : new FilterSet({
+            'type' : 'whitelist',
+        }), 
+        'blacklist' : new FilterSet({
+            'type' : 'blacklist',
+        }),
+    },
+    //when the user is logged in set the boolean to give logged in views.
+    setLogin : function(status) {
+        this.set({ 
+            'loggedIn': status,
+        });
+    },
+    //type is whitelist or blacklist which calls update method on FilterSet object
+    updateSet : function(listType, item, action) {
+         if (action == 'add') {
+            this.get(listType).addItem(item);
+        } else if (action == 'rm') {
+            this.get(listType).rmItem(item);
+        }
+    }
+});
+
+
+//This object can represent either a whitelist or blacklist for a given user. On an update send results to server to update stored data. On intialization set is synced with server. Should allow offline syncing in the future.
+var FilterSet = Backbone.Model.extend({
+    
+    defaults : {
+        'set' : {},
+        'type' : ''
+    },
+
+    initialize : function() {
+        _.bindAll(this); //allow access to 'this' in callbacks with 'this' meaning the object not the context of the callback
+    },
+
+    getType : function() {
+        return this.get('type')
+    },
+
+    getSet : function() {
+        return this.get('set')
+    },
+
+    syncSet : function() {
+        var payload = {
+            'type' : this.getType(),
+        };
+        var url = this.urlSync();
+        /* 
+            we send the server the type of set we want to sync and reset our set to be what the server has. This allows access across computers/entensions
+        */
+        $.post(url, payload, function(res){
+            if (res.success) {     
+                this.set({
+                    'set' : res.set,
+                });
+            }
+        });
+    },
+
+    addItem : function(item) {
+        var set = this.getSet();
+        set[item] = item;
+
+        var payload = {
+            'type' : this.getType(),
+            'action' : 'add',
+            'item': item,
+        }
+        this.updateSet(payload);
+    },
+
+    rmItem : function(item) {
+        var set = this.getSet();
+        delete set[item];
+        var payload = {
+            'type' : this.getType(),
+            'action' : 'rm',
+            'item': item,
+        }
+        this.updateSet(payload);
+    },
+
+    updateSet : function(payload) {
+        var url = urlUpdateSet();
+        $.post(url, payload, function(res) {
+            return this.res.success //return true or false maybe we have a gui update here.
+        });
+    },
+
+    urlSync : function() {
+        return baseUrl //+ todo 
+    },
+
+    urlUpdateSet : function() {
+        return baseUrl // + todo
+    },
+});
 
 /*
     inputs:
@@ -57,3 +158,16 @@ function update_badge() {
             text: String(open_items.length + 1)
         });
 }
+
+
+///////////Global vars/////////////
+var baseUrl = "http://localhost:8000" // global website base, set to localhost for testing
+//var baseUrl = "http://eyebrowse.herokuapp.com"
+
+/////////init models///////
+var user = new User();
+
+// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
+open_items = [];
+var active_item;
+open_items_dict = {};
