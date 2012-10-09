@@ -1,65 +1,5 @@
 ///////////Models//////////////
 
-//User object holds the status of the user, the cookie from the server, preferences for eyebrowse, whitelist, blacklist, etc
-var User = Backbone.Model.extend({
-    defaults: {
-        'loggedIn' : false,
-        'whitelist' : new FilterSet({
-            'type' : 'whitelist',
-        }),  // for dev lets use a blacklist since its easier to exclude only a few 
-        'blacklist' : new FilterSet({
-            'type' : 'blacklist',
-        }),
-    },
-
-    getWhitelist : function() {
-        return this.get('whitelist')
-    },
-
-    getBlackList : function() {
-        return this.get('blacklist')
-    },
-
-    isLoggedIn : function() {
-        return this.get('loggedIn')
-    },
-
-    //when the user is logged in set the boolean to give logged in views.
-    setLogin : function(status) {
-        this.set({ 
-            'loggedIn': status,
-        });
-    },
-
-    //check if a url is in the blacklist
-    inBlackList : function(url) {
-        return inSet('blacklist', url)
-    },
-
-    //check if a url is in the whitelise
-    inWhitelist : function(url) {
-        return inSet('whitelist', url)
-    },
-
-    //check if url is in a set (either whitelist or blacklist)
-    // documentation for URL.js : http://medialize.github.com/URI.js/docs.html
-    inSet : function(setType, url) {
-        var set = this.get(setType);
-        var hostname = new URI(url).hostname();
-        return set[hostname] != undefined
-    }
-
-    //type is whitelist or blacklist which calls update method on FilterSet object
-    updateSet : function(listType, item, action) {
-         if (action == 'add') {
-            this.get(listType).addItem(item);
-        } else if (action == 'rm') {
-            this.get(listType).rmItem(item);
-        }
-    },
-});
-
-
 //This object can represent either a whitelist or blacklist for a given user. On an update send results to server to update stored data. On intialization set is synced with server. Should allow offline syncing in the future.
 var FilterSet = Backbone.Model.extend({
     
@@ -121,7 +61,8 @@ var FilterSet = Backbone.Model.extend({
     },
 
     updateSet : function(payload) {
-        var url = urlUpdateSet();
+        return //tmp for dev
+        var url = this.urlUpdateSet();
         $.post(url, payload, function(res) {
             return this.res.success //return true or false maybe we have a gui update here.
         });
@@ -133,6 +74,93 @@ var FilterSet = Backbone.Model.extend({
 
     urlUpdateSet : function() {
         return baseUrl // + todo
+    },
+});
+
+
+//User object holds the status of the user, the cookie from the server, preferences for eyebrowse, whitelist, blacklist, etc
+var User = Backbone.Model.extend({
+    defaults: {
+        'loggedIn' : false,
+        'whitelist' : new FilterSet({
+            'type' : 'whitelist',
+        }),  // for dev lets use a blacklist since its easier to exclude only a few 
+        'blacklist' : new FilterSet({
+            'type' : 'blacklist',
+        }),
+    },
+    initialize : function() {
+        _.bindAll(this); //allow access to 'this' in callbacks with 'this' meaning the object not the context of the callback
+        /*
+            debug is a dictionary of the following form:
+            debug = {
+                whitelist : [url1, url2, ...],
+                blacklist : [url1, url2, ...]
+            }
+            This allows for debugging of whitelist/blacklist functionality
+        */
+        var debug = this.get('debug'); 
+        if (debug != undefined) {
+            this.initDefaults(debug);
+        }
+    },
+
+    //set the default whitelist and blacklist values
+    initDefaults : function(debug) {
+        var whitelist = this.getWhitelist();
+        var blacklist = this.getBlackList();
+        $.each(debug.whitelist, function(index, item) {
+            whitelist.addItem(item);
+        });
+        $.each(debug.blacklist, function(index, item) {
+            blacklist.addItem(item);
+        });
+    },
+
+    getWhitelist : function() {
+        return this.get('whitelist')
+    },
+
+    getBlackList : function() {
+        return this.get('blacklist')
+    },
+
+    isLoggedIn : function() {
+        return this.get('loggedIn')
+    },
+
+    //when the user is logged in set the boolean to give logged in views.
+    setLogin : function(status) {
+        this.set({ 
+            'loggedIn': status,
+        });
+    },
+
+    //check if a url is in the blacklist
+    inBlackList : function(url) {
+        return this.inSet('blacklist', url)
+    },
+
+    //check if a url is in the whitelise
+    inWhitelist : function(url) {
+        return this.inSet('whitelist', url)
+    },
+
+    //check if url is in a set (either whitelist or blacklist)
+    // documentation for URL.js : http://medialize.github.com/URI.js/docs.html
+    inSet : function(setType, url) {
+        var set = this.get(setType);
+        var hostname = new URI(url).hostname();
+        return set[hostname] != undefined
+    },
+
+    //type is whitelist or blacklist which calls update method on FilterSet object
+    updateSet : function(listType, item, action) {
+         if (action == 'add') {
+            this.get(listType).addItem(item);
+        } else if (action == 'rm') {
+            this.get(listType).rmItem(item);
+        }
     },
 });
 
@@ -190,7 +218,12 @@ var baseUrl = "http://localhost:8000" // global website base, set to localhost f
 //var baseUrl = "http://eyebrowse.herokuapp.com"
 
 /////////init models///////
-var user = new User();
+var user = new User({
+    'debug' : {
+        'whitelist' : [],
+        'blacklist' : ['chrome'],
+    }
+});
 
 // dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
 open_items = [];
