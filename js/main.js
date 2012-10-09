@@ -11,12 +11,25 @@ var User = Backbone.Model.extend({
             'type' : 'blacklist',
         }),
     },
+
+    getWhitelist : function() {
+        return this.get('whitelist')
+    },
+
+    getBlackList : function() {
+        return this.get('blacklist')
+    },
+
+    isLoggedIn : function() {
+        return this.get('loggedIn')
+    }
     //when the user is logged in set the boolean to give logged in views.
     setLogin : function(status) {
         this.set({ 
             'loggedIn': status,
         });
     },
+
     //type is whitelist or blacklist which calls update method on FilterSet object
     updateSet : function(listType, item, action) {
          if (action == 'add') {
