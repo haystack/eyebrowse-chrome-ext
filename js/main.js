@@ -6,7 +6,7 @@ var User = Backbone.Model.extend({
         'loggedIn' : false,
         'whitelist' : new FilterSet({
             'type' : 'whitelist',
-        }), 
+        }),  // for dev lets use a blacklist since its easier to exclude only a few 
         'blacklist' : new FilterSet({
             'type' : 'blacklist',
         }),
@@ -124,10 +124,12 @@ var FilterSet = Backbone.Model.extend({
     title - title of the webpage the tab is displaying
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
-function open_item(tabId, url, title, event_type) {
+function open_item(tabId, url, faviconUrl, title, event_type) {
 
     //if event type is focus we need to close out the current tab
+    var host = getHost(url)
     if (event_type === "focus" && active_item != undefined) {
+        if(user.getBlackList().url)
         close_item(active_item.tabId, 'blur');
     }
     
@@ -135,6 +137,7 @@ function open_item(tabId, url, title, event_type) {
     active_item = {
         'tabId' : tabId,
         'url' : url,
+        'faviconUrl' : faviconUrl,
         'title' : title,
         'start_event' : event_type,
         'start_time' : new Date().getTime(), // milliseconds

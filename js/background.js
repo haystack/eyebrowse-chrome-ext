@@ -15,7 +15,7 @@ function activeTabListener() {
     chrome.tabs.onActivated.addListener(function(activeInfo) {
         var event_type = 'focus';
         chrome.tabs.get(activeInfo.tabId, function (tab) {
-            open_item(activeInfo.tabId, tab.url, tab.title, event_type)
+            open_item(activeInfo.tabId, tab.url, tab.faviconUrl,  tab.title, event_type);
         });
     });
 }
@@ -25,7 +25,7 @@ function updatedTabListener() {
    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         var event_type = 'update';
         chrome.tabs.get(tabId, function (tab) {
-            open_item(tabId, tab.url, tab.title, event_type);
+            open_item(tabId, tab.url, tab.faviconUrl, tab.title, event_type);
         });
         
     }); 
@@ -36,7 +36,7 @@ function removedTabListener() {
     chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
         var event_type = 'destroy';
         chrome.tabs.get(tabId, function (tab) {
-            close_item(tabId, tab.url, tab.title, event_type)
+            close_item(tabId, event_type);
         });
     });
 }
