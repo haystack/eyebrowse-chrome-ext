@@ -41,7 +41,13 @@ function removedTabListener() {
     });
 }
 
-
+//tmp for dev
+function update_badge() {
+    chrome.browserAction.setBadgeText(
+        {
+            text: String(open_items.length + 1)
+        });
+}
 // run each listener
 activeTabListener();
 updatedTabListener();

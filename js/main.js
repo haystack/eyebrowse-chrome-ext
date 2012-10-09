@@ -185,16 +185,6 @@ function close_item(tabId, url, event_type) {
 }
 
 
-//tmp for dev
-function update_badge() {
-
-    chrome.browserAction.setBadgeText(
-        {
-            text: String(open_items.length + 1)
-        });
-}
-
-
 ///////////Global vars/////////////
 var baseUrl = "http://localhost:8000" // global website base, set to localhost for testing
 //var baseUrl = "http://eyebrowse.herokuapp.com"
