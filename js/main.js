@@ -3,6 +3,29 @@ open_items = [];
 var active_item;
 open_items_dict = {};
 
+//
+// SET UP EXTENSION VARIABLES
+//
+
+// default values 
+var serverURL = "http://vivid-meadow-7063.herokuapp.com/visits/myCreate";
+var blacklist = JSON.stringify(["mail.google.com","www.sillypinkbunnies.com"]);
+var graylist = ["www.google.com"]; // expose button to include/exclude
+
+//  Check if these are already set to avoid overwriting.
+function localSetIfNull(key,value) {
+    if (localStorage.getItem(key)==null) {
+        console.log(key+" not set. Setting now to "+value);
+        localStorage.setItem(key,value);
+    } else {
+        console.log(key+" already set. Leaving it alone. Value is "+localStorage.getItem(key));
+    }
+}
+
+localSetIfNull("serverURL",serverURL);
+localSetIfNull("blacklist",blacklist);
+localSetIfNull("graylist",graylist);
+
 /*
     inputs:
     tabId - indentifer of tab (unique to session only)
@@ -10,6 +33,7 @@ open_items_dict = {};
     title - title of the webpage the tab is displaying
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
+
 function open_item(tabId, url, title, event_type) {
 
     //if event type is focus we need to close out the current tab
@@ -60,7 +84,8 @@ function update_badge() {
 
 function submit_to_server(item) {
     var xhr = new XMLHttpRequest();
-    var url = "http://vivid-meadow-7063.herokuapp.com/visits/myCreate?site="+encodeURI(item.title)+"&URL="+encodeURI(item.url);
+    var url = localStorage.getItem("serverURL")+"?site="+encodeURI(item.title)+"&URL="+encodeURI(item.url);
+    //console.log(url);
     xhr.open("GET",url,true);
     xhr.send();
     // the url is "http://vivid-meadow-7063.herokuapp.com/visits/myCreate?site="+encodeURI(pageInfo[2])+"&URL="+encodeURI(pageInfo[0]),
