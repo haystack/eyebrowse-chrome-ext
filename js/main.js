@@ -10,6 +10,7 @@ var FilterSet = Backbone.Model.extend({
 
     initialize : function() {
         _.bindAll(this); //allow access to 'this' in callbacks with 'this' meaning the object not the context of the callback
+        this.syncSet();
     },
 
     getType : function() {
@@ -20,7 +21,12 @@ var FilterSet = Backbone.Model.extend({
         return this.get('set')
     },
 
+    getItem : function(item) {
+        return this.getSet()[item]
+    },
+
     syncSet : function() {
+        return
         var payload = {
             'type' : this.getType(),
         };
@@ -150,8 +156,10 @@ var User = Backbone.Model.extend({
     // documentation for URL.js : http://medialize.github.com/URI.js/docs.html
     inSet : function(setType, url) {
         var set = this.get(setType);
-        var hostname = new URI(url).hostname();
-        return set[hostname] != undefined
+        var uri = new URI(url)
+        var hostname = uri.hostname();
+        var protocol = uri.protocol();
+        return (set.getItem(hostname) != undefined || set.getItem(protocol) != undefined)
     },
 
     //type is whitelist or blacklist which calls update method on FilterSet object
