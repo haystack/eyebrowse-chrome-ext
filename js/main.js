@@ -181,10 +181,11 @@ var User = Backbone.Model.extend({
 */
 function open_item(tabId, url, faviconUrl, title, event_type) {
 
+    var timeCheck = checkTimeDelta();
     //if event type is focus we need to close out the current tab
-    if(!user.inBlackList(url)) {
+    if(!user.inBlackList(url) && timeCheck.allow) {
         if (event_type === "focus" && active_item != undefined) {
-            close_item(active_item.tabId, 'blur');
+            close_item(active_item.tabId, 'blur', timeCheck.time);
         }
         
         //reassign the active item to be the current tab
@@ -203,20 +204,42 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
 }
 
 
-local_storage = [] //tmp tmp tmp
+local_storage = [] //tmp tmp tmp //http://stackoverflow.com/questions/2153070/do-chrome-extensions-have-access-to-local-storage
 /* 
     There is only ever one active_item at a time so only close out the active one. 
     This event will be fired when a tab is closed or unfocused but we would have already 'closed' the item so we don't want to do it again.
 */
-function close_item(tabId, url, event_type) {
+function close_item(tabId, url, event_type, time) {
+    var time = time || new Date().getTime(); // time is indefined for destroy event
 
     if (active_item.tabId === tabId && !user.inBlackList(url)) {
         //write to local storage
         var item = $.extend({}, active_item); //copy active_item
-        item.end_event = event_type
-        item.end_time = new Date().getTime()
-        item.tot_time = item.start_time - item.end_time
-        local_storage.push(item)
+
+        item.end_event = event_type;
+        item.end_time = time;
+        item.tot_time = item.start_time - item.end_time;
+        local_storage.push(item);
+    }
+}
+
+/*
+    checks if the time between the current event and the active item is greater than the delta. Default delta is 900ms
+*/
+function checkTimeDelta(delta) {
+    var delta = delta || 900
+    var now = new Date().getTime();
+    var allow = true; // default to true allows active item to be set initially
+    if (active_item != undefined) { 
+        allow = (now - active_item.start_time) > delta
+    }
+    console.log({
+        'allow' : allow,
+        'time' : now,
+    });
+    return {
+        'allow' : allow,
+        'time' : now,
     }
 }
 
@@ -229,7 +252,7 @@ var baseUrl = "http://localhost:8000" // global website base, set to localhost f
 var user = new User({
     'debug' : {
         'whitelist' : [],
-        'blacklist' : ['chrome'],
+        'blacklist' : ['chrome', 'chrome-devtools'],
     }
 });
 

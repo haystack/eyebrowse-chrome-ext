@@ -45,7 +45,7 @@ function removedTabListener() {
 function update_badge() {
     chrome.browserAction.setBadgeText(
         {
-            text: String(open_items.length + 1)
+            text: String(open_items.length)
         });
 }
 // run each listener
