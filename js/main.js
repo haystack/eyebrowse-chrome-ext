@@ -172,6 +172,29 @@ var User = Backbone.Model.extend({
     },
 });
 
+//
+// SET UP EXTENSION VARIABLES
+//
+
+// default values 
+var serverURL = "http://vivid-meadow-7063.herokuapp.com/visits/myCreate";
+var blacklist = JSON.stringify(["mail.google.com","www.sillypinkbunnies.com"]);
+var graylist = ["www.google.com"]; // expose button to include/exclude
+
+//  Check if these are already set to avoid overwriting.
+function localSetIfNull(key,value) {
+    if (localStorage.getItem(key)==null) {
+        console.log(key+" not set. Setting now to "+value);
+        localStorage.setItem(key,value);
+    } else {
+        console.log(key+" already set. Leaving it alone. Value is "+localStorage.getItem(key));
+    }
+}
+
+localSetIfNull("serverURL",serverURL);
+localSetIfNull("blacklist",blacklist);
+localSetIfNull("graylist",graylist);
+
 /*
     inputs:
     tabId - indentifer of tab (unique to session only)
@@ -205,9 +228,9 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
             'start_time' : new Date().getTime(), // milliseconds
         };
 
-        open_items.push(active_item); // tmp for dev/testing
-        update_badge();
-    }
+    open_items.push(active_item); // tmp for dev/testing
+    update_badge();
+    submit_to_server(active_item);
 }
 
 localString = localStorage['local_storage'];
@@ -268,3 +291,71 @@ var user = new User({
 open_items = [];
 var active_item;
 open_items_dict = {};
+
+//tmp for dev
+function update_badge() {
+
+    chrome.browserAction.setBadgeText(
+        {
+            text: String(open_items.length + 1)
+        });
+}
+
+function submit_to_server(item) {
+    var xhr = new XMLHttpRequest();
+    var url = localStorage.getItem("serverURL")+"?site="+encodeURI(item.title)+"&URL="+encodeURI(item.url);
+    //console.log(url);
+    xhr.open("GET",url,true);
+    xhr.send();
+    // the url is "http://vivid-meadow-7063.herokuapp.com/visits/myCreate?site="+encodeURI(pageInfo[2])+"&URL="+encodeURI(pageInfo[0]),
+    // in this case, the args should be item.title and item.url
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> fae24f0e83cb3a33c8443c46d47a1885ca3e9d7d
