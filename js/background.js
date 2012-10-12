@@ -36,9 +36,19 @@ function removedTabListener() {
     chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
         var event_type = 'destroy';
         chrome.tabs.get(tabId, function (tab) {
-            close_item(tabId, tab.url, event_type);
+            if (tab != undefined) {
+                close_item(tabId, tab.url, event_type);
+            }
         });
     });
+}
+
+//Fired when the window is closed. Writes all data to local_storage
+function closedWindowListener() {
+    chrome.windows.onRemoved.addListener(function() {
+        alert("closing window");
+        localStorage['local_storage'] = JSON.stringify(local_storage)
+    })
 }
 
 //tmp for dev
@@ -52,3 +62,4 @@ function update_badge() {
 activeTabListener();
 updatedTabListener();
 removedTabListener();
+closedWindowListener();
