@@ -188,8 +188,7 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
             'blacklist' : ['chrome', 'chrome-devtools'],
         }
     });
-    console.log(local_storage);
-    console.log("HERE");
+    
     //if event type is focus we need to close out the current tab
     if(!user.inBlackList(url) && timeCheck.allow) {
         if (event_type === "focus" && active_item != undefined) {
