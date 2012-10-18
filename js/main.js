@@ -178,7 +178,7 @@ var User = Backbone.Model.extend({
 
 
 // default values 
-var serverURL = "http://vivid-meadow-7063.herokuapp.com/visits/myCreate";
+var serverURL = "enter server url";
 var blacklist = JSON.stringify(["mail.google.com","www.sillypinkbunnies.com"]);
 var graylist = ["www.google.com"]; // expose button to include/exclude
 
@@ -312,7 +312,5 @@ function submit_to_server(item) {
     //console.log(url);
     xhr.open("GET",url,true);
     xhr.send();
-    // the url is "http://vivid-meadow-7063.herokuapp.com/visits/myCreate?site="+encodeURI(pageInfo[2])+"&URL="+encodeURI(pageInfo[0]),
-    // in this case, the args should be item.title and item.url
 }
 
