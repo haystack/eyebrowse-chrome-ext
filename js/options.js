@@ -24,7 +24,6 @@ $(document).ready(function() {
 	myDiv.append($(document.createElement("br")));	
 	myDiv.append($(document.createElement("span")).text("To disable, delete the url and preset enter."));
 	myDiv.append($(document.createElement("br")));
-	myDiv.append($(document.createElement("span")).text("In case you lose it, the working url is http://vivid-meadow-7063.herokuapp.com/visits/myCreate"));
 
 	urlBox.bind("enterKey",function(e){
    		console.log("enter key in urlbox");//do stuff here

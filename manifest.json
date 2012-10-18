@@ -16,7 +16,7 @@
             "tabs",
             "background",
             "storage",
-            "http://vivid-meadow-7063.herokuapp.com/"
+            "*://*/"
             ],
     "options_page":"options.html"
 }
