@@ -284,13 +284,13 @@ var baseUrl = "http://localhost:8000";
 // global website base, set to localhost for testing
 //var baseUrl = "http://eyebrowse.herokuapp.com"
 
-// /////////init models///////
-// var user = new User({
-//     'debug' : {
-//         'whitelist' : [],
-//         'blacklist' : ['chrome', 'chrome-devtools'],
-//     }
-// });
+/////////init models///////
+var user = new User({
+    'debug' : {
+        'whitelist' : [],
+        'blacklist' : ['chrome', 'chrome-devtools'],
+    }
+});
 
 // dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
 open_items = [];
