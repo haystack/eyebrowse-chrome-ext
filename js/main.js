@@ -283,7 +283,7 @@ var baseUrl = "http://localhost:8000" // global website base, set to localhost f
 var user = new User({
     'debug' : {
         'whitelist' : [],
-        'blacklist' : ['chrome', 'chrome-devtools'],
+        'blacklist' : ['chrome', 'chrome-devtools', 'mail.google.com','www.sillypinkbunnies.com'],
     }
 });
 
