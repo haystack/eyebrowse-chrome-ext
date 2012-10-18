@@ -7,8 +7,8 @@ This implementation is a browser extension for Chrome and is currently in pre-al
 
 The project [eyebrowse-server](https://github.com/joshblum/eyebrowse-server) (also in pre-alpha) aims to build a server that can receive the data from users' installs of eyebrowse-2.
 
-This wiki will be used as a set of working documents for current developers [swgreen](https://github.com/swgreen), [joshblum](https://github.com/joshblum), and [mjhu](https://github.com/mjhu).
+Current developers are [swgreen](https://github.com/swgreen), [joshblum](https://github.com/joshblum), and [mjhu](https://github.com/mjhu).
 
-Pages:
+Wiki Pages:
 [Notes on Unit Testing]
 (https://github.com/swgreen/eyebrowse-2/wiki/Notes-on-Unit-Testing)
