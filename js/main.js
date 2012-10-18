@@ -1,6 +1,7 @@
 ///////////Models//////////////
 
 //This object can represent either a whitelist or blacklist for a given user. On an update send results to server to update stored data. On intialization set is synced with server. Should allow offline syncing in the future.
+
 var FilterSet = Backbone.Model.extend({
     
     defaults : {
@@ -80,7 +81,7 @@ var FilterSet = Backbone.Model.extend({
 
     urlUpdateSet : function() {
         return baseUrl // + todo
-    },
+    }
 });
 
 
@@ -172,9 +173,9 @@ var User = Backbone.Model.extend({
     },
 });
 
-//
+
 // SET UP EXTENSION VARIABLES
-//
+
 
 // default values 
 var serverURL = "http://vivid-meadow-7063.herokuapp.com/visits/myCreate";
@@ -216,17 +217,18 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
     if(!user.inBlackList(url) && timeCheck.allow) {
         if (event_type === "focus" && active_item != undefined) {
             close_item(active_item.tabId, 'blur', timeCheck.time);
-        }
-        
-        //reassign the active item to be the current tab
-        active_item = {
-            'tabId' : tabId,
-            'url' : url,
-            'faviconUrl' : faviconUrl,
-            'title' : title,
-            'start_event' : event_type,
-            'start_time' : new Date().getTime(), // milliseconds
         };
+    };
+        
+    //reassign the active item to be the current tab
+    active_item = {
+        'tabId' : tabId,
+        'url' : url,
+        'faviconUrl' : faviconUrl,
+        'title' : title,
+        'start_event' : event_type,
+        'start_time' : new Date().getTime(), // milliseconds
+    };
 
     open_items.push(active_item); // tmp for dev/testing
     update_badge();
@@ -234,8 +236,11 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
 }
 
 localString = localStorage['local_storage'];
+localString = (localString) ? localString : "[]"; // catch undefined case
 parsed = JSON.parse(localString);
-local_storage = parsed || []; //tmp tmp tmp //http://stackoverflow.com/questions/2153070/do-chrome-extensions-have-access-to-local-storage
+local_storage = parsed;
+//local_storage = (parsed || []); 
+
 /* 
     There is only ever one active_item at a time so only close out the active one. 
     This event will be fired when a tab is closed or unfocused but we would have already 'closed' the item so we don't want to do it again.
@@ -274,18 +279,18 @@ function checkTimeDelta(delta) {
     }
 }
 
-
 ///////////Global vars/////////////
-var baseUrl = "http://localhost:8000" // global website base, set to localhost for testing
+var baseUrl = "http://localhost:8000"; 
+// global website base, set to localhost for testing
 //var baseUrl = "http://eyebrowse.herokuapp.com"
 
-/////////init models///////
-var user = new User({
-    'debug' : {
-        'whitelist' : [],
-        'blacklist' : ['chrome', 'chrome-devtools'],
-    }
-});
+// /////////init models///////
+// var user = new User({
+//     'debug' : {
+//         'whitelist' : [],
+//         'blacklist' : ['chrome', 'chrome-devtools'],
+//     }
+// });
 
 // dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
 open_items = [];
@@ -311,51 +316,3 @@ function submit_to_server(item) {
     // in this case, the args should be item.title and item.url
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> fae24f0e83cb3a33c8443c46d47a1885ca3e9d7d
