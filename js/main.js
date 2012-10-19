@@ -326,7 +326,7 @@ function loadLocalUser() {
         return new User({
             'debug' : {
                 'whitelist' : [],
-                'blacklist' : ['chrome', 'chrome-devtools'],
+                'blacklist' : ['', 'chrome', 'chrome-devtools'],
             }
         });
     }

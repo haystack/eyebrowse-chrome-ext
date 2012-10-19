@@ -38,15 +38,15 @@ $(document).ready(function() {
 	// BLACKLIST LISTING
 	var blacklistLabel = $(document.createElement("span"));
 	blacklistLabel.append($(document.createElement("h2")).text("Blacklist"));
-	blacklistLabel.append($(document.createElement("span")).text("Not implemented yet"));
 	myDiv.append(blacklistLabel);
 	var blacklistUL = $(document.createElement("ul"));
 	myDiv.append(blacklistUL);
-	var blacklist = JSON.parse(localStorage.getItem("blacklist"));
-	console.log("hello console 96746");
-	console.log(blacklist);
-	for (var index in blacklist) {
-		blacklistUL.append(
-			$(document.createElement("li")).text(blacklist[index]));
-	}
+	window.backpage = chrome.extension.getBackgroundPage();
+    var blacklist = backpage.user.getBlackList().getSet();
+    console.log(blacklist);
+    $.each(blacklist, function(key, value) {
+        blacklistUL.append($(document.createElement("li")).text(value));
+        console.log($(document.createElement("li")).text(value));
+        });
+	var blacklistUL = $(document.createElement("ul"));
 });
