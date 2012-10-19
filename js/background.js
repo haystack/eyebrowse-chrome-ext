@@ -47,7 +47,8 @@ function removedTabListener() {
 function closedWindowListener() {
     chrome.windows.onRemoved.addListener(function() {
         alert("closing window");
-        localStorage['local_storage'] = JSON.stringify(local_storage)
+        localStorage['local_storage'] = JSON.stringify(local_storage);
+        localStorage['user'] = JSON.stringify(user);
     })
 }
 
