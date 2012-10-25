@@ -200,6 +200,7 @@ localSetIfNull("graylist",graylist);
     inputs:
     tabId - indentifer of tab (unique to session only)
     url - url of the tab making the request
+    faviconUrl - used for displaying content
     title - title of the webpage the tab is displaying
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
