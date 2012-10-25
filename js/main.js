@@ -4,9 +4,11 @@
 
 var FilterSet = Backbone.Model.extend({
     
-    defaults : {
+    defaults : function() {
+        return {
         'set' : {},
         'type' : ''
+        };
     },
 
     initialize : function() {
@@ -46,7 +48,9 @@ var FilterSet = Backbone.Model.extend({
 
     addItem : function(item) {
         var set = this.getSet();
-        set[item] = item;
+        var uri = new URI(item)
+        var hostname = uri.hostname();
+        set[hostname] = hostname;
 
         var payload = {
             'type' : this.getType(),
@@ -160,7 +164,7 @@ var User = Backbone.Model.extend({
         var uri = new URI(url)
         var hostname = uri.hostname();
         var protocol = uri.protocol();
-        return (set.getItem(hostname) != undefined || set.getItem(protocol) != undefined)
+        return (set.getItem(hostname) != undefined || set.getItem(protocol) != undefined || set.getItem(url) != undefined)
     },
 
     //type is whitelist or blacklist which calls update method on FilterSet object
@@ -207,13 +211,27 @@ localSetIfNull("graylist",graylist);
 function open_item(tabId, url, faviconUrl, title, event_type) {
 
     var timeCheck = checkTimeDelta();
-    user = new User({
-        'debug' : {
-            'whitelist' : [],
-            'blacklist' : ['chrome', 'chrome-devtools'],
-        }
-    });
+    // user = new User({
+    //     'debug' : {
+    //         'whitelist' : [],
+    //         'blacklist' : ['chrome', 'chrome-devtools'],
+    //     }
+    // });
     
+    if (!user.inBlackList(url) && !user.inWhitelist(url)) {
+        list = undefined
+        if (confirm("Can we add this site to be logged?")) {
+            list = user.getWhitelist();
+        }
+        else {
+            list = user.getBlackList();
+
+        }
+        list.addItem(url);
+    }
+    if (user.inBlackList(url)) {
+        return  //Don't log anything if the site is on the blacklist
+    }
     //if event type is focus we need to close out the current tab
     if(!user.inBlackList(url) && timeCheck.allow) {
         if (event_type === "focus" && active_item != undefined) {
@@ -236,10 +254,12 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
     submit_to_server(active_item);
 }
 
-localString = localStorage['local_storage'];
-localString = (localString) ? localString : "[]"; // catch undefined case
-parsed = JSON.parse(localString);
-local_storage = parsed;
+function loadLocalHistory() {
+    localString = localStorage['local_storage'];
+    localString = (localString) ? localString : "[]"; // catch undefined case
+    return JSON.parse(localString);
+}
+local_storage = loadLocalHistory();
 //local_storage = (parsed || []); 
 
 /* 
@@ -286,12 +306,35 @@ var baseUrl = "http://localhost:8000";
 //var baseUrl = "http://eyebrowse.herokuapp.com"
 
 /////////init models///////
-var user = new User({
-    'debug' : {
-        'whitelist' : [],
-        'blacklist' : ['chrome', 'chrome-devtools', 'mail.google.com','www.sillypinkbunnies.com'],
+function loadLocalUser() {
+    localUser = localStorage['user'];
+    localUser = (localUser) ? localUser : ""; // catch undefined case
+    if (localUser != "") {
+        parsedUser = JSON.parse(localUser);
+        return new User({
+            'loggedIn': true,
+            'whitelist': new FilterSet({
+                'type': 'whitelist',
+                'set': parsedUser['whitelist']['set']
+            }),
+            'blacklist': new FilterSet({
+                'type': 'blacklist',
+                'set': parsedUser['blacklist']['set']
+            })
+        })
     }
-});
+    else {
+        return new User({
+            'debug' : {
+                'whitelist' : [],
+                'blacklist' : ['', 'chrome', 'chrome-devtools'],
+            }
+        });
+    }
+}
+
+user = loadLocalUser();
+
 
 // dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
 open_items = [];
