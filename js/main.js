@@ -1,3 +1,6 @@
+///////////Global vars/////////////
+var baseUrl = "http://localhost:5000"; 
+
 ///////////Models//////////////
 
 //This object can represent either a whitelist or blacklist for a given user. On an update send results to server to update stored data. On intialization set is synced with server. Should allow offline syncing in the future.
@@ -12,32 +15,17 @@ var FilterListItem = Backbone.Model.extend({
 });
 
 
-var Whitelist = Backbone.Collection.extend({
+var FilterList = Backbone.Collection.extend({
 
     model: FilterListItem,
 
-    initialize: function() {
+    initialize: function(type) {
         _.bindAll(this);
+        this.type = type;
         this.fetch()
     },
     url : function() {
-        return getApiURL('whitelist', null, {'user_profile__user__username': 'joshblum'})
-    },
-    parse: function(data){
-        return data.objects;
-    },
-});
-
-var BlackList = Backbone.Collection.extend({
-
-    model: FilterListItem,
-
-    initialize: function() {
-        _.bindAll(this);
-        this.fetch()
-    },
-    url : function() {
-        return getApiURL('blacklist', null, {'user_profile__user__username': 'joshblum'})
+        return getApiURL(this.type)
     },
     parse: function(data){
         return data.objects;
@@ -49,8 +37,8 @@ var BlackList = Backbone.Collection.extend({
 var User = Backbone.Model.extend({
     defaults: {
         'loggedIn' : false,
-        'whitelist' : new Whitelist(),
-        'blacklist' : new BlackList(),
+        'whitelist' : new FilterList('whitelist'),
+        'blacklist' : new FilterList('blacklist'),
         'username' : '',
     },
 
@@ -63,7 +51,7 @@ var User = Backbone.Model.extend({
         return this.get('whitelist')
     },
 
-    getWhitelist : function() {
+    getBlacklist : function() {
         return this.get('blacklist')
     },
 
@@ -99,7 +87,7 @@ var User = Backbone.Model.extend({
         var uri = new URI(url)
         var hostname = uri.hostname();
         var protocol = uri.protocol();
-        return (set.where({'url' : hostname}).length != 0 || set.where({"url" : protocol}).length != 0 || set.getItem(url).length != 0)
+        return (set.where({'url' : hostname}).length != 0 || set.where({"url" : protocol}).length != 0 || set.where(url).length != 0)
     },
 });
 
@@ -117,7 +105,7 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
     var timeCheck = checkTimeDelta();
 
     if (!user.inWhitelist(url)) {
-        list = undefined
+        var list;
         if (true){//confirm("Can we add this site to be logged?")) {
             list = user.getWhitelist();
             list.create({
@@ -127,6 +115,7 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
             list = user.getBlacklist();
             list.create({
                 'url' : url,
+                'user_profile' : baseUrl+'/api/v1/user_profile/1/?format=json',
             })
         }
     }
@@ -198,6 +187,7 @@ function getApiURL(resource, id, params) {
     if (id != null) {
         apiBase += '/' + id;
     } 
+    return apiBase+'/'
     return sprintf("%s/?format=json%s", apiBase, getParams)
 }
 
@@ -229,8 +219,7 @@ function update_badge() {
 
 
 
-///////////Global vars/////////////
-var baseUrl = "http://localhost:5000"; 
+
 // global website base, set to localhost for testing
 //var baseUrl = "http://eyebrowse.herokuapp.com"
 
@@ -239,9 +228,7 @@ var active_item;
 
 local_storage = loadLocalHistory();
 
-user = new User();;
+user = new User();
 
 localSetIfNull("baseUrl", baseUrl);
-localSetIfNull("blacklist", blacklist);
-localSetIfNull("graylist", graylist);
 
