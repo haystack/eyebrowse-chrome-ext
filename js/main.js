@@ -2,90 +2,46 @@
 
 //This object can represent either a whitelist or blacklist for a given user. On an update send results to server to update stored data. On intialization set is synced with server. Should allow offline syncing in the future.
 
-var FilterSet = Backbone.Model.extend({
-    
-    defaults : function() {
+var FilterListItem = Backbone.Model.extend({
+    parse: function(data) {
         return {
-        'set' : {},
-        'type' : ''
-        };
-    },
-
-    initialize : function() {
-        _.bindAll(this); //allow access to 'this' in callbacks with 'this' meaning the object not the context of the callback
-        this.syncSet();
-    },
-
-    getType : function() {
-        return this.get('type')
-    },
-
-    getSet : function() {
-        return this.get('set')
-    },
-
-    getItem : function(item) {
-        return this.getSet()[item]
-    },
-
-    syncSet : function() {
-        return
-        var payload = {
-            'type' : this.getType(),
-        };
-        var url = this.urlSync();
-        /* 
-            we send the server the type of set we want to sync and reset our set to be what the server has. This allows access across computers/entensions
-        */
-        $.post(url, payload, function(res){
-            if (res.success) {     
-                this.set({
-                    'set' : res.set,
-                });
-            }
-        });
-    },
-
-    addItem : function(item) {
-        var set = this.getSet();
-        var uri = new URI(item)
-        var hostname = uri.hostname();
-        set[hostname] = hostname;
-
-        var payload = {
-            'type' : this.getType(),
-            'action' : 'add',
-            'item': item,
+            url : data.url, 
+            id : data.id,
         }
-        this.updateSet(payload);
     },
+});
 
-    rmItem : function(item) {
-        var set = this.getSet();
-        delete set[item];
-        var payload = {
-            'type' : this.getType(),
-            'action' : 'rm',
-            'item': item,
-        }
-        this.updateSet(payload);
+
+var Whitelist = Backbone.Collection.extend({
+
+    model: FilterListItem,
+
+    initialize: function() {
+        _.bindAll(this);
+        this.fetch()
     },
-
-    updateSet : function(payload) {
-        return //tmp for dev
-        var url = this.urlUpdateSet();
-        $.post(url, payload, function(res) {
-            return this.res.success //return true or false maybe we have a gui update here.
-        });
+    url : function() {
+        return getApiURL('whitelist', null, {'user_profile__user__username': 'joshblum'})
     },
-
-    urlSync : function() {
-        return baseUrl //+ todo 
+    parse: function(data){
+        return data.objects;
     },
+});
 
-    urlUpdateSet : function() {
-        return baseUrl // + todo
-    }
+var BlackList = Backbone.Collection.extend({
+
+    model: FilterListItem,
+
+    initialize: function() {
+        _.bindAll(this);
+        this.fetch()
+    },
+    url : function() {
+        return getApiURL('blacklist', null, {'user_profile__user__username': 'joshblum'})
+    },
+    parse: function(data){
+        return data.objects;
+    },
 });
 
 
@@ -93,47 +49,26 @@ var FilterSet = Backbone.Model.extend({
 var User = Backbone.Model.extend({
     defaults: {
         'loggedIn' : false,
-        'whitelist' : new FilterSet({
-            'type' : 'whitelist',
-        }),  // for dev lets use a blacklist since its easier to exclude only a few 
-        'blacklist' : new FilterSet({
-            'type' : 'blacklist',
-        }),
-    },
-    initialize : function() {
-        _.bindAll(this); //allow access to 'this' in callbacks with 'this' meaning the object not the context of the callback
-        /*
-            debug is a dictionary of the following form:
-            debug = {
-                whitelist : [url1, url2, ...],
-                blacklist : [url1, url2, ...]
-            }
-            This allows for debugging of whitelist/blacklist functionality
-        */
-        var debug = this.get('debug'); 
-        if (debug != undefined) {
-            this.initDefaults(debug);
-        }
+        'whitelist' : new Whitelist(),
+        'blacklist' : new BlackList(),
+        'username' : '',
     },
 
-    //set the default whitelist and blacklist values
-    initDefaults : function(debug) {
-        var whitelist = this.getWhitelist();
-        var blacklist = this.getBlackList();
-        $.each(debug.whitelist, function(index, item) {
-            whitelist.addItem(item);
-        });
-        $.each(debug.blacklist, function(index, item) {
-            blacklist.addItem(item);
-        });
+    initialize : function() {
+        _.bindAll(this); //allow access to 'this' in callbacks with 'this' meaning the object not the context of the callback
+
     },
 
     getWhitelist : function() {
         return this.get('whitelist')
     },
 
-    getBlackList : function() {
+    getWhitelist : function() {
         return this.get('blacklist')
+    },
+
+    getUsername : function() {
+        return this.get('username')
     },
 
     isLoggedIn : function() {
@@ -164,41 +99,10 @@ var User = Backbone.Model.extend({
         var uri = new URI(url)
         var hostname = uri.hostname();
         var protocol = uri.protocol();
-        return (set.getItem(hostname) != undefined || set.getItem(protocol) != undefined || set.getItem(url) != undefined)
-    },
-
-    //type is whitelist or blacklist which calls update method on FilterSet object
-    updateSet : function(listType, item, action) {
-         if (action == 'add') {
-            this.get(listType).addItem(item);
-        } else if (action == 'rm') {
-            this.get(listType).rmItem(item);
-        }
+        return (set.where({'url' : hostname}).length != 0 || set.where({"url" : protocol}).length != 0 || set.getItem(url).length != 0)
     },
 });
 
-
-// SET UP EXTENSION VARIABLES
-
-
-// default values 
-var serverURL = "enter server url";
-var blacklist = JSON.stringify(["mail.google.com","www.sillypinkbunnies.com"]);
-var graylist = ["www.google.com"]; // expose button to include/exclude
-
-//  Check if these are already set to avoid overwriting.
-function localSetIfNull(key,value) {
-    if (localStorage.getItem(key)==null) {
-        console.log(key+" not set. Setting now to "+value);
-        localStorage.setItem(key,value);
-    } else {
-        console.log(key+" already set. Leaving it alone. Value is "+localStorage.getItem(key));
-    }
-}
-
-localSetIfNull("serverURL",serverURL);
-localSetIfNull("blacklist",blacklist);
-localSetIfNull("graylist",graylist);
 
 /*
     inputs:
@@ -211,29 +115,24 @@ localSetIfNull("graylist",graylist);
 function open_item(tabId, url, faviconUrl, title, event_type) {
 
     var timeCheck = checkTimeDelta();
-    // user = new User({
-    //     'debug' : {
-    //         'whitelist' : [],
-    //         'blacklist' : ['chrome', 'chrome-devtools'],
-    //     }
-    // });
-    
-    if (!user.inBlackList(url) && !user.inWhitelist(url)) {
-        list = undefined
-        if (confirm("Can we add this site to be logged?")) {
-            list = user.getWhitelist();
-        }
-        else {
-            list = user.getBlackList();
 
+    if (!user.inWhitelist(url)) {
+        list = undefined
+        if (true){//confirm("Can we add this site to be logged?")) {
+            list = user.getWhitelist();
+            list.create({
+                'url' : url,
+            });
+        } else {
+            list = user.getBlacklist();
+            list.create({
+                'url' : url,
+            })
         }
-        list.addItem(url);
     }
-    if (user.inBlackList(url)) {
-        return  //Don't log anything if the site is on the blacklist
-    }
+
     //if event type is focus we need to close out the current tab
-    if(!user.inBlackList(url) && timeCheck.allow) {
+    if(timeCheck.allow) {
         if (event_type === "focus" && active_item != undefined) {
             close_item(active_item.tabId, 'blur', timeCheck.time);
         };
@@ -248,19 +147,7 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
         'start_event' : event_type,
         'start_time' : new Date().getTime(), // milliseconds
     };
-
-    open_items.push(active_item); // tmp for dev/testing
-    update_badge();
-    submit_to_server(active_item);
 }
-
-function loadLocalHistory() {
-    localString = localStorage['local_storage'];
-    localString = (localString) ? localString : "[]"; // catch undefined case
-    return JSON.parse(localString);
-}
-local_storage = loadLocalHistory();
-//local_storage = (parsed || []); 
 
 /* 
     There is only ever one active_item at a time so only close out the active one. 
@@ -277,6 +164,7 @@ function close_item(tabId, url, event_type, time) {
         item.end_time = time;
         item.tot_time = item.start_time - item.end_time;
         local_storage.push(item);
+        update_badge();
     }
 }
 
@@ -300,61 +188,60 @@ function checkTimeDelta(delta) {
     }
 }
 
-///////////Global vars/////////////
-var baseUrl = "http://localhost:8000"; 
-// global website base, set to localhost for testing
-//var baseUrl = "http://eyebrowse.herokuapp.com"
-
-/////////init models///////
-function loadLocalUser() {
-    localUser = localStorage['user'];
-    localUser = (localUser) ? localUser : ""; // catch undefined case
-    if (localUser != "") {
-        parsedUser = JSON.parse(localUser);
-        return new User({
-            'loggedIn': true,
-            'whitelist': new FilterSet({
-                'type': 'whitelist',
-                'set': parsedUser['whitelist']['set']
-            }),
-            'blacklist': new FilterSet({
-                'type': 'blacklist',
-                'set': parsedUser['blacklist']['set']
-            })
-        })
-    }
-    else {
-        return new User({
-            'debug' : {
-                'whitelist' : [],
-                'blacklist' : ['', 'chrome', 'chrome-devtools'],
-            }
-        });
-    }
+function getApiURL(resource, id, params) { 
+    params = params || {};
+    var apiBase = sprintf('%s/api/v1/%s', baseUrl, resource);
+    var getParams = ''
+    $.each(params, function(key, val){
+        getParams += sprintf("&%s=%s", key, val);
+    });
+    if (id != null) {
+        apiBase += '/' + id;
+    } 
+    return sprintf("%s/?format=json%s", apiBase, getParams)
 }
 
-user = loadLocalUser();
+/////////init models///////
+function loadLocalHistory() {
+    localString = localStorage['local_storage'];
+    localString = (localString) ? localString : "[]"; // catch undefined case
+    return JSON.parse(localString);
+}
 
-
-// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
-open_items = [];
-var active_item;
-open_items_dict = {};
+//  Check if these are already set to avoid overwriting.
+function localSetIfNull(key,value) {
+    if (localStorage.getItem(key) === null) {
+        console.log(key + " not set. Setting now to " + value);
+        localStorage.setItem(key,value);
+    } else {
+        console.log(key + " already set. Leaving it alone. Value is " + localStorage.getItem(key));
+    }
+}
 
 //tmp for dev
 function update_badge() {
 
     chrome.browserAction.setBadgeText(
         {
-            text: String(open_items.length + 1)
+            text: String(local_storage.length + 1)
         });
 }
 
-function submit_to_server(item) {
-    var xhr = new XMLHttpRequest();
-    var url = localStorage.getItem("serverURL")+"?site="+encodeURI(item.title)+"&URL="+encodeURI(item.url);
-    //console.log(url);
-    xhr.open("GET",url,true);
-    xhr.send();
-}
+
+
+///////////Global vars/////////////
+var baseUrl = "http://localhost:5000"; 
+// global website base, set to localhost for testing
+//var baseUrl = "http://eyebrowse.herokuapp.com"
+
+// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
+var active_item;
+
+local_storage = loadLocalHistory();
+
+user = new User();;
+
+localSetIfNull("baseUrl", baseUrl);
+localSetIfNull("blacklist", blacklist);
+localSetIfNull("graylist", graylist);
 
