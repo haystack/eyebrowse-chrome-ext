@@ -110,6 +110,7 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
             list = user.getWhitelist();
             list.create({
                 'url' : url,
+                'user_profile' :'/api/v1/user_profile/1'
             });
         } else {
             list = user.getBlacklist();
