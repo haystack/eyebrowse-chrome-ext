@@ -11,12 +11,15 @@
     "background" : {
         "page": "background.html"
         },
-    "permissions" : [
-            "notifications",
-            "tabs",
-            "background",
-            "storage",
-            "*://*/"
-            ],
+    "permissions": [
+        "http://eyebrowse.herokuapp.com/.*",
+        "http://localhost:5000/.*",
+        "cookies",
+        "tabs",
+        "storage",
+        "notifications",
+        "background"
+    ], 
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
     "options_page":"options.html"
 }
