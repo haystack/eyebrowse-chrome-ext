@@ -88,7 +88,6 @@ LoginView = Backbone.View.extend({
         user.setLogin(true);
         user.setUsername(username);
         navView.render('home_tab');
-        subNavView.render();
     },
 
     logout : function() {
