@@ -45,7 +45,7 @@ var User = Backbone.Model.extend({
         'whitelist' : new FilterList('whitelist'),
         'blacklist' : new FilterList('blacklist'),
         'username' : '',
-        'resourceURI' : '/api/v1/user/joshblum/' //hardcoded for ev
+        'resourceURI' : '/api/v1/user/',
     },
 
     initialize : function() {
@@ -78,6 +78,19 @@ var User = Backbone.Model.extend({
         this.set({ 
             'loggedIn': status,
         });
+    },
+    
+    setUsername : function(username) {
+        this.set({ 
+            'username': username,
+        });
+        this.setResourceURI(username);
+    },
+
+    setResourceURI : function(username) {
+        this.set({
+            'resourceURI' : sprintf('/api/v1/user/%s/', username)
+        })
     },
 
     //check if a url is in the blacklist

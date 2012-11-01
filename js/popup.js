@@ -69,7 +69,7 @@ LoginView = Backbone.View.extend({
                     if(match) { // we didn't log in successfully
                         self.displayErrors("Invalid username or password");
                     } else {
-                        self.completeLogin()
+                        self.completeLogin(username)
                     }
                 },
                 error : function(data) {
@@ -78,14 +78,15 @@ LoginView = Backbone.View.extend({
             });
         }
         else {
-            self.completeLogin();
+            self.completeLogin(username);
         }
     },
 
-    completeLogin : function() {
+    completeLogin : function(username) {
         $('#login_container').remove();
         $('body').css('width', '600px');
         user.setLogin(true);
+        user.setUsername(username);
         navView.render('home_tab');
         subNavView.render();
     },
