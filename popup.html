@@ -3,27 +3,90 @@
 
     <head>
         <meta charset="utf-8">
-        <title id="page_title"> EyeBrowse </title>
+        <title id="page_title"> Eyebrowse </title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
 
         <!--  styles -->
         <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
-        <link type="text/css" rel="stylesheet" href="css/bootstrap-responsive.css" />
+        <link type="text/css" rel="stylesheet" href="css/bootstrap-responsive.min.css" />
+        
+        <link type="text/css" rel="stylesheet" href="http://localhost:5000/static/common/css/base.css" />
+
+        <link type="text/css" rel="stylesheet" href="css/popup.css" />
+        
     </head>
   
     <body>
-        <div id="main">
-            Pages Visited:
-            <ol class="visited-items">
+        <div class="nav-container"></div>
 
-            </ol>
+        <div class="container">
+            <div class="subnav-container"></div>
+            <div class="content-container"></div>
         </div>
-        <button id="reset" class="btn btn-small"> Reset </button>
         
+        <!-- BEGIN: Underscore Template Definition. -->
+        
+        <!-- Nav template -->
+        <script type="text/template" id="nav_template">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner nav_bg">
+                <a class="brand" href=" <%= baseUrl %>">
+                    <img class="logo" src="/img/eye.png"/> Eyebrowse
+                </a>
+                <ul class="nav topbar">
+                    <% if( loggedIn ) { %>
+                        <li id="home_tab" class="nav-tab">
+                            <a href="#home">Home</a>
+                        </li>
+                        <li id="profile_tab" class="nav-tab">
+                            <a href="#profile">Profile</a>
+                        </li>
+                        <li>
+                            <a href="#logout">Logout</a>
+                        </li>
+                    <%} else {%>
+                        <li id="login_tab" class="nav-tab">
+                            <a href="#login">Login</a>
+                        </li>
+                    <% } %>
+            </div>
+        </div>
+
+        </script>
+
+        <!-- Login template -->
+        <script type="text/template" id="login_template">
+
+             <div class="row">
+                <div id="login_container" class="offset2 span4 well">
+                    <div id="errors" class="alert alert-error"></div>
+                    <p>
+                        <input id="id_username" type="text" placeholder="Username or Email" name="username" maxlength="30" />
+                    </p>
+                    <p>
+                        <input type="password" placeholder="Password" name="password" id="id_password" />
+                    </p>
+
+                    <input class="btn btn-primary" data-loading-text="Loading..." id="login" type="submit" value="Login" />
+                    <a href="<%= baseUrl %>/accounts/password/reset/"> Forgot Password? </a> 
+
+                    <input type="hidden" name="next" value="" />
+                </div>
+            </div>
+
+        </script>
+
+
+        <!-- END: Underscore Template Definition. -->
+
         <!--  javascript -->
         <script type="text/javascript" src="libs/jquery-1.8.2.js"></script>
+        <script type="text/javascript" src="libs/underscore.js"></script>
+        <script type="text/javascript" src="libs/backbone.js"></script>
+        <script type="text/javascript" src="libs/bootstrap.js"></script>
         <script type="text/javascript" src="libs/sprintf-0.7-beta1.js"></script>
         <script type="text/javascript" src="js/popup.js"></script>
     </body>

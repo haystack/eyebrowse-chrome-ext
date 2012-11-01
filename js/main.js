@@ -7,9 +7,11 @@ var baseUrl = "http://localhost:5000";
 
 var FilterListItem = Backbone.Model.extend({
     parse: function(data) {
-        return {
-            url : data.url, 
-            id : data.id,
+        if (data != null) {
+            return {
+                url : data.url, 
+                id : data.id,
+            }
         }
     },
 });
@@ -23,6 +25,9 @@ var FilterList = Backbone.Collection.extend({
         _.bindAll(this);
         this.type = type;
         this.fetch()
+    },
+    getType : function() {
+        return this.get('type')
     },
     url : function() {
         return getApiURL(this.type)
@@ -40,6 +45,7 @@ var User = Backbone.Model.extend({
         'whitelist' : new FilterList('whitelist'),
         'blacklist' : new FilterList('blacklist'),
         'username' : '',
+        'resourceURI' : '/api/v1/user/',
     },
 
     initialize : function() {
@@ -59,6 +65,10 @@ var User = Backbone.Model.extend({
         return this.get('username')
     },
 
+    getResourceURI : function() {
+        return this.get('resourceURI')
+    },
+
     isLoggedIn : function() {
         return this.get('loggedIn')
     },
@@ -68,6 +78,19 @@ var User = Backbone.Model.extend({
         this.set({ 
             'loggedIn': status,
         });
+    },
+    
+    setUsername : function(username) {
+        this.set({ 
+            'username': username,
+        });
+        this.setResourceURI(username);
+    },
+
+    setResourceURI : function(username) {
+        this.set({
+            'resourceURI' : sprintf('/api/v1/user/%s/', username)
+        })
     },
 
     //check if a url is in the blacklist
@@ -103,25 +126,24 @@ var User = Backbone.Model.extend({
 function open_item(tabId, url, faviconUrl, title, event_type) {
 
     var timeCheck = checkTimeDelta();
+    var uri = new URI(url);
 
-    if (!user.inWhitelist(url)) {
-        var list;
-        if (true){//confirm("Can we add this site to be logged?")) {
-            list = user.getWhitelist();
-            list.create({
-                'url' : url,
-            });
-        } else {
-            list = user.getBlacklist();
-            list.create({
-                'url' : url,
-                'user_profile' : baseUrl+'/api/v1/user_profile/1/?format=json',
+    //if its not in the whitelist lets check that the user has it
+    if (!user.inWhitelist(url) && !user.inBlackList(url)) {
+        var list = true ? user.getWhitelist() : user.getBlacklist(); // setup user confirmation
+        list.create({
+                'url' : uri.hostname(),
+                'user' : user.getResourceURI(),
             })
+        if (list.getType() === 'blacklist'){
+            return
         }
+    } else if (user.inBlackList(url)) {
+        return
     }
 
     //if event type is focus we need to close out the current tab
-    if(timeCheck.allow) {
+    if (timeCheck.allow) {
         if (event_type === "focus" && active_item != undefined) {
             close_item(active_item.tabId, 'blur', timeCheck.time);
         };
@@ -151,10 +173,31 @@ function close_item(tabId, url, event_type, time) {
 
         item.end_event = event_type;
         item.end_time = time;
-        item.tot_time = item.start_time - item.end_time;
+        item.tot_time = item.end_time - item.start_time;
         local_storage.push(item);
         update_badge();
     }
+}
+
+
+/*
+    Posts data to server
+*/
+function dump_data() {
+    var url = getApiURL('history-data');
+    $.each(local_storage, function(index, item){
+        var payload = JSON.stringify(item);
+        payload.user = user.getResourceURI();
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: payload,
+            dataType: "application/json",
+            processData:  false,
+            contentType: "application/json"
+        });
+    });
 }
 
 /*
@@ -167,10 +210,7 @@ function checkTimeDelta(delta) {
     if (active_item != undefined) { 
         allow = (now - active_item.start_time) > delta
     }
-    console.log({
-        'allow' : allow,
-        'time' : now,
-    });
+
     return {
         'allow' : allow,
         'time' : now,
@@ -187,8 +227,8 @@ function getApiURL(resource, id, params) {
     if (id != null) {
         apiBase += '/' + id;
     } 
-    return apiBase+'/'
-    return sprintf("%s/?format=json%s", apiBase, getParams)
+    return apiBase
+    //return sprintf("%s/?format=json%s", apiBase, getParams)
 }
 
 /////////init models///////
