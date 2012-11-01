@@ -15,7 +15,11 @@ function activeTabListener() {
     chrome.tabs.onActivated.addListener(function(activeInfo) {
         var event_type = 'focus';
         chrome.tabs.get(activeInfo.tabId, function (tab) {
-            open_item(activeInfo.tabId, tab.url, tab.faviconUrl,  tab.title, event_type);
+            if (tab != undefined) {
+                console.log(tab)
+                open_item(activeInfo.tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
+            }
+            
         });
     });
 }
@@ -25,7 +29,10 @@ function updatedTabListener() {
    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         var event_type = 'update';
         chrome.tabs.get(tabId, function (tab) {
-            open_item(tabId, tab.url, tab.faviconUrl, tab.title, event_type);
+            if (tab != undefined) {
+                console.log(tab)
+                open_item(tabId, tab.url, tab.favIconUrl, tab.title, event_type);
+            }
         });
         
     }); 

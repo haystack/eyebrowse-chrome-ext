@@ -119,15 +119,14 @@ var User = Backbone.Model.extend({
     inputs:
     tabId - indentifer of tab (unique to session only)
     url - url of the tab making the request
-    faviconUrl - used for displaying content
+    favIconUrl - used for displaying content
     title - title of the webpage the tab is displaying
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
-function open_item(tabId, url, faviconUrl, title, event_type) {
-
+function open_item(tabId, url, favIconUrl, title, event_type) {
+    console.log(favIconUrl)
     var timeCheck = checkTimeDelta();
     var uri = new URI(url);
-
     //if its not in the whitelist lets check that the user has it
     if (!user.inWhitelist(url) && !user.inBlackList(url)) {
         console.log("NEIGHTER LIST");
@@ -146,7 +145,7 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
     //if event type is focus we need to close out the current tab
     if (timeCheck.allow) {
         if (event_type === "focus" && active_item != undefined) {
-            close_item(active_item.tabId, 'blur', timeCheck.time);
+            close_item(active_item.tabId, active_item.url, 'blur', timeCheck.time);
         };
     };
         
@@ -154,10 +153,10 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
     active_item = {
         'tabId' : tabId,
         'url' : url,
-        'faviconUrl' : faviconUrl,
+        'favIconUrl' : favIconUrl,
         'title' : title,
         'start_event' : event_type,
-        'start_time' : new Date().getTime(), // milliseconds
+        'start_time' : new Date(),
     };
 }
 
@@ -166,15 +165,15 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
     This event will be fired when a tab is closed or unfocused but we would have already 'closed' the item so we don't want to do it again.
 */
 function close_item(tabId, url, event_type, time) {
-    var time = time || new Date().getTime(); // time is indefined for destroy event
-
+    var time = time || new Date(); // time is undefined for destroy event
     if (active_item.tabId === tabId && !user.inBlackList(url)) {
         //write to local storage
         var item = $.extend({}, active_item); //copy active_item
 
         item.end_event = event_type;
         item.end_time = time;
-        item.tot_time = item.end_time - item.start_time;
+        item.total_time = item.end_time - item.start_time;
+        item.humanize_time = moment.humanizeDuration(item.total_time);
         local_storage.push(item);
         update_badge();
     }
@@ -187,9 +186,7 @@ function close_item(tabId, url, event_type, time) {
 function dump_data() {
     var url = getApiURL('history-data');
     $.each(local_storage, function(index, item){
-        var payload = JSON.stringify(item);
-        payload.user = user.getResourceURI();
-
+        payload = serializePayload(item);
         $.ajax({
             type: 'POST',
             url: url,
@@ -247,6 +244,14 @@ function localSetIfNull(key,value) {
     } else {
         console.log(key + " already set. Leaving it alone. Value is " + localStorage.getItem(key));
     }
+}
+
+//convets the data to JSON serialized
+function serializePayload(payload) {
+    payload.start_time = moment(payload.start_time).toString()
+    payload.end_time = moment(payload.end_time).toString()
+    payload.user = user.getResourceURI();
+    return JSON.stringify(payload);
 }
 
 //tmp for dev
