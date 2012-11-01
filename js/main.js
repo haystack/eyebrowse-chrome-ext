@@ -173,10 +173,31 @@ function close_item(tabId, url, event_type, time) {
 
         item.end_event = event_type;
         item.end_time = time;
-        item.tot_time = item.start_time - item.end_time;
+        item.tot_time = item.end_time - item.start_time;
         local_storage.push(item);
         update_badge();
     }
+}
+
+
+/*
+    Posts data to server
+*/
+function dump_data() {
+    var url = getApiURL('history-data');
+    $.each(local_storage, function(index, item){
+        var payload = JSON.stringify(item);
+        payload.user = user.getResourceURI();
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: payload,
+            dataType: "application/json",
+            processData:  false,
+            contentType: "application/json"
+        });
+    });
 }
 
 /*
@@ -206,8 +227,8 @@ function getApiURL(resource, id, params) {
     if (id != null) {
         apiBase += '/' + id;
     } 
-    return apiBase+'/'
-    return sprintf("%s/?format=json%s", apiBase, getParams)
+    return apiBase
+    //return sprintf("%s/?format=json%s", apiBase, getParams)
 }
 
 /////////init models///////
