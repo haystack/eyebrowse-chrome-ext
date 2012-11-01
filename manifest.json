@@ -11,6 +11,12 @@
     "background" : {
         "page": "background.html"
         },
+    "content_scripts": [
+        {
+          "matches": ["<all_urls>"],
+          "js": ["libs/jquery-1.8.2.js", "js/prompt.js"]
+        }
+        ],
     "permissions": [
         "http://eyebrowse.herokuapp.com/.*",
         "http://localhost:5000/.*",

@@ -130,6 +130,7 @@ function open_item(tabId, url, faviconUrl, title, event_type) {
 
     //if its not in the whitelist lets check that the user has it
     if (!user.inWhitelist(url) && !user.inBlackList(url)) {
+        console.log("NEIGHTER LIST");
         var list = true ? user.getWhitelist() : user.getBlacklist(); // setup user confirmation
         list.create({
                 'url' : uri.hostname(),
