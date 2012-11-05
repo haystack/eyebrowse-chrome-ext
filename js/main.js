@@ -130,14 +130,18 @@ function open_item(tabId, url, favIconUrl, title, event_type) {
     //if its not in the whitelist lets check that the user has it
     if (!user.inWhitelist(url) && !user.inBlackList(url)) {
         console.log("NEIGHTER LIST");
-        var list = true ? user.getWhitelist() : user.getBlacklist(); // setup user confirmation
-        list.create({
-                'url' : uri.hostname(),
-                'user' : user.getResourceURI(),
-            })
-        if (list.getType() === 'blacklist'){
-            return
-        }
+        chrome.tabs.getSelected(null, function(tab) {
+            console.log("PROMPTED");
+            chrome.tabs.sendMessage(tab.id, {"action": "prompt"});
+        });
+        // var list = true ? user.getWhitelist() : user.getBlacklist(); // setup user confirmation
+        // list.create({
+        //         'url' : uri.hostname(),
+        //         'user' : user.getResourceURI(),
+        //     })
+        // if (list.getType() === 'blacklist'){
+        //     return
+        // }
     } else if (user.inBlackList(url)) {
         return
     }
@@ -179,6 +183,30 @@ function close_item(tabId, url, event_type, time) {
     }
 }
 
+function executeMessage(request, sender, sendResponse) {
+    var message = JSON.parse(request);
+    var action = message['action'];
+    console.log(message);
+    if (action == "whitelist") {
+        var url = message['url'];
+        console.log(url + " " + action);
+        var list = user.getWhitelist();
+        list.create({
+                'url' : url,
+                'user' : user.getResourceURI(),
+            })
+    } else if (action == "blacklist") {
+        var url = message['url'];
+        console.log(url + " " + action);
+        var list = user.getBlacklist();
+        list.create({
+                'url' : url,
+                'user' : user.getResourceURI(),
+            })
+    } else {
+        console.log("Action not supported");
+    }
+}
 
 /*
     Posts data to server

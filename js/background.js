@@ -58,6 +58,13 @@ function closedWindowListener() {
     })
 }
 
+//////////////////Content-script to Background script listener//////////////////
+function messageListener() {
+    chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+        executeMessage(request, sender, sendResponse);
+    })
+}
+
 //tmp for dev
 function update_badge() {
     chrome.browserAction.setBadgeText(
@@ -70,3 +77,4 @@ activeTabListener();
 updatedTabListener();
 removedTabListener();
 closedWindowListener();
+messageListener();
