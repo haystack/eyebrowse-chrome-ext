@@ -49,6 +49,7 @@ function popup(t) {
 			if (el != undefined) {
 				console.log("HERE");
 				$(el).remove();
+				popups.shift();
 			}
 			var message = {"action": action,
 							"url": url};
@@ -100,6 +101,7 @@ function fade(el) {
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	var action = request['action'];
 	if (action == 'prompt') {
+		console.log("RECEIVED");
 		setup();
 		var uri = new URI(document.location)
 		var hostname = uri.hostname();
