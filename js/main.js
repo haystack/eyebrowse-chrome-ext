@@ -131,7 +131,7 @@ function open_item(tabId, url, favIconUrl, title, event_type) {
 
         timeCheck.allow = false; // we need to wait for prompt callback
         chrome.tabs.sendMessage(tabId, {"action": "prompt"},function(res){
-                if (res != undefined && res.prompRes != 'allow') {
+                if (res != undefined && res.prompRes == 'allow') {
                     finish_open(tabId, url, favIconUrl, title, event_type);
                 }
             });
@@ -147,10 +147,9 @@ function open_item(tabId, url, favIconUrl, title, event_type) {
 
 function finish_open(tabId, url, favIconUrl, title, event_type, time) {
     
-    if (event_type === "focus" && active_item != undefined) {
+    if (active_item != undefined) {
         close_item(active_item.tabId, active_item.url, 'blur', time);
     };
-
         
     //reassign the active item to be the current tab
     active_item = {
@@ -243,7 +242,7 @@ function checkTimeDelta(delta) {
     }
 }
 
-function getApiURL(resource, id, params) { 
+function getApiURL(resource, id, params) {
     params = params || {};
     var apiBase = sprintf('%s/api/v1/%s', baseUrl, resource);
     var getParams = ''
@@ -280,21 +279,6 @@ function serializePayload(payload) {
     payload.end_time = moment(payload.end_time).toString()
     payload.user = user.getResourceURI();
     return JSON.stringify(payload);
-}
-
-//tmp for dev
-function update_badge() {
-
-    chrome.browserAction.setBadgeText(
-        {
-            text: String(local_storage.length)
-        });
-}
-
-//tmp for dev
-function clear_storage(){
-    localStorage.removeItem('local_storage')
-    local_storage = []
 }
 
 

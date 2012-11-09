@@ -14,12 +14,13 @@
 function activeTabListener() {
     chrome.tabs.onActivated.addListener(function(activeInfo) {
         var event_type = 'focus';
-        chrome.tabs.get(activeInfo.tabId, function (tab) {
-            if (tab != undefined) {
-                open_item(activeInfo.tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
-            }
+        // chrome.tabs.get(activeInfo.tabId, function (tab) {
+        //     if (tab != undefined) {
+        //         open_item(activeInfo.tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
+        //     }
             
-        });
+        // });
+        openTab(activeInfo.tabId, event_type)
     });
 }
 
@@ -27,13 +28,23 @@ function activeTabListener() {
 function updatedTabListener() {
    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         var event_type = 'update';
-        chrome.tabs.get(tabId, function (tab) {
-            if (tab != undefined) {
-                open_item(tabId, tab.url, tab.favIconUrl, tab.title, event_type);
-            }
-        });
+        // chrome.tabs.get(tabId, function (tab) {
+        //     if (tab != undefined) {
+        //         open_item(tabId, tab.url, tab.favIconUrl, tab.title, event_type);
+        //     }
+        // });
+        openTab(tabId, event_type)
         
     }); 
+}
+
+function openTab(tabId, event_type) {
+    chrome.tabs.get(tabId, function (tab) {
+        if (tab != undefined && tab.status === 'complete') {
+            open_item(tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
+        }
+        
+    });
 }
 
 //Fired when a tab is closed. Note: A listener can be registered for this event without requesting the 'tabs' permission in the manifest.
@@ -67,8 +78,13 @@ function messageListener() {
 function update_badge() {
     chrome.browserAction.setBadgeText(
         {
-            text: String(open_items.length)
+            text: String(local_storage.length)
         });
+}
+
+function clear_storage(){
+    localStorage.removeItem('local_storage')
+    local_storage = []
 }
 // run each listener
 activeTabListener();
