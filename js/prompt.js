@@ -15,11 +15,10 @@ function setup() {
 	$(document.body).append(tray);
 }
 
-function popup(t) {
+function popup(t, callback) {
 	var h = popups.length;
 	var tray = $('#tray');
 	var imgUrl = chrome.extension.getURL("/img/bg-nav.png"); 
-	console.log("URL: " + imgUrl);
 	var settings = {'border': 'solid 3px white',
 			'border-radius': 20,
 			'background-image': 'url("' + imgUrl + '")',
@@ -44,10 +43,12 @@ function popup(t) {
 	var tr = $(document.createElement('tr'));
 	var td1 = $(document.createElement('td'));
 	var td2 = $(document.createElement('td'));
-	function passMessage(action,url,el){
+
+	function passMessage(action, url, el){
+		callback(action)
 		return function(){
 			if (el != undefined) {
-				console.log("HERE");
+
 				$(el).remove();
 				popups.shift();
 			}
@@ -66,7 +67,7 @@ function popup(t) {
 	$(tray).append(newDiv);
 	var t = setTimeout(function() {fade(newDiv)}, 2000);
 	$(newDiv).hover(function() {
-		console.log("CLEARED");
+		
 		mousein = true;
 		clearInterval(t);
 		$(newDiv).stop();
@@ -101,11 +102,13 @@ function fade(el) {
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	var action = request['action'];
 	if (action == 'prompt') {
-		console.log("RECEIVED");
 		setup();
 		var uri = new URI(document.location)
 		var hostname = uri.hostname();
-		console.log(hostname);
-		popup(hostname);
+		popup(hostname, function(res) {
+			sendResponse({
+				'promptRes' : res,
+			})
+		})
 	}
 })

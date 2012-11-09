@@ -124,34 +124,33 @@ var User = Backbone.Model.extend({
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
 function open_item(tabId, url, favIconUrl, title, event_type) {
-    console.log(favIconUrl)
     var timeCheck = checkTimeDelta();
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
     if (!user.inWhitelist(url) && !user.inBlackList(url)) {
-        console.log("NEIGHTER LIST");
-        chrome.tabs.getSelected(null, function(tab) {
-            console.log("PROMPTED");
-            chrome.tabs.sendMessage(tab.id, {"action": "prompt"});
-        });
-        // var list = true ? user.getWhitelist() : user.getBlacklist(); // setup user confirmation
-        // list.create({
-        //         'url' : uri.hostname(),
-        //         'user' : user.getResourceURI(),
-        //     })
-        // if (list.getType() === 'blacklist'){
-        //     return
-        // }
+
+        timeCheck.allow = false; // we need to wait for prompt callback
+        chrome.tabs.sendMessage(tabId, {"action": "prompt"},function(res){
+                if (res != undefined && res.prompRes != 'allow') {
+                    finish_open(tabId, url, favIconUrl, title, event_type);
+                }
+            });
+
     } else if (user.inBlackList(url)) {
         return
-    }
+    } 
 
-    //if event type is focus we need to close out the current tab
-    if (timeCheck.allow) {
-        if (event_type === "focus" && active_item != undefined) {
-            close_item(active_item.tabId, active_item.url, 'blur', timeCheck.time);
-        };
+    if (timeCheck.allow){
+        finish_open(tabId, url, favIconUrl, title, event_type, timeCheck.time);
+    }
+}
+
+function finish_open(tabId, url, favIconUrl, title, event_type, time) {
+    
+    if (event_type === "focus" && active_item != undefined) {
+        close_item(active_item.tabId, active_item.url, 'blur', time);
     };
+
         
     //reassign the active item to be the current tab
     active_item = {
@@ -179,6 +178,9 @@ function close_item(tabId, url, event_type, time) {
         item.total_time = item.end_time - item.start_time;
         item.humanize_time = moment.humanizeDuration(item.total_time);
         local_storage.push(item);
+        if (local_storage.length > 2) {
+            dump_data();
+        }
         update_badge();
     }
 }
@@ -186,10 +188,8 @@ function close_item(tabId, url, event_type, time) {
 function executeMessage(request, sender, sendResponse) {
     var message = JSON.parse(request);
     var action = message['action'];
-    console.log(message);
     if (action == "whitelist") {
         var url = message['url'];
-        console.log(url + " " + action);
         var list = user.getWhitelist();
         list.create({
                 'url' : url,
@@ -197,7 +197,6 @@ function executeMessage(request, sender, sendResponse) {
             })
     } else if (action == "blacklist") {
         var url = message['url'];
-        console.log(url + " " + action);
         var list = user.getBlacklist();
         list.create({
                 'url' : url,
@@ -224,6 +223,7 @@ function dump_data() {
             contentType: "application/json"
         });
     });
+    local_storage = []
 }
 
 /*
@@ -287,11 +287,15 @@ function update_badge() {
 
     chrome.browserAction.setBadgeText(
         {
-            text: String(local_storage.length + 1)
+            text: String(local_storage.length)
         });
 }
 
-
+//tmp for dev
+function clear_storage(){
+    localStorage.removeItem('local_storage')
+    local_storage = []
+}
 
 
 // global website base, set to localhost for testing

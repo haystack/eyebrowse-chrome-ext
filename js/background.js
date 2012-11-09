@@ -16,7 +16,6 @@ function activeTabListener() {
         var event_type = 'focus';
         chrome.tabs.get(activeInfo.tabId, function (tab) {
             if (tab != undefined) {
-                console.log(tab)
                 open_item(activeInfo.tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
             }
             
@@ -30,7 +29,6 @@ function updatedTabListener() {
         var event_type = 'update';
         chrome.tabs.get(tabId, function (tab) {
             if (tab != undefined) {
-                console.log(tab)
                 open_item(tabId, tab.url, tab.favIconUrl, tab.title, event_type);
             }
         });
