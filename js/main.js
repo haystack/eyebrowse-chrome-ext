@@ -55,6 +55,7 @@ var User = Backbone.Model.extend({
 
     initialize : function() {
         _.bindAll(this); //allow access to 'this' in callbacks with 'this' meaning the object not the context of the callback
+        this.bind('change:loggedIn', updateBadge());
 
     },
 
@@ -191,9 +192,9 @@ function closeItem(tabId, url, event_type, time) {
         item.humanize_time = moment.humanizeDuration(item.total_time);
         local_storage.push(item);
         if (local_storage.length > 2) {
-            dump_data();
+            dumpData();
         }
-        update_badge();
+        updateBadge();
     }
 }
 
@@ -222,7 +223,7 @@ function executeMessage(request, sender, sendResponse) {
 /*
     Posts data to server
 */
-function dump_data() {
+function dumpData() {
     var url = getApiURL('history-data');
     $.each(local_storage, function(index, item){
         payload = serializePayload(item);
@@ -294,18 +295,13 @@ function serializePayload(payload) {
     return JSON.stringify(payload);
 }
 
-function changeLoginBadge(e) {
-
-}
-
-$(document).on('change:loggedIn', changeLoginBadge)
-
 // dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
 var active_item;
 
 local_storage = loadLocalHistory();
 
 user = new User();
+initBadge()
 
 localSetIfNull("baseUrl", baseUrl);
 

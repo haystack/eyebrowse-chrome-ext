@@ -57,7 +57,7 @@ function closedWindowListener() {
     chrome.windows.onRemoved.addListener(function() {
         localStorage['local_storage'] = JSON.stringify(local_storage);
         localStorage['user'] = JSON.stringify(user);
-    })
+    });
 }
 
 //////////////////Content-script to Background script listener//////////////////
@@ -68,14 +68,33 @@ function messageListener() {
 }
 
 //tmp for dev
-function update_badge() {
+function updateBadge(text) {
+    text = text || String(local_storage.length);
     chrome.browserAction.setBadgeText(
         {
-            text: String(local_storage.length)
+            'text' : text
         });
 }
 
-function clear_storage(){
+function logoutBadge() {
+    updateBadge('!');
+}
+
+function initBadge() {
+    chrome.browserAction.setBadgeBackgroundColor({'color':'#cd5c5c'});
+    if (!user.isLoggedIn()) {
+        logoutBadge();
+    }
+}
+
+/*
+Helper to open urls from the extension to the main website
+*/
+function openLink(url) {
+    chrome.tabs.create({'url': chrome.extension.getURL(url)});
+}
+
+function clearStorage(){
     localStorage.removeItem('local_storage')
     local_storage = []
 }
