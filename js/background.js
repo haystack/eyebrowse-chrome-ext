@@ -14,12 +14,6 @@
 function activeTabListener() {
     chrome.tabs.onActivated.addListener(function(activeInfo) {
         var event_type = 'focus';
-        // chrome.tabs.get(activeInfo.tabId, function (tab) {
-        //     if (tab != undefined) {
-        //         open_item(activeInfo.tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
-        //     }
-            
-        // });
         openTab(activeInfo.tabId, event_type)
     });
 }
@@ -28,20 +22,19 @@ function activeTabListener() {
 function updatedTabListener() {
    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         var event_type = 'update';
-        // chrome.tabs.get(tabId, function (tab) {
-        //     if (tab != undefined) {
-        //         open_item(tabId, tab.url, tab.favIconUrl, tab.title, event_type);
-        //     }
-        // });
         openTab(tabId, event_type)
         
     }); 
 }
 
+
+/*
+Helper function to get the current tab with tabId and open the item
+*/
 function openTab(tabId, event_type) {
     chrome.tabs.get(tabId, function (tab) {
         if (tab != undefined && tab.status === 'complete') {
-            open_item(tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
+            openItem(tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
         }
         
     });
@@ -53,7 +46,7 @@ function removedTabListener() {
         var event_type = 'destroy';
         chrome.tabs.get(tabId, function (tab) {
             if (tab != undefined) {
-                close_item(tabId, tab.url, event_type);
+                closeItem(tabId, tab.url, event_type);
             }
         });
     });

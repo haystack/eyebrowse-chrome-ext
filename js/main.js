@@ -1,5 +1,7 @@
 ///////////Global vars/////////////
 var baseUrl = "http://localhost:5000"; 
+// global website base, set to localhost for testing
+//var baseUrl = "http://eyebrowse.herokuapp.com"
 
 ///////////Models//////////////
 
@@ -32,8 +34,11 @@ var FilterList = Backbone.Collection.extend({
     url : function() {
         return getApiURL(this.type)
     },
-    parse: function(data){
-        return data.objects;
+    parse: function(data, res){
+        if (res.status === 200) {
+            return data.objects;    
+        }
+        user.logout() //triggers logout badge update
     },
 });
 
@@ -79,6 +84,14 @@ var User = Backbone.Model.extend({
             'loggedIn': status,
         });
     },
+
+    login : function() {
+        this.setLogin(true);
+    },
+
+    logout : function() {
+        this.setLogin(false);
+    },
     
     setUsername : function(username) {
         this.set({ 
@@ -123,7 +136,7 @@ var User = Backbone.Model.extend({
     title - title of the webpage the tab is displaying
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
-function open_item(tabId, url, favIconUrl, title, event_type) {
+function openItem(tabId, url, favIconUrl, title, event_type) {
     var timeCheck = checkTimeDelta();
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
@@ -132,7 +145,7 @@ function open_item(tabId, url, favIconUrl, title, event_type) {
         timeCheck.allow = false; // we need to wait for prompt callback
         chrome.tabs.sendMessage(tabId, {"action": "prompt"},function(res){
                 if (res != undefined && res.prompRes == 'allow') {
-                    finish_open(tabId, url, favIconUrl, title, event_type);
+                    finishOpen(tabId, url, favIconUrl, title, event_type);
                 }
             });
 
@@ -141,14 +154,14 @@ function open_item(tabId, url, favIconUrl, title, event_type) {
     } 
 
     if (timeCheck.allow){
-        finish_open(tabId, url, favIconUrl, title, event_type, timeCheck.time);
+        finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
     }
 }
 
-function finish_open(tabId, url, favIconUrl, title, event_type, time) {
+function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
     
     if (active_item != undefined) {
-        close_item(active_item.tabId, active_item.url, 'blur', time);
+        closeItem(active_item.tabId, active_item.url, 'blur', time);
     };
         
     //reassign the active item to be the current tab
@@ -166,7 +179,7 @@ function finish_open(tabId, url, favIconUrl, title, event_type, time) {
     There is only ever one active_item at a time so only close out the active one. 
     This event will be fired when a tab is closed or unfocused but we would have already 'closed' the item so we don't want to do it again.
 */
-function close_item(tabId, url, event_type, time) {
+function closeItem(tabId, url, event_type, time) {
     var time = time || new Date(); // time is undefined for destroy event
     if (active_item.tabId === tabId && !user.inBlackList(url)) {
         //write to local storage
@@ -281,9 +294,11 @@ function serializePayload(payload) {
     return JSON.stringify(payload);
 }
 
+function changeLoginBadge(e) {
 
-// global website base, set to localhost for testing
-//var baseUrl = "http://eyebrowse.herokuapp.com"
+}
+
+$(document).on('change:loggedIn', changeLoginBadge)
 
 // dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
 var active_item;
