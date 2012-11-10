@@ -33,7 +33,7 @@
 
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner nav_bg">
-                <a class="brand" href=" <%= baseUrl %>">
+                <a class="brand" href="<%= baseUrl %>/">
                     <img class="logo" src="/img/eye.png"/> Eyebrowse
                 </a>
                 <ul class="nav topbar">
@@ -42,14 +42,14 @@
                             <a href="#home">Home</a>
                         </li>
                         <li id="profile_tab" class="nav-tab">
-                            <a href="#profile">Profile</a>
+                            <a href="<%= baseUrl %>/accounts/profile/">Profile</a>
                         </li>
                         <li>
-                            <a href="#logout">Logout</a>
+                            <a href="<%= baseUrl %>/accounts/logout/">Logout</a>
                         </li>
                     <%} else {%>
                         <li id="login_tab" class="nav-tab">
-                            <a href="#login">Login</a>
+                            <a href="<%= baseUrl %>/accounts/login/">Login</a>
                         </li>
                     <% } %>
             </div>
@@ -74,6 +74,23 @@
                     <a href="<%= baseUrl %>/accounts/password/reset/"> Forgot Password? </a> 
 
                     <input type="hidden" name="next" value="" />
+                </div>
+            </div>
+
+        </script>
+
+        <!-- Login template -->
+        <script type="text/template" id="splash_template">
+
+             <div class="row">
+                <div class="hero-unit">
+                    <h1>Welcome to Eyebrowse!</h1>
+                    <p>Click the button below to go to the main site to manage your data. </p>
+                    <p>
+                        <a href="<%= baseUrl %>" class="btn btn-primary btn-large">
+                            Eyebrowse Site
+                        </a>
+                    </p>
                 </div>
             </div>
 

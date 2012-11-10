@@ -55,7 +55,6 @@ var User = Backbone.Model.extend({
 
     initialize : function() {
         _.bindAll(this); //allow access to 'this' in callbacks with 'this' meaning the object not the context of the callback
-        this.bind('change:loggedIn', updateBadge());
 
     },
 
@@ -84,6 +83,12 @@ var User = Backbone.Model.extend({
         this.set({ 
             'loggedIn': status,
         });
+        var map = {
+            'true' : 'login',
+            'false' : 'logout'
+        };
+
+        loginBadge(map[status]);
     },
 
     login : function() {

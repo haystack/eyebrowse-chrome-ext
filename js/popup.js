@@ -125,9 +125,34 @@ NavView = Backbone.View.extend({
             tab = "login_tab"
         }
         $('nav-tab').removeClass('active');
-        $('#' + tab).addClass('active');
+        $('#' + tab).addClass('active').click();
     },
 });
+
+HomeView = Backbone.View.extend({
+    'el' : $('.content-container'),
+
+    initialize : function(){
+        this.render()
+    },
+
+    render : function() {
+        if (!user.isLoggedIn()) {
+            return
+        }
+        var template = _.template($("#splash_template").html());
+        $(this.el).html(template);
+        $('a').click(clickHandle)
+    },
+});
+
+function clickHandle(e) {
+    var url = $(e.target).context.href;
+    if (url.toLowerCase().indexOf(baseUrl) >= 0) {
+        backpage.openLink(url);
+    }
+
+}
 
 ///////////////////URL BUILDERS///////////////////
 function url_login() {
@@ -144,4 +169,12 @@ $(document).ready(function() {
     baseUrl = backpage.baseUrl;
     navView =  new NavView();
     loginView = new LoginView();
+    homeView;
+    if (user.isLoggedIn()){
+        homeView = new HomeView();
+    }
+    $(document).click('#home_tab', function(){
+        homeView.render()
+    });
+    $('a').click(clickHandle)
 });

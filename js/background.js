@@ -76,14 +76,18 @@ function updateBadge(text) {
         });
 }
 
-function logoutBadge() {
-    updateBadge('!');
+function loginBadge(event) {
+    if (event == 'logout') {
+        updateBadge('!');
+    } else if(event == 'login') {
+        updateBadge('');
+    }
 }
 
 function initBadge() {
     chrome.browserAction.setBadgeBackgroundColor({'color':'#cd5c5c'});
     if (!user.isLoggedIn()) {
-        logoutBadge();
+        loginBadge('logout');
     }
 }
 
@@ -91,7 +95,7 @@ function initBadge() {
 Helper to open urls from the extension to the main website
 */
 function openLink(url) {
-    chrome.tabs.create({'url': chrome.extension.getURL(url)});
+    chrome.tabs.create({'url': url});
 }
 
 function clearStorage(){
