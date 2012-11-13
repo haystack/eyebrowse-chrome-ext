@@ -169,12 +169,14 @@ $(document).ready(function() {
     baseUrl = backpage.baseUrl;
     navView =  new NavView();
     loginView = new LoginView();
-    homeView;
+    var homeView;
     if (user.isLoggedIn()){
         homeView = new HomeView();
     }
     $(document).click('#home_tab', function(){
-        homeView.render()
+        if (homeView != undefined) {
+            homeView.render()
+        }
     });
     $('a').click(clickHandle)
 });
