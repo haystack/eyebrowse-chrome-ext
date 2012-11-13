@@ -166,12 +166,12 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 
 function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
     
-    if (active_item != undefined) {
-        closeItem(active_item.tabId, active_item.url, 'blur', time);
+    if (activeItem != undefined) {
+        closeItem(activeItem.tabId, activeItem.url, 'blur', time);
     };
         
     //reassign the active item to be the current tab
-    active_item = {
+    activeItem = {
         'tabId' : tabId,
         'url' : url,
         'favIconUrl' : favIconUrl,
@@ -182,46 +182,72 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
 }
 
 /* 
-    There is only ever one active_item at a time so only close out the active one. 
+    There is only ever one activeItem at a time so only close out the active one. 
     This event will be fired when a tab is closed or unfocused but we would have already 'closed' the item so we don't want to do it again.
 */
-function closeItem(tabId, url, event_type, time) {
+function closeItem(tabId, url, event_type, time, callback) {
     var time = time || new Date(); // time is undefined for destroy event
-    if (active_item.tabId === tabId && !user.inBlackList(url)) {
+    var callback = callback || false;
+    if (activeItem.tabId === tabId && !user.inBlackList(url)) {
         //write to local storage
-        var item = $.extend({}, active_item); //copy active_item
+        var item = $.extend({}, activeItem); //copy activeItem
 
         item.end_event = event_type;
         item.end_time = time;
         item.total_time = item.end_time - item.start_time;
         item.humanize_time = moment.humanizeDuration(item.total_time);
         local_storage.push(item);
+
+        // send data for server and sync whitelist/blacklist
         if (local_storage.length > 2) {
             dumpData();
+            user.getWhitelist().fetch();
+            user.getBlacklist().fetch();   
         }
         updateBadge();
+    }
+    if (callback) {
+        callback();
     }
 }
 
 function executeMessage(request, sender, sendResponse) {
     var message = JSON.parse(request);
-    var action = message['action'];
-    if (action == "whitelist") {
-        var url = message['url'];
-        var list = user.getWhitelist();
-        list.create({
-                'url' : url,
-                'user' : user.getResourceURI(),
-            })
-    } else if (action == "blacklist") {
-        var url = message['url'];
-        var list = user.getBlacklist();
-        list.create({
-                'url' : url,
-                'user' : user.getResourceURI(),
-            })
+    var action = message.action;
+    if (action == "filterlist") {
+        handleFilterListMsg(message);
+    } else if (action == "idle") {
+       handleIdleMsg(message, sender.tab.id);
     } else {
         console.log("Action not supported");
+    }
+}
+
+function handleFilterListMsg(message) {
+    var type = message.type;
+    var url = message.url;
+    var list;
+    if (type == 'whitelist') {
+        list = user.getWhitelist();
+    } else if (type == 'blacklist') {
+        list = user.getBlacklist();
+    } else {
+        return
+    }
+    list.create({
+        'url' : url,
+        'user' : user.getResourceURI(),
+    });
+}
+
+function handleIdleMsg(message, tabId) { 
+    var type = message.type;
+    if (type == 'openItem')  {
+        openTab(tabId, 'focus');
+    } else if (type == 'closeItem' && activeItem != undefined) { 
+        closeTab(tabId, 'idle', function() {
+                activeItem = undefined;
+            });
     }
 }
 
@@ -251,8 +277,8 @@ function checkTimeDelta(delta) {
     var delta = delta || 900
     var now = new Date().getTime();
     var allow = true; // default to true allows active item to be set initially
-    if (active_item != undefined) { 
-        allow = (now - active_item.start_time) > delta
+    if (activeItem != undefined) { 
+        allow = (now - activeItem.start_time) > delta
     }
 
     return {
@@ -301,7 +327,7 @@ function serializePayload(payload) {
 }
 
 // dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
-var active_item;
+var activeItem;
 
 local_storage = loadLocalHistory();
 

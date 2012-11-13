@@ -52,8 +52,11 @@ function popup(t, callback) {
 				$(el).remove();
 				popups.shift();
 			}
-			var message = {"action": action,
-							"url": url};
+			var message = {
+				"action" : 'filterlist',
+				"type": action,
+				"url": url
+			};
 			chrome.extension.sendMessage(JSON.stringify(message));
 		}
 	}

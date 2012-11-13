@@ -29,7 +29,7 @@ function updatedTabListener() {
 
 
 /*
-Helper function to get the current tab with tabId and open the item
+Helper function to get the tab with tabId and open the item
 */
 function openTab(tabId, event_type) {
     chrome.tabs.get(tabId, function (tab) {
@@ -40,15 +40,24 @@ function openTab(tabId, event_type) {
     });
 }
 
+/*
+Helper function to get the tab with tabId and close the item
+*/
+function closeTab(tabId, event_type, callback) {
+    chrome.tabs.get(tabId, function (tab) {
+        if (tab != undefined && tab.status === 'complete') {
+            closeItem(tabId, tab.url, event_type, false, callback);
+        }
+        
+    });
+}
+
+
 //Fired when a tab is closed. Note: A listener can be registered for this event without requesting the 'tabs' permission in the manifest.
 function removedTabListener() {
     chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
         var event_type = 'destroy';
-        chrome.tabs.get(tabId, function (tab) {
-            if (tab != undefined) {
-                closeItem(tabId, tab.url, event_type);
-            }
-        });
+        closeTab(tab.id, event_type);
     });
 }
 
@@ -64,7 +73,7 @@ function closedWindowListener() {
 function messageListener() {
     chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         executeMessage(request, sender, sendResponse);
-    })
+    });
 }
 
 //tmp for dev

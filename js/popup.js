@@ -86,6 +86,7 @@ LoginView = Backbone.View.extend({
         $('#login_container').remove();
         $('body').css('width', '600px');
         user.setLogin(true);
+        homeView = new HomeView();
         user.setUsername(username);
         navView.render('home_tab');
     },
@@ -175,7 +176,7 @@ $(document).ready(function() {
     }
     $(document).click('#home_tab', function(){
         if (homeView != undefined) {
-            homeView.render()
+            homeView.render();
         }
     });
     $('a').click(clickHandle)
