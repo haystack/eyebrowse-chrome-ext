@@ -18,5 +18,5 @@ $(window).idle(
         sendMessage('openItem'); //on active
     },  
     {
-        'after': 5000, //5 min max idle
+        'after': 50000, //5 min max idle
     });

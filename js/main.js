@@ -3,10 +3,10 @@ var baseUrl = "http://localhost:5000";
 // global website base, set to localhost for testing
 //var baseUrl = "http://eyebrowse.herokuapp.com"
 
+
 ///////////Models//////////////
 
 //This object can represent either a whitelist or blacklist for a given user. On an update send results to server to update stored data. On intialization set is synced with server. Should allow offline syncing in the future.
-
 var FilterListItem = Backbone.Model.extend({
     parse: function(data) {
         if (data != null) {
@@ -186,6 +186,7 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
     This event will be fired when a tab is closed or unfocused but we would have already 'closed' the item so we don't want to do it again.
 */
 function closeItem(tabId, url, event_type, time, callback) {
+    if (activeItem === undefined) return;
     var time = time || new Date(); // time is undefined for destroy event
     var callback = callback || false;
     if (activeItem.tabId === tabId && !user.inBlackList(url)) {
@@ -275,10 +276,10 @@ function dumpData() {
 */
 function checkTimeDelta(delta) {
     var delta = delta || 900
-    var now = new Date().getTime();
+    var now = new Date();
     var allow = true; // default to true allows active item to be set initially
     if (activeItem != undefined) { 
-        allow = (now - activeItem.start_time) > delta
+        allow = (now.getTime() - activeItem.start_time) > delta
     }
 
     return {
@@ -318,11 +319,12 @@ function localSetIfNull(key,value) {
     }
 }
 
-//convets the data to JSON serialized
+//converts the data to JSON serialized
 function serializePayload(payload) {
-    payload.start_time = moment(payload.start_time).toString()
-    payload.end_time = moment(payload.end_time).toString()
+    payload.start_time = payload.start_time.toISOString()
+    payload.end_time = payload.end_time.toISOString()
     payload.user = user.getResourceURI();
+    console.log(payload)
     return JSON.stringify(payload);
 }
 
