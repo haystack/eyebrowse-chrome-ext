@@ -321,8 +321,8 @@ function localSetIfNull(key,value) {
 
 //converts the data to JSON serialized
 function serializePayload(payload) {
-    payload.start_time = payload.start_time.toISOString()
-    payload.end_time = payload.end_time.toISOString()
+    payload.start_time = payload.start_time
+    payload.end_time = payload.end_time
     payload.user = user.getResourceURI();
     console.log(payload)
     return JSON.stringify(payload);
