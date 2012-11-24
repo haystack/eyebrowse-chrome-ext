@@ -225,6 +225,7 @@ function executeMessage(request, sender, sendResponse) {
 }
 
 function handleFilterListMsg(message) {
+    console.log("working");
     var type = message.type;
     var url = message.url;
     var list;

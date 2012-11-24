@@ -1,10 +1,17 @@
 var popups = [];
 var mousein = false;
 function setup() {
+	if ($('#tray').length > 0) {
+		console.log($('#tray'))
+		console.log("exists, exiting");
+		return;
+	}
+	console.log("FIRST TIME");
 	var w = document.width;
 	var size = 300;
-	var height = 500;
+	var height = 200;
 	var settings = {'z-index': 999999999,
+					'border-style': 'none',
 					'width': size,
 					'height': height,
 					'position': 'fixed',
