@@ -10,14 +10,15 @@ function setup() {
 					'position': 'fixed',
 					'left': w-size,
 					'top': 0};
-	var tray = $(document.createElement("div")).css(settings).attr('id', 'tray');
+	var tray = $(document.createElement("iframe")).css(settings).attr('id', 'tray');
 
 	$(document.body).append(tray);
 }
 
 function popup(t, callback) {
 	var h = popups.length;
-	var tray = $('#tray');
+	var tray = $('#tray').contents().find('body');
+	console.log(tray);
 	var imgUrl = chrome.extension.getURL("/img/bg-nav.png"); 
 	var settings = {'border': 'solid 3px white',
 			'border-radius': 20,
@@ -105,6 +106,7 @@ function fade(el) {
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	var action = request['action'];
 	if (action == 'prompt') {
+		console.log(!$('#tray'));
 		setup();
 		var uri = new URI(document.location)
 		var hostname = uri.hostname();
