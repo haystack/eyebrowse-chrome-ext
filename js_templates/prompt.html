@@ -1,0 +1,26 @@
+<div id='popup' style="border: solid 3px white;
+					   border-radius: 20;
+					   background-image: {{ imgUrl }};
+					   opacity: .7;
+					   width: 200;
+					   height: 100;
+					   top: 0;
+					   position: absolute;
+					   left: 50">
+    <div id='innerPopup' style="color: black;
+								top: 25;
+								display: block;
+								position: absolute;
+								text-align: center">
+		Do you want to track activity from {{ site }}
+		<table style="margin-left: auto; margin-right: auto">
+			<tbody>
+				<tr>
+					<td><input id="allowBt" type="button" value="Allow"></td>
+					<td><input id="noBt" type="button" value="No"></td>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
+</div>
