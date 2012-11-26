@@ -197,10 +197,11 @@ function closeItem(tabId, url, event_type, time, callback) {
         item.end_time = time;
         item.total_time = item.end_time - item.start_time;
         item.humanize_time = moment.humanizeDuration(item.total_time);
-        local_storage.push(item);
+        local_history.push(item);
 
         // send data for server and sync whitelist/blacklist
-        if (local_storage.length > 2) {
+        if (local_history.length > 2) {
+            console.log("dumping data");
             dumpData();
             user.getWhitelist().fetch();
             user.getBlacklist().fetch();   
@@ -235,10 +236,12 @@ function handleFilterListMsg(message) {
     } else {
         return
     }
-    list.create({
+    m = list.create({
         'url' : url,
         'user' : user.getResourceURI(),
     });
+
+    localStorage['user'] = JSON.stringify(user);
 }
 
 function handleIdleMsg(message, tabId) { 
@@ -256,8 +259,10 @@ function handleIdleMsg(message, tabId) {
     Posts data to server
 */
 function dumpData() {
+    backlog = []
     var url = getApiURL('history-data');
-    $.each(local_storage, function(index, item){
+    $.each(local_history, function(index, item){
+        console.log(item);
         payload = serializePayload(item);
         $.ajax({
             type: 'POST',
@@ -265,10 +270,18 @@ function dumpData() {
             data: payload,
             dataType: "application/json",
             processData:  false,
-            contentType: "application/json"
+            contentType: "application/json",
+            error: function(jqXHR, textStatus, errorThrown){
+                // log the error to the console
+                console.log(
+                    "The following error occured: "+
+                    textStatus, errorThrown
+                );
+                backlog.push(item);
+            }
         });
     });
-    local_storage = []
+    local_history = backlog
 }
 
 /*
@@ -304,9 +317,25 @@ function getApiURL(resource, id, params) {
 
 /////////init models///////
 function loadLocalHistory() {
-    localString = localStorage['local_storage'];
+    localString = localStorage['local_history'];
     localString = (localString) ? localString : "[]"; // catch undefined case
     return JSON.parse(localString);
+}
+
+function loadLocalUser() {
+    localString = localStorage['user']
+    if (!localString) {
+        return new User();
+    }
+    var u = new User();
+    o = JSON.parse(localString);
+    u['username'] = o['username'];
+    u['loggedIn'] = false;
+    u['blacklist'] = o['blacklist'];
+    u['whitelist'] = o['whitelist'];
+    u['resourceURI'] = o['resourceURI'];
+
+    return u
 }
 
 //  Check if these are already set to avoid overwriting.
@@ -331,9 +360,9 @@ function serializePayload(payload) {
 // dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
 var activeItem;
 
-local_storage = loadLocalHistory();
+local_history = loadLocalHistory();
 
-user = new User();
+user = loadLocalUser();
 initBadge()
 
 localSetIfNull("baseUrl", baseUrl);
