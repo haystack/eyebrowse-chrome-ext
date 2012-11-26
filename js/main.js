@@ -278,10 +278,12 @@ function dumpData() {
                     textStatus, errorThrown
                 );
                 backlog.push(item);
+                if (index == local_history.length) {
+                    local_history = backlog;
+                }
             }
         });
     });
-    local_history = backlog
 }
 
 /*
