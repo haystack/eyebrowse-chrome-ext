@@ -259,16 +259,15 @@ function handleIdleMsg(message, tabId) {
     Posts data to server
 */
 function dumpData() {
-    backlog = []
+    var backlog = []
     var url = getApiURL('history-data');
     $.each(local_history, function(index, item){
-        console.log(item);
         payload = serializePayload(item);
         $.ajax({
             type: 'POST',
             url: url,
             data: payload,
-            dataType: "application/json",
+            dataType: "text",
             processData:  false,
             contentType: "application/json",
             error: function(jqXHR, textStatus, errorThrown){
@@ -278,10 +277,15 @@ function dumpData() {
                     textStatus, errorThrown
                 );
                 backlog.push(item);
-                if (index == local_history.length) {
+                if (index == local_history.length-1) {
                     local_history = backlog;
                 }
-            }
+            },
+            success: function(data, textStatus, jqXHR) {
+               if (index == local_history.length-1) {
+                    local_history = [];
+                } 
+            },
         });
     });
 }
