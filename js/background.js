@@ -5,7 +5,8 @@
 //When a tab or window is destroyed
 //API info: http://developer.chrome.com/extensions/tabs.html
 
-
+/////////// Keeps track of all open tabs to be used when tab is removed //////////////////
+tabs = {};
 ///////////////Event listeners/////////////// 
 //Specific to Chrome. Each calls the data processor function in main.js to be processed and recorded if necessary. The handler checks for things like restricted sites and user permissions that are set. This allows firefox to use the same main. 
 
@@ -23,7 +24,7 @@ function updatedTabListener() {
    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         var event_type = 'update';
         openTab(tabId, event_type)
-        
+        tabs[tabId] = tab;
     }); 
 }
 
@@ -43,13 +44,10 @@ function openTab(tabId, event_type) {
 /*
 Helper function to get the tab with tabId and close the item
 */
-function closeTab(tabId, event_type, callback) {
-    chrome.tabs.get(tabId, function (tab) {
-        if (tab != undefined && tab.status === 'complete') {
-            closeItem(tabId, tab.url, event_type, false, callback);
-        }
-        
-    });
+function closeTab(tab, event_type, callback) {
+    if (tab != undefined && tab.status === 'complete') {
+        closeItem(tab.id, tab.url, event_type, false, callback);
+    }
 }
 
 
@@ -57,14 +55,15 @@ function closeTab(tabId, event_type, callback) {
 function removedTabListener() {
     chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
         var event_type = 'destroy';
-        closeTab(tab.id, event_type);
+        closeTab(tabs[tabId], event_type);
+        delete tabs[tabId];
     });
 }
 
 //Fired when the window is closed. Writes all data to local_storage
 function closedWindowListener() {
     chrome.windows.onRemoved.addListener(function() {
-        localStorage['local_storage'] = JSON.stringify(local_storage);
+        localStorage['local_history'] = JSON.stringify(local_history);
         localStorage['user'] = JSON.stringify(user);
     });
 }
@@ -79,7 +78,7 @@ function messageListener() {
 
 //tmp for dev
 function updateBadge(text) {
-    text = text || String(local_storage.length);
+    text = text || String(local_history.length);
     chrome.browserAction.setBadgeText(
         {
             'text' : text
@@ -109,8 +108,8 @@ function openLink(url) {
 }
 
 function clearStorage(){
-    localStorage.removeItem('local_storage')
-    local_storage = []
+    localStorage.removeItem('local_history')
+    local_history = []
 }
 // run each listener
 activeTabListener();
