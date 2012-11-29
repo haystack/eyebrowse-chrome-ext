@@ -41,8 +41,7 @@ function popup(site, callback) {
 				mousein = true;
 				clearInterval(to);
 				el.stop();
-				//el.css('opacity', 1.0);
-				$(el).fadeIn()
+				el.css('opacity', 1.0);
 			})
 			el.mouseleave(function() {
 				mousein = false;
