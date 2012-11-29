@@ -35,7 +35,7 @@ function popup(site, callback) {
 			var el = frame.find('#popup');
 			frame.find('#allow-btn').click(passMessage('whitelist', site, el));
 			frame.find('#deny-btn').click(passMessage('blacklist', site, el));
-			//var to = setTimeout(function() {fade(el)}, 2000);
+			var to = setTimeout(function() {fade(el)}, 2000);
 			el.hover(function() {
 				
 				mousein = true;
