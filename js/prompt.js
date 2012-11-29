@@ -5,53 +5,54 @@ function setup() {
 		$('#tray').css('z-index',999999999);
 		return;
 	}
-	var w = document.width;
 	var size = 300;
 	var height = 200;
-	var settings = {'z-index': 999999999,
-					'border-style': 'none',
-					'width': size,
-					'height': height,
-					'position': 'fixed',
-					'left': w-size,
-					'top': 0};
-	var tray = $(document.createElement("iframe")).css(settings).attr('id', 'tray');
+	var settings = {
+		'z-index': 999999999,
+		'border-style': 'none',
+		'width': size,
+		'height': height,
+		'position': 'fixed',
+		'right': '0px',
+		'top': '0px',
+	};
+	var tray = $("<iframe>").css(settings).attr('id', 'tray');
 
 	$(document.body).append(tray);
 }
 
-function popup(t, callback) {
-	var h = popups.length;
+function popup(site, callback) {
 	var frame = $('#tray').contents();
-	var tray = frame.find('body');
-	var imgUrl = 'url("' + chrome.extension.getURL("/img/bg-nav.png") + '")'; 
-	$.get(chrome.extension.getURL("/js_templates/prompt.html"),function(template){
-		data = {"site": t,
-				"imgUrl": imgUrl}
-		$(tray).html(Mustache.to_html(template, data));
+	var body = frame.find('body');
+	var backgroundUrl = chrome.extension.getURL("/img/bg-body.png"); 
+	$.get(chrome.extension.getURL("/js_templates/prompt.html"),function(templateURL){
+			data = {
+				"site": site,
+				"backgroundUrl": backgroundUrl
+			};
+			$(body).html(Mustache.to_html(templateURL, data));
 
-		var el = frame.find('#popup');
-		frame.find('#allowBt').click(passMessage('whitelist', t, el));
-		frame.find('#noBt').click(passMessage('blacklist', t, el));
-		var to = setTimeout(function() {fade(el)}, 2000);
-		el.hover(function() {
-			
-			mousein = true;
-			clearInterval(to);
-			el.stop();
-			el.css('opacity', 1.0);
-			//$(newDiv).css('border', 'solid 2px white');
-		})
-		el.mouseleave(function() {
-			mousein = false;
-			to = setTimeout(function() {fade(el)}, 2000);
-		})
-		popups.push(el);
-	});
+			var el = frame.find('#popup');
+			frame.find('#allow-btn').click(passMessage('whitelist', site, el));
+			frame.find('#deny-btn').click(passMessage('blacklist', site, el));
+			//var to = setTimeout(function() {fade(el)}, 2000);
+			el.hover(function() {
+				
+				mousein = true;
+				clearInterval(to);
+				el.stop();
+				//el.css('opacity', 1.0);
+				$(el).fadeIn()
+			})
+			el.mouseleave(function() {
+				mousein = false;
+				to = setTimeout(function() {fade(el)}, 2000);
+			})
+			popups.push(el);
+		});
 }
 
 function passMessage(action, url, el){
-	//callback(action)
 	return function(){
 		if (el != undefined) {
 			el.remove();
@@ -67,13 +68,13 @@ function passMessage(action, url, el){
 }
 
 function fade(el) {
-	el.fadeOut(1000,function() {
+	el.fadeOut(1000, function() {
 		popups.shift().remove();
 		for (var i = 0; i < popups.length; i++) {
-			h = parseInt(popups[i].css('top'))-120;
-			popups[i].animate({'top': h},500);
+			h = parseInt(popups[i].css('top')) -120;
+			popups[i].animate({'top': h}, 500);
 		};
-		$('#tray').css('z-index',-1)
+		$('#tray').css('z-index', -1)
 	});
 }
 
