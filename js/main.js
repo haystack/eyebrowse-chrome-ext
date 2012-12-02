@@ -200,7 +200,7 @@ function closeItem(tabId, url, event_type, time, callback) {
         local_history.push(item);
 
         // send data for server and sync whitelist/blacklist
-        if (local_history.length > 2) {
+        if (local_history.length) {
             console.log("dumping data");
             dumpData();
             user.getWhitelist().fetch();
