@@ -25,6 +25,7 @@
     "permissions": [
         "http://eyebrowse.herokuapp.com/.*",
         "http://localhost:5000/.*",
+        "http://pure-brushlands-5870.herokuapp.com/.*",
         "cookies",
         "tabs",
         "storage",
