@@ -27,6 +27,7 @@
         "http://localhost:5000/.*",
         "http://pure-brushlands-5870.herokuapp.com/.*",
         "cookies",
+        "*://*.localhost/",
         "tabs",
         "storage",
         "notifications",

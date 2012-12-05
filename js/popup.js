@@ -2,7 +2,8 @@ LoginView = Backbone.View.extend({
     'el' : $('.content-container'),
 
     initialize : function() {
-         _.bindAll(this);
+        chrome.extension.getBackgroundPage().console.log("LoginView initialization1.");
+        _.bindAll(this);
         this.render();
     },
 
@@ -14,7 +15,7 @@ LoginView = Backbone.View.extend({
                     'baseUrl' : baseUrl,
                 });
 
-            $(this.el).html(template);
+            $(this.el).html(template); //[swgree] what is this? el=element?
             $('#errors').fadeOut();
             $('#id_username').focus();
         }
@@ -47,6 +48,7 @@ LoginView = Backbone.View.extend({
     },
 
     postLogin : function(data, username, password) {
+        chrome.extension.getBackgroundPage().console.log("LoginView.postLogin: evaluating.");
         var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
         var match = data.match(REGEX);
         var self = this;
@@ -61,14 +63,17 @@ LoginView = Backbone.View.extend({
                         "username": username,
                         "password": password,
                         "csrfmiddlewaretoken" : csrfmiddlewaretoken,
-                        "remember_me": 'on', // for convience
+                        "remember_me": 'on', // for convenience
                 },
                 dataType: "html",
                 success: function(data) {
+                    chrome.extension.getBackgroundPage().console.log("LoginView.postLogin:ajax.success evaluating.");
                     var match = data.match(REGEX)
                     if(match) { // we didn't log in successfully
+                        chrome.extension.getBackgroundPage().console.log("LoginView.postLogin:ajax.success login.fail evaluating.");
                         self.displayErrors("Invalid username or password");
                     } else {
+                        chrome.extension.getBackgroundPage().console.log("LoginView.postLogin:ajax.success login.success evaluating.");
                         self.completeLogin(username)
                     }
                 },
@@ -83,14 +88,35 @@ LoginView = Backbone.View.extend({
     },
 
     completeLogin : function(username) {
+        var console = chrome.extension.getBackgroundPage().console;
+        console.log("LoginView.completeLogin: evaluating1.");
+        //chrome.extension.getBackgroundPage().console.log("LoginView.completeLogin: evaluating.");
         $('#login_container').remove();
         $('body').css('width', '600px');
+        console.log(JSON.stringify(user));
+        console.log("LoginView.completeLogin: Initial log of JSON.stringify(user).");
         user.setLogin(true);
         homeView = new HomeView();
         user.setUsername(username);
         navView.render('home_tab');
+        //
+        // Update user attributes in localStorage
+        //
+        user.getBlacklist().fetch({
+            success: function (data) {
+                chrome.extension.getBackgroundPage().console.log("Fetching blacklist succeeded.");
+                localStorage['user'] = JSON.stringify(user);
+            }
+        });
+        user.getWhitelist().fetch({
+            success: function (data) {
+                chrome.extension.getBackgroundPage().console.log("Fetching whitelist succeeded.");
+                localStorage['user'] = JSON.stringify(user);
+            }
+        });
     },
 
+    // this isn't getting called -- after logging out, "user" still exists and isLoggedIn
     logout : function() {
         $.get(url_logout());
         user.setLogin(false);
@@ -166,10 +192,11 @@ function url_logout() {
 
 $(document).ready(function() {
     window.backpage = chrome.extension.getBackgroundPage();
+    window.backpage.console.log("This is the popup.js ready function.");
     user = backpage.user;
     baseUrl = backpage.baseUrl;
     navView =  new NavView();
-    loginView = new LoginView();
+    loginView = new LoginView(); // (presumably) calls initialization
     var homeView;
     if (user.isLoggedIn()){
         homeView = new HomeView();

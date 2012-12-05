@@ -328,6 +328,7 @@ function loadLocalHistory() {
     return JSON.parse(localString);
 }
 
+// [swgreen] not sure I entirely follow the logic here... 
 function loadLocalUser() {
     localString = localStorage['user']
     if (!localString) {
@@ -368,7 +369,19 @@ var activeItem;
 
 local_history = loadLocalHistory();
 
+// caution: need to make sure this makes sense
+// does main.js get evaluated every time the browser starts, or only on install/enable?
+console.log("Clearing localStorage");
+localStorage.clear();
+
+console.log("Removing localhost cookies.")
+chrome.cookies.remove({'url':'http://localhost', 'name':'sessionid'});
+chrome.cookies.remove({'url':'http://localhost', 'name':'csrftoken'});
+
 user = loadLocalUser();
+localStorage['user'] = JSON.stringify(user);
+console.log("main.js:Initialized user:");
+console.log(JSON.stringify(user));
 initBadge()
 
 localSetIfNull("baseUrl", baseUrl);
