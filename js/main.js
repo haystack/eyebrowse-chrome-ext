@@ -329,8 +329,9 @@ function loadLocalHistory() {
 }
 
 // [swgreen] not sure I entirely follow the logic here... 
-function loadLocalUser() {
-    localString = localStorage['user']
+var getLocalStorageUser = function() {
+    console.log("Loading user into localStorage.");
+    localString = localStorage['user'];
     if (!localString) {
         return new User();
     }
@@ -343,6 +344,10 @@ function loadLocalUser() {
     u['resourceURI'] = o['resourceURI'];
 
     return u
+}
+
+var setLocalStorageUser = function() {
+    localStorage['user'] = JSON.stringify(user);
 }
 
 //  Check if these are already set to avoid overwriting.
@@ -378,7 +383,7 @@ console.log("Removing localhost cookies.")
 chrome.cookies.remove({'url':'http://localhost', 'name':'sessionid'});
 chrome.cookies.remove({'url':'http://localhost', 'name':'csrftoken'});
 
-user = loadLocalUser();
+user = getLocalStorageUser();
 localStorage['user'] = JSON.stringify(user);
 console.log("main.js:Initialized user:");
 console.log(JSON.stringify(user));

@@ -118,6 +118,7 @@ LoginView = Backbone.View.extend({
 
     // this isn't getting called -- after logging out, "user" still exists and isLoggedIn
     logout : function() {
+        console.log("Logging out.");
         $.get(url_logout());
         user.setLogin(false);
         this.render();
@@ -174,12 +175,62 @@ HomeView = Backbone.View.extend({
 });
 
 function clickHandle(e) {
+    var console = chrome.extension.getBackgroundPage().console;
+    console.log("Evaluating clickHandle.");
     var url = $(e.target).context.href;
     if (url.toLowerCase().indexOf(baseUrl) >= 0) {
+        if (url.toLowerCase().indexOf("logout") >= 0) {
+            doLogout();
+            //loadLocalUser1();            
+        } else {
+            console.log("The url is not a logout url "+url);
+        }
         backpage.openLink(url);
     }
-
 }
+
+// function loadLocalUser1() {
+//     chrome.extension.getBackgroundPage().console.log("Hello from loadLocalUser1.");
+// }
+
+//[swgreen] CAUTION: DUPLICATE FUNCTION, I COULDN'T FIGURE OUT HOW TO MAKE IT GLOBAL
+function loadLocalUser1() {
+    backpage = chrome.extension.getBackgroundPage();
+    var console = backpage.console;
+    console.log("Loading user into localStorage from popup.js.");
+    backpage.setLocalUser();
+    
+    // localString = localStorage['user'];
+    // console.log("")
+    // if (!localString) {
+    //     return new User();
+    // }
+    // var u = new User();
+    // o = JSON.parse(localString);
+    // u['username'] = o['username'];
+    // u['loggedIn'] = false;
+    // u['blacklist'] = o['blacklist'];
+    // u['whitelist'] = o['whitelist'];
+    // u['resourceURI'] = o['resourceURI'];
+    console.log("Did it: Loaded user into localStorage from popup.js.");
+    // return u
+}
+
+function doLogout() {
+    var backpage = chrome.extension.getBackgroundPage();
+    var console = backpage.console;
+    console.log("Logging out.");
+    console.log("Logging user.isloggedIn(): "+user.isLoggedIn());
+    user.setLogin(false);
+    console.log("Logging user.isloggedIn(): "+user.isLoggedIn());
+    console.log("Logging backpage.user.isLoggedIn()"+backpage.user.isLoggedIn());
+    backpage.setLocalStorageUser();
+    //loadLocalUser1();
+    // maybe also need to clear other things from localStorage (e.g. user)
+    loginView = new LoginView();
+    // need to make sure that opening the link from clickHandle sends the 
+    //  necessary credentials
+}    
 
 ///////////////////URL BUILDERS///////////////////
 function url_login() {
