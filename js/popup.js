@@ -96,9 +96,9 @@ LoginView = Backbone.View.extend({
         console.log(JSON.stringify(user));
         console.log("LoginView.completeLogin: Initial log of JSON.stringify(user).");
         user.setLogin(true);
-        homeView = new HomeView();
         user.setUsername(username);
         navView.render('home_tab');
+        homeView = new HomeView();
         //
         // Update user attributes in localStorage
         //
