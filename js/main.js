@@ -328,7 +328,7 @@ function loadLocalHistory() {
 }
 
 // [swgreen] not sure I entirely follow the logic here... 
-var getLocalStorageUser = function() {
+function getLocalStorageUser() {
     console.log("Loading user into localStorage.");
     localString = localStorage['user'];
     if (!localString) {
@@ -345,12 +345,15 @@ var getLocalStorageUser = function() {
     return u
 }
 
-var setLocalStorageUser = function() {
-    localStorage['user'] = JSON.stringify(user);
+/*
+    Clear the local storage for the given key
+*/
+var clearLocalStorage = function(key) {
+    localStorage[key] = null;
 }
 
 //  Check if these are already set to avoid overwriting.
-function localSetIfNull(key,value) {
+function localSetIfNull(key, value) {
     if (localStorage.getItem(key) === null) {
         console.log(key + " not set. Setting now to " + value);
         localStorage.setItem(key,value);

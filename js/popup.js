@@ -168,25 +168,18 @@ HomeView = Backbone.View.extend({
 
 function clickHandle(e) {
     var url = $(e.target).context.href;
-    if (url.toLowerCase().indexOf(baseUrl) >= 0) {
-        if (url.toLowerCase().indexOf("logout") >= 0) {
-            doLogout();          
-        } else {
-            console.log("The url is not a logout url "+url);
-        }
-        backpage.openLink(url);
+    if (url.indexOf("logout") >= 0) {
+        doLogout();          
+    } else {
+        backpage.openLink(url)    
     }
 }
 
 function doLogout() {
-    var backpage = chrome.extension.getBackgroundPage();
-    
-    user.setLogin(false);
-    backpage.setLocalStorageUser();
-    // maybe also need to clear other things from localStorage (e.g. user)
-    loginView = new LoginView();
-    // need to make sure that opening the link from clickHandle sends the 
-    //  necessary credentials
+    $.get(url_logout());
+    user.logout();
+    backpage.clearLocalStorage('user')
+    loginView.render();
 }    
 
 ///////////////////URL BUILDERS///////////////////
@@ -200,7 +193,6 @@ function url_logout() {
 
 $(document).ready(function() {
     window.backpage = chrome.extension.getBackgroundPage();
-    window.backpage.console.log("This is the popup.js ready function.");
     user = backpage.user;
     baseUrl = backpage.baseUrl;
     navView =  new NavView();
