@@ -5,8 +5,6 @@
 //When a tab or window is destroyed
 //API info: http://developer.chrome.com/extensions/tabs.html
 
-/////////// Keeps track of all open tabs to be used when tab is removed //////////////////
-tabs = {};
 ///////////////Event listeners/////////////// 
 //Specific to Chrome. Each calls the data processor function in main.js to be processed and recorded if necessary. The handler checks for things like restricted sites and user permissions that are set. This allows firefox to use the same main. 
 

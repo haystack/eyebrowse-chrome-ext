@@ -12,7 +12,7 @@
         <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="css/bootstrap-responsive.min.css" />
         
-        <link type="text/css" rel="stylesheet" href="http://localhost:5000/static/common/css/base.css" />
+        <link type="text/css" rel="stylesheet" href="http://eyebrowse.herokuapp.com/static/common/css/base.css" />
 
         <link type="text/css" rel="stylesheet" href="css/popup.css" />
         
@@ -40,9 +40,6 @@
                     <% if( loggedIn ) { %>
                         <li id="home_tab" class="nav-tab">
                             <a href="#home">Home</a>
-                        </li>
-                        <li id="profile_tab" class="nav-tab">
-                            <a href="<%= baseUrl %>/accounts/profile/">Profile</a>
                         </li>
                         <li id="logout">
                             <a href="<%= baseUrl %>/accounts/logout/">Logout</a>
@@ -82,16 +79,14 @@
         <!-- Login template -->
         <script type="text/template" id="splash_template">
 
-             <div class="row">
-                <div class="hero-unit">
-                    <h1>Welcome to Eyebrowse!</h1>
-                    <p>Click the button below to go to the main site to manage your data. </p>
+             <div class="row well">
+                    <h2>Welcome to Eyebrowse!</h2>
+                    <p> Click below to go to the main site </p>
                     <p>
-                        <a href="<%= baseUrl %>" class="btn btn-primary btn-large">
-                            Eyebrowse Site
+                        <a href="<%= baseUrl %>/accounts/profile/edit" class="btn btn-primary">
+                            Manage Settings
                         </a>
                     </p>
-                </div>
             </div>
 
         </script>

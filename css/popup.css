@@ -1,6 +1,9 @@
+html {
+    height:250px;
+}
+
 body {
     padding-top: 0px;
     padding-bottom:15px;
-    width:600px;
-    height:auto;
+    width:400px;
 }
