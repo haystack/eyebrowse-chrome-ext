@@ -2,7 +2,6 @@ LoginView = Backbone.View.extend({
     'el' : $('.content-container'),
 
     initialize : function() {
-        chrome.extension.getBackgroundPage().console.log("LoginView initialization1.");
         _.bindAll(this);
         this.render();
     },
@@ -27,7 +26,7 @@ LoginView = Backbone.View.extend({
     },
 
     filterKey : function(e) {
-        if (e.which == 13) { // listen for enter event
+        if (e.which === 13) { // listen for enter event
             e.preventDefault();
             this.getLogin()
         }
@@ -99,17 +98,16 @@ LoginView = Backbone.View.extend({
         //
         user.getBlacklist().fetch({
             success: function (data) {
-                localStorage['user'] = JSON.stringify(user);
+                user.saveState();
             }
         });
         user.getWhitelist().fetch({
             success: function (data) {
-                localStorage['user'] = JSON.stringify(user);
+                user.saveState();
             }
         });
     },
 
-    // this isn't getting called -- after logging out, "user" still exists and isLoggedIn
     logout : function() {
         $.get(url_logout());
         user.setLogin(false);
@@ -168,7 +166,7 @@ HomeView = Backbone.View.extend({
 
 function clickHandle(e) {
     var url = $(e.target).context.href;
-    if (url.indexOf("logout") >= 0) {
+    if (!url.indexOf("logout")) {
         doLogout();          
     } else {
         backpage.openLink(url)    

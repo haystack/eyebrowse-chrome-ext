@@ -74,9 +74,7 @@ function messageListener() {
     });
 }
 
-//tmp for dev
 function updateBadge(text) {
-    text = text || String(local_history.length);
     chrome.browserAction.setBadgeText(
         {
             'text' : text

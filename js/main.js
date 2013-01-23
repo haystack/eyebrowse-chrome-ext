@@ -75,6 +75,9 @@ var User = Backbone.Model.extend({
     },
 
     isLoggedIn : function() {
+        if (this.getUsername() === this.defaults.username || this.getResourceURI() === this.defaults.resourceURI) {
+            this.logout();
+        }
         return this.get('loggedIn')
     },
 
@@ -83,6 +86,7 @@ var User = Backbone.Model.extend({
         this.set({ 
             'loggedIn': status,
         });
+
         var map = {
             'true' : 'login',
             'false' : 'logout'
@@ -112,6 +116,20 @@ var User = Backbone.Model.extend({
         })
     },
 
+    setWhitelist : function(whitelist) {
+        this.setFilterSet('whitelist', whitelist);
+    },
+
+    setBlacklist : function(blacklist) {
+        this.setFilterSet('blacklist', blacklist);
+    },
+
+    setFilterSet : function(type, list) {
+        this.set({
+            type : list
+        })
+    },
+
     //check if a url is in the blacklist
     inBlackList : function(url) {
         return this.inSet('blacklist', url)
@@ -131,6 +149,11 @@ var User = Backbone.Model.extend({
         var protocol = uri.protocol();
         return (set.where({'url' : hostname}).length != 0 || set.where({"url" : protocol}).length != 0 || set.where(url).length != 0)
     },
+
+    //save the current state to local storage
+    saveState : function(){
+        localStorage.user = JSON.stringify(this);
+    }
 });
 
 
@@ -205,7 +228,6 @@ function closeItem(tabId, url, event_type, time, callback) {
             user.getWhitelist().fetch();
             user.getBlacklist().fetch();   
         }
-        updateBadge();
     }
     if (callback) {
         callback();
@@ -327,38 +349,40 @@ function loadLocalHistory() {
     return JSON.parse(localString);
 }
 
-// [swgreen] not sure I entirely follow the logic here... 
+/*
+    Get and return the user from local storage.
+    If no user is found create a new one.
+    If an old user exists unJSON the object and return it.
+*/
 function getLocalStorageUser() {
-    console.log("Loading user into localStorage.");
-    localString = localStorage['user'];
-    if (!localString) {
-        return new User();
+    storedUser = localStorage.user;
+    if (storedUser === null) {
+        user = new User();
+        return user
     }
+
+    o = JSON.parse(storedUser);
     var u = new User();
-    o = JSON.parse(localString);
-    u['username'] = o['username'];
-    u['loggedIn'] = false;
-    u['blacklist'] = o['blacklist'];
-    u['whitelist'] = o['whitelist'];
-    u['resourceURI'] = o['resourceURI'];
+
+    u.setUsername(o.username);
+    u.setLogin(o.loggedIn);
+    u.setBlacklist(o.blacklist);
+    u.setWhitelist(o.whitelist);
 
     return u
 }
 
 /*
     Clear the local storage for the given key
-*/
-var clearLocalStorage = function(key) {
+*/ 
+function clearLocalStorage(key) {
     localStorage[key] = null;
 }
 
 //  Check if these are already set to avoid overwriting.
 function localSetIfNull(key, value) {
     if (localStorage.getItem(key) === null) {
-        console.log(key + " not set. Setting now to " + value);
-        localStorage.setItem(key,value);
-    } else {
-        console.log(key + " already set. Leaving it alone. Value is " + localStorage.getItem(key));
+        localStorage.setItem(key, value);
     }
 }
 
@@ -375,19 +399,7 @@ var activeItem;
 
 local_history = loadLocalHistory();
 
-// caution: need to make sure this makes sense
-// does main.js get evaluated every time the browser starts, or only on install/enable?
-console.log("Clearing localStorage");
-localStorage.clear();
-
-console.log("Removing localhost cookies.")
-chrome.cookies.remove({'url':'http://localhost', 'name':'sessionid'});
-chrome.cookies.remove({'url':'http://localhost', 'name':'csrftoken'});
-
 user = getLocalStorageUser();
-localStorage['user'] = JSON.stringify(user);
-console.log("main.js:Initialized user:");
-console.log(JSON.stringify(user));
 initBadge()
 
 localSetIfNull("baseUrl", baseUrl);

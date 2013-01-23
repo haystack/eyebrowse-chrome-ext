@@ -25,8 +25,6 @@ $(document).ready(function() {
         }
     });
 
-    var console = chrome.extension.getBackgroundPage().console;
-    console.log("Hello world yeah yeah 26 from options.js");
 
     //
     // POPULATE "GET" SECTION
@@ -98,10 +96,6 @@ $(document).ready(function() {
     //
     // button to clear localStorage and reload page
     //
-
-    var console = chrome.extension.getBackgroundPage().console;
-    console.log("reaching this point in options.js");
-
     var clearLocalStorage = function() {
         localStorage.removeItem('user');
         localStorage.removeItem('local_history');
@@ -116,6 +110,5 @@ $(document).ready(function() {
 
     $('#options').append(myButton);
 
-    console.log("Hello world yeah yeah theEnd from options.js");
 
 });
