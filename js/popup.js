@@ -165,8 +165,9 @@ HomeView = Backbone.View.extend({
 });
 
 function clickHandle(e) {
+    e.preventDefault();
     var url = $(e.target).context.href;
-    if (!url.indexOf("logout")) {
+    if (url.indexOf("logout") !== -1) {
         doLogout();          
     } else {
         backpage.openLink(url)    

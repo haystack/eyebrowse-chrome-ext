@@ -147,7 +147,7 @@ var User = Backbone.Model.extend({
         var uri = new URI(url)
         var hostname = uri.hostname();
         var protocol = uri.protocol();
-        return (set.where({'url' : hostname}).length != 0 || set.where({"url" : protocol}).length != 0 || set.where(url).length != 0)
+        return (set.where({'url' : hostname}).length || set.where({"url" : protocol}).length || set.where(url).length)
     },
 
     //save the current state to local storage
@@ -356,7 +356,7 @@ function loadLocalHistory() {
 */
 function getLocalStorageUser() {
     storedUser = localStorage.user;
-    if (storedUser === null) {
+    if (storedUser === "null") {
         user = new User();
         return user
     }
