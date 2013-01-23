@@ -367,7 +367,6 @@ function serializePayload(payload) {
     payload.start_time = payload.start_time
     payload.end_time = payload.end_time
     payload.user = user.getResourceURI();
-    console.log(payload)
     return JSON.stringify(payload);
 }
 

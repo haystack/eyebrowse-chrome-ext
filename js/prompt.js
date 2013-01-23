@@ -1,13 +1,13 @@
 var popups = [];
 var mousein = false;
 function setup() {
-	if ($('#tray').length > 0) {
-		$('#tray').css('z-index',999999999);
+	if ($('#tray').length) {
+		$('#tray').css('z-index', 999999999);
 		return;
 	}
-	var size = 300;
+	var size = 350;
 	var height = 200;
-	var settings = {
+	var settings =  {
 		'z-index': 999999999,
 		'border-style': 'none',
 		'width': size,
@@ -32,7 +32,7 @@ function popup(site, callback) {
 			};
 			$(body).html(Mustache.to_html(templateURL, data));
 
-			var el = frame.find('#popup');
+			var el = frame.find('.popup');
 			frame.find('#allow-btn').click(passMessage('whitelist', site, el));
 			frame.find('#deny-btn').click(passMessage('blacklist', site, el));
 			var to = setTimeout(function() {fade(el)}, 2000);
@@ -89,4 +89,4 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			})
 		})
 	}
-})
+});
