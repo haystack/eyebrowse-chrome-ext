@@ -89,7 +89,7 @@ LoginView = Backbone.View.extend({
         $('#login_container').remove();
         $('body').css('width', '400px');
 
-        user.setLogin(true);
+        user.login();
         user.setUsername(username);
         navView.render('home_tab');
         homeView = new HomeView();
@@ -110,7 +110,7 @@ LoginView = Backbone.View.extend({
 
     logout : function() {
         $.get(url_logout());
-        user.setLogin(false);
+        user.logout();
         this.render();
     },
 
