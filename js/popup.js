@@ -160,7 +160,6 @@ HomeView = Backbone.View.extend({
         }
         var template = _.template($("#splash_template").html());
         $(this.el).html(template);
-        $('a').click(clickHandle)
     },
 });
 

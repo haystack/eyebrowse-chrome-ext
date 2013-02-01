@@ -332,14 +332,13 @@ function getApiURL(resource, id, params) {
     params = params || {};
     var apiBase = sprintf('%s/api/v1/%s', baseUrl, resource);
     var getParams = ''
-    $.each(params, function(key, val){
-        getParams += sprintf("&%s=%s", key, val);
-    });
+    for (var key in params) {
+      getParams += sprintf("&%s=%s", key, params[key]);
+    }
     if (id != null) {
         apiBase += '/' + id;
     } 
     return apiBase
-    //return sprintf("%s/?format=json%s", apiBase, getParams)
 }
 
 /////////init models///////
