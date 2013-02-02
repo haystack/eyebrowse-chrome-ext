@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name" : "Eyebrowse",
-    "version" : "1.0",
+    "version" : "1.0.0",
     "description" : "Eyebrowse by CSAIL",
     "browser_action" : {
         "default_icon" : "img/eye.png",
@@ -29,9 +29,7 @@
         "cookies",
         "*://*.localhost/",
         "tabs",
-        "storage",
-        "notifications",
-        "background"
+        "storage"
     ], 
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
     "options_page":"options.html"

@@ -153,7 +153,7 @@ var User = Backbone.Model.extend({
     //save the current state to local storage
     saveState : function(){
         localStorage.user = JSON.stringify(this);
-    }
+    },
 });
 
 
@@ -354,8 +354,8 @@ function loadLocalHistory() {
     If an old user exists unJSON the object and return it.
 */
 function getLocalStorageUser() {
-    storedUser = localStorage.user;
-    if (storedUser === "null") {
+    var storedUser = localStorage.user;
+    if (storedUser === undefined || storedUser === "null") {
         user = new User();
         return user
     }

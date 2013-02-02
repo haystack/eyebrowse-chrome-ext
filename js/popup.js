@@ -14,7 +14,7 @@ LoginView = Backbone.View.extend({
                     'baseUrl' : baseUrl,
                 });
 
-            $(this.el).html(template); //[swgree] what is this? el=element?
+            $(this.el).html(template);
             $('#errors').fadeOut();
             $('#id_username').focus();
         }
@@ -78,14 +78,12 @@ LoginView = Backbone.View.extend({
                     self.displayErrors("Unable to connect, try again later.")
                 }
             });
-        }
-        else {
+        } else {
             self.completeLogin(username);
         }
     },
 
     completeLogin : function(username) {
-        //chrome.extension.getBackgroundPage().console.log("LoginView.completeLogin: evaluating.");
         $('#login_container').remove();
         $('body').css('width', '400px');
 
@@ -111,6 +109,7 @@ LoginView = Backbone.View.extend({
     logout : function() {
         $.get(url_logout());
         user.logout();
+        backpage.clearLocalStorage('user')
         this.render();
     },
 
@@ -167,18 +166,11 @@ function clickHandle(e) {
     e.preventDefault();
     var url = $(e.target).context.href;
     if (url.indexOf("logout") !== -1) {
-        doLogout();          
+        loginView.logout();          
     } else {
-        backpage.openLink(url)    
+        backpage.openLink(url);
     }
 }
-
-function doLogout() {
-    $.get(url_logout());
-    user.logout();
-    backpage.clearLocalStorage('user')
-    loginView.render();
-}    
 
 ///////////////////URL BUILDERS///////////////////
 function url_login() {

@@ -81,10 +81,10 @@ function updateBadge(text) {
         });
 }
 
-function loginBadge(event) {
-    if (event == 'logout') {
+function loginBadge(e) {
+    if (e == 'logout') {
         updateBadge('!');
-    } else if(event == 'login') {
+    } else if(e == 'login') {
         updateBadge('');
     }
 }
