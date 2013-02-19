@@ -22,7 +22,6 @@ function updatedTabListener() {
    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         var event_type = 'update';
         openTab(tabId, event_type)
-        tabs[tabId] = tab;
     }); 
 }
 
@@ -53,8 +52,7 @@ function closeTab(tab, event_type, callback) {
 function removedTabListener() {
     chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
         var event_type = 'destroy';
-        closeTab(tabs[tabId], event_type);
-        delete tabs[tabId];
+        closeTab(tabId, event_type);
     });
 }
 

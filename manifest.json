@@ -1,36 +1,35 @@
 {
     "manifest_version": 2,
     "name" : "Eyebrowse",
-    "version" : "1.0.0",
+    "version" : "0.0.1",
     "description" : "Eyebrowse by CSAIL",
     "browser_action" : {
         "default_icon" : "img/eye.png",
         "default_popup" : "popup.html",
         "default_title" : "Eyebrowse"
-        },
+    },
     "background" : {
         "page": "background.html"
-        },
+    },
     "content_scripts": [
             {
               "matches": ["<all_urls>"],
               "js": ["libs/jquery-1.8.2.js", "libs/mustache.js", "libs/URL.js", "js/prompt.js", "libs/jquery.idle.js", "js/idle-detection.js"]
             }
-        ],
+    ],
     "web_accessible_resources": [
-        "img/bg-body.png",
-        "img/bg-nav.png",
         "js_templates/*"
-        ],
+    ],
     "permissions": [
         "http://eyebrowse.herokuapp.com/.*",
         "http://localhost:5000/.*",
-        "http://pure-brushlands-5870.herokuapp.com/.*",
         "cookies",
-        "*://*.localhost/",
-        "tabs",
-        "storage"
-    ], 
+        "tabs"
+    ],
+    "icons": {
+           "48": "img/eye-48.png",
+          "128": "img/eye-128.png" 
+    },
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-    "options_page":"options.html"
+    "options_page": "options.html"
 }

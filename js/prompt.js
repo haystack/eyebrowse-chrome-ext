@@ -78,7 +78,7 @@ function fade(el) {
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-	var action = request['action'];
+	var action = request.action;
 	if (action == 'prompt') {
 		setup();
 		var uri = new URI(document.location)

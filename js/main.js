@@ -15,6 +15,7 @@ var FilterListItem = Backbone.Model.extend({
                 id : data.id,
             }
         }
+        user.logout() //triggers logout badge update
     },
 });
 
@@ -28,12 +29,15 @@ var FilterList = Backbone.Collection.extend({
         this.type = type;
         this.fetch()
     },
+
     getType : function() {
         return this.get('type')
     },
+
     url : function() {
         return getApiURL(this.type)
     },
+    
     parse: function(data, res){
         if (res.status === 200) {
             return data.objects;    
