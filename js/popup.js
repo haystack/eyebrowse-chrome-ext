@@ -34,6 +34,7 @@ LoginView = Backbone.View.extend({
 
     getLogin : function() {
         $('#errors').fadeOut();
+        $('#login').button('loading');
         var self = this;
         var username = $('#id_username').val();
         var password = $('#id_password').val();
@@ -114,6 +115,7 @@ LoginView = Backbone.View.extend({
     },
 
     displayErrors : function(errorMsg) {
+        $('#login').button('reset');
         $errorDiv = $('#errors');
         $errorDiv.html(errorMsg);
         $errorDiv.fadeIn();
@@ -166,10 +168,54 @@ function clickHandle(e) {
     e.preventDefault();
     var url = $(e.target).context.href;
     if (url.indexOf("logout") !== -1) {
-        loginView.logout();          
-    } else {
+        loginView.logout();
+    } else if (url.indexOf("http") !== -1){
         backpage.openLink(url);
+    }else if (url.indexOf("login") !== -1){
+        return
+    } else {
+        url = url.split('#')[1];
+        user.setTab(url);
+        subNavView.render();
     }
+}
+
+
+////////////// AJAX CSRF PROTECTION///////////
+
+/*
+Ajax CSRF protection
+*/
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+function sameOrigin(url) {
+    // test that a given url is a same-origin URL
+    // url could be relative or scheme relative or absolute
+    var host = document.location.host; // host + port
+    var protocol = document.location.protocol;
+    var sr_origin = '//' + host;
+    var origin = protocol + sr_origin;
+    // Allow absolute or scheme relative URLs to same origin
+    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+        // or any other URL that isn't scheme relative or absolute i.e relative.
+        !(/^(\/\/|http:|https:).*/.test(url));
+}
+
+function ajaxSetup(csrftoken){
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
 }
 
 ///////////////////URL BUILDERS///////////////////
@@ -188,6 +234,16 @@ $(document).ready(function() {
     navView =  new NavView();
     loginView = new LoginView(); // (presumably) calls initialization
     var homeView;
+
+    /////setup funcs///////
+    chrome.cookies.get({
+        'name' :'csrftoken', 
+        'url' : baseUrl
+        }, function(cookie){
+            ajaxSetup(cookie.value);
+    });
+
+
     if (user.isLoggedIn()){
         homeView = new HomeView();
     }
