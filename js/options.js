@@ -7,10 +7,10 @@ $(document).ready(function() {
     //
 
     // Server address get/set
-    var urlBox = $(document.createElement("input"));
+    var urlBox = $("input");
     urlBox.val(localStorage.getItem("baseUrl"));
     urlBox.width(500);
-    var urlBoxLabel = $(document.createElement("span"));
+    var urlBoxLabel = $("span");
     urlBoxLabel.text("Server URL ");
     myDiv.append(urlBoxLabel);
     myDiv.append(urlBox);
@@ -39,7 +39,7 @@ $(document).ready(function() {
         // auxiliary function for listing properties
         var populateDivWithList = function(someDiv, list, property) {
             $.each(list, function(key, value) {
-                someDiv.append($('<div></div>').text(value[property]));
+                someDiv.append($('<div>').text(value[property]));
             });
         };
 
@@ -76,21 +76,21 @@ $(document).ready(function() {
 
         var liDiv = $('#loggedIn');
         if (userVal.loggedIn != undefined) {
-            liDiv.append($('<div></div>').text(userVal.loggedIn));
+            liDiv.append($('<div>').text(userVal.loggedIn));
         } else {
-            liDiv.append($('<div></div>').text("FFalse")); 
+            liDiv.append($('<div>').text("FFalse")); 
         }
 
         if (userVal.username) {
             var unDiv = $('#username');
-            unDiv.append($('<div></div>').text(userVal.username));
+            unDiv.append($('<div>').text(userVal.username));
         }
 
         // 
         // Display raw json of user item
         //
         var rjDiv = $('#rawJson');
-        rjDiv.append($('<div></div>').text(JSON.stringify(userVal)));
+        rjDiv.append($('<div>').text(JSON.stringify(userVal)));
     }
 
     //
