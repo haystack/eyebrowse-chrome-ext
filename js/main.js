@@ -15,7 +15,6 @@ var FilterListItem = Backbone.Model.extend({
                 id : data.id,
             }
         }
-        user.logout() //triggers logout badge update
     },
 });
 
@@ -27,7 +26,7 @@ var FilterList = Backbone.Collection.extend({
     initialize: function(type) {
         _.bindAll(this);
         this.type = type;
-        this.fetch()
+        this._fetch();
     },
 
     getType : function() {
@@ -37,12 +36,20 @@ var FilterList = Backbone.Collection.extend({
     url : function() {
         return getApiURL(this.type)
     },
-    
+
     parse: function(data, res){
         if (res.status === 200) {
             return data.objects;    
         }
-        user.logout() //triggers logout badge update
+    },
+
+    //wrapper for fetch which logs user out if server errs
+    _fetch: function() {
+        this.fetch({
+            error: _.bind(function(model, xhr, options) {
+                user.logout();
+            }, this)
+        });
     },
 });
 
@@ -229,24 +236,12 @@ function closeItem(tabId, url, event_type, time, callback) {
         // send data for server and sync whitelist/blacklist
         if (local_history.length) {
             dumpData();
-            user.getWhitelist().fetch();
-            user.getBlacklist().fetch();   
+            user.getWhitelist()._fetch();
+            user.getBlacklist()._fetch();   
         }
     }
     if (callback) {
         callback();
-    }
-}
-
-function executeMessage(request, sender, sendResponse) {
-    var message = JSON.parse(request);
-    var action = message.action;
-    if (action == "filterlist") {
-        handleFilterListMsg(message);
-    } else if (action == "idle") {
-       handleIdleMsg(message, sender.tab.id);
-    } else {
-        console.log("Action not supported");
     }
 }
 
@@ -286,8 +281,11 @@ function handleIdleMsg(message, tabId) {
 function dumpData() {
     var backlog = []
     var url = getApiURL('history-data');
+    var stop = false;
     $.each(local_history, function(index, item){
+        if (stop) return; //stop sending on error
         payload = serializePayload(item);
+        var that = this;
         $.ajax({
             type: 'POST',
             url: url,
@@ -296,20 +294,11 @@ function dumpData() {
             processData:  false,
             contentType: "application/json",
             error: function(jqXHR, textStatus, errorThrown){
-                // log the error to the console
-                console.log(
-                    "The following error occured: "+
-                    textStatus, errorThrown
-                );
-                backlog.push(item);
-                if (index == local_history.length-1) {
-                    local_history = backlog;
-                }
+                stop = true;
+                user.logout(); //notify user of server error
             },
             success: function(data, textStatus, jqXHR) {
-               if (index == local_history.length-1) {
-                    local_history = [];
-                } 
+               array.splice(index, 1); //remove item from history on success 
             },
         });
     });
