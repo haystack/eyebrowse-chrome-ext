@@ -298,7 +298,7 @@ function dumpData() {
                 user.logout(); //notify user of server error
             },
             success: function(data, textStatus, jqXHR) {
-               array.splice(index, 1); //remove item from history on success 
+               local_history.splice(index, 1); //remove item from history on success 
             },
         });
     });
