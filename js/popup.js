@@ -116,7 +116,7 @@ LoginView = Backbone.View.extend({
 
     displayErrors : function(errorMsg) {
         $('#login').button('reset');
-        $errorDiv = $('#errors');
+        var $errorDiv = $('#errors');
         $errorDiv.html(errorMsg);
         $errorDiv.fadeIn();
     },
@@ -248,7 +248,7 @@ $(document).ready(function() {
         homeView = new HomeView();
     }
     $(document).click('#home_tab', function(){
-        if (homeView != undefined) {
+        if (homeView !== undefined) {
             homeView.render();
         }
     });

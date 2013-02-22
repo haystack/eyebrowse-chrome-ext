@@ -9,7 +9,7 @@ var siteName = "Eyebrowse";
 //This object can represent either a whitelist or blacklist for a given user. On an update send results to server to update stored data. On intialization set is synced with server. Should allow offline syncing in the future.
 var FilterListItem = Backbone.Model.extend({
     parse: function(data) {
-        if (data != null) {
+        if (data !== null) {
             return {
                 url : data.url, 
                 id : data.id,
@@ -184,7 +184,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 
         timeCheck.allow = false; // we need to wait for prompt callback
         chrome.tabs.sendMessage(tabId, {"action": "prompt"},function(res){
-                if (res != undefined && res.prompRes == 'allow') {
+                if (res !== undefined && res.prompRes == 'allow') {
                     finishOpen(tabId, url, favIconUrl, title, event_type);
                 }
             });
@@ -200,7 +200,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 
 function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
     
-    if (activeItem != undefined) {
+    if (activeItem !== undefined) {
         closeItem(activeItem.tabId, activeItem.url, 'blur', time);
     };
         
@@ -268,7 +268,7 @@ function handleIdleMsg(message, tabId) {
     var type = message.type;
     if (type == 'openItem')  {
         openTab(tabId, 'focus');
-    } else if (type == 'closeItem' && activeItem != undefined) { 
+    } else if (type == 'closeItem' && activeItem !== undefined) { 
         closeTab(tabId, 'idle', function() {
                 activeItem = undefined;
             });
@@ -311,7 +311,7 @@ function checkTimeDelta(delta) {
     var delta = delta || 900
     var now = new Date();
     var allow = true; // default to true allows active item to be set initially
-    if (activeItem != undefined) { 
+    if (activeItem !== undefined) { 
         allow = (now.getTime() - activeItem.start_time) > delta
     }
 
@@ -328,7 +328,7 @@ function getApiURL(resource, id, params) {
     for (var key in params) {
       getParams += sprintf("&%s=%s", key, params[key]);
     }
-    if (id != null) {
+    if (id !== null) {
         apiBase += '/' + id;
     } 
     return apiBase

@@ -31,7 +31,7 @@ Helper function to get the tab with tabId and open the item
 */
 function openTab(tabId, event_type) {
     chrome.tabs.get(tabId, function (tab) {
-        if (tab != undefined && tab.status === 'complete') {
+        if (tab !== undefined && tab.status === 'complete') {
             openItem(tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
         }
         
@@ -42,7 +42,7 @@ function openTab(tabId, event_type) {
 Helper function to get the tab with tabId and close the item
 */
 function closeTab(tab, event_type, callback) {
-    if (tab != undefined && tab.status === 'complete') {
+    if (tab !== undefined && tab.status === 'complete') {
         closeItem(tab.id, tab.url, event_type, false, callback);
     }
 }
