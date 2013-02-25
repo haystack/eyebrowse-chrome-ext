@@ -14,7 +14,7 @@
     "content_scripts": [
             {
               "matches": ["<all_urls>"],
-              "js": ["libs/jquery-1.8.2.js", "libs/mustache.js", "libs/URL.js", "js/prompt.js", "libs/jquery.idle.js", "js/idle-detection.js"]
+              "js": ["libs/jquery-1.8.2.js", "libs/mustache.js", "js/prompt.js", "libs/jquery.idle.js", "js/idle-detection.js"]
             }
     ],
     "web_accessible_resources": [

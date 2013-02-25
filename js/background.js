@@ -41,9 +41,9 @@ function openTab(tabId, event_type) {
 /*
 Helper function to get the tab with tabId and close the item
 */
-function closeTab(tab, event_type, callback) {
+function closeTab(tab, event_type) {
     if (tab !== undefined && tab.status === 'complete') {
-        closeItem(tab.id, tab.url, event_type, false, callback);
+        closeItem(tab.id, tab.url, event_type, false);
     }
 }
 

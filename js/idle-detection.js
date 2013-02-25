@@ -19,4 +19,4 @@ $(window).idle(
     },  
     {
         'after': 50000, //5 min max idle
-    });
+});

@@ -219,10 +219,9 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
     There is only ever one activeItem at a time so only close out the active one. 
     This event will be fired when a tab is closed or unfocused but we would have already 'closed' the item so we don't want to do it again.
 */
-function closeItem(tabId, url, event_type, time, callback) {
+function closeItem(tabId, url, event_type, time) {
     if (activeItem === undefined) return;
     var time = time || new Date(); // time is undefined for destroy event
-    var callback = callback || false;
     if (activeItem.tabId === tabId && !user.inBlackList(url)) {
         //write to local storage
         var item = $.extend({}, activeItem); //copy activeItem
@@ -239,9 +238,6 @@ function closeItem(tabId, url, event_type, time, callback) {
             user.getWhitelist()._fetch();
             user.getBlacklist()._fetch();   
         }
-    }
-    if (callback) {
-        callback();
     }
 }
 
@@ -328,7 +324,11 @@ function getApiURL(resource, id, params) {
     for (var key in params) {
       getParams += sprintf("&%s=%s", key, params[key]);
     }
-    if (id !== null) {
+    
+    if (getParams !== '') {
+        apiBase += "?" + getParams.slice(1);
+    }
+    if (id != null) {
         apiBase += '/' + id;
     } 
     return apiBase
@@ -380,8 +380,6 @@ function localSetIfNull(key, value) {
 
 //converts the data to JSON serialized
 function serializePayload(payload) {
-    payload.start_time = payload.start_time
-    payload.end_time = payload.end_time
     payload.user = user.getResourceURI();
     return JSON.stringify(payload);
 }
