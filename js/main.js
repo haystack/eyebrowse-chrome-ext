@@ -18,7 +18,9 @@ var FilterListItem = Backbone.Model.extend({
     },
 });
 
-
+/*
+    collection to hold filterlist items
+*/
 var FilterList = Backbone.Collection.extend({
 
     model: FilterListItem,
@@ -54,7 +56,9 @@ var FilterList = Backbone.Collection.extend({
 });
 
 
-//User object holds the status of the user, the cookie from the server, preferences for eyebrowse, whitelist, blacklist, etc
+/*
+    User object holds the status of the user, the cookie from the server, preferences for eyebrowse, whitelist, blacklist, etc.
+*/
 var User = Backbone.Model.extend({
     defaults: {
         "loggedIn" : false,
@@ -374,6 +378,9 @@ function openLink(url) {
 }
 
 ///////////////////local storage methods//////////////
+/*
+    create or parase and return localhistory object
+*/
 function loadLocalHistory() {
     localString = localStorage.local_history;
     localString = (localString) ? localString : "[]"; // catch undefined case
@@ -419,6 +426,9 @@ function localSetIfNull(key, value) {
     }
 }
 
+/*
+    remove all local history from storage
+*/
 function clearStorage(){
     localStorage.removeItem("local_history")
     local_history = []
@@ -437,6 +447,9 @@ function updateBadge(text) {
         });
 }
 
+/*
+    clear login flag
+*/
 function loginBadge(e) {
     if (e == "logout") {
         updateBadge("!");
@@ -445,6 +458,9 @@ function loginBadge(e) {
     }
 }
 
+/*
+    initialize the badge with login flag
+*/
 function initBadge() {
     chrome.browserAction.setBadgeBackgroundColor({"color":"#cd5c5c"});
     if (!user.isLoggedIn()) {
