@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    var myDiv = $('#myDiv');
+    var myDiv = $("#myDiv");
     
     //
     // POPULATE "SET" SECTION
@@ -34,12 +34,12 @@ $(document).ready(function() {
     var userVal = JSON.parse(localStorage.getItem("user"));
 
     if (userVal) {
-        var userInfo = $('#userInfo');
+        var userInfo = $("#userInfo");
         
         // auxiliary function for listing properties
         var populateDivWithList = function(someDiv, list, property) {
             $.each(list, function(key, value) {
-                someDiv.append($('<div>').text(value[property]));
+                someDiv.append($("<div>").text(value[property]));
             });
         };
 
@@ -50,8 +50,8 @@ $(document).ready(function() {
         console.log("Hello world yeah yeah 43 from options.js");
 
         if (userVal.whitelist) {
-            var wlDiv = $('#whitelist');
-            populateDivWithList(wlDiv,userVal.whitelist,'url');
+            var wlDiv = $("#whitelist");
+            populateDivWithList(wlDiv,userVal.whitelist,"url");
         }
 
         console.log("Hello world yeah yeah 48 from options.js");
@@ -63,8 +63,8 @@ $(document).ready(function() {
         console.log("Hello world yeah yeah 54 from options.js");
 
         if (userVal.blacklist) {
-            var blDiv = $('#blacklist');
-            populateDivWithList(blDiv,userVal.blacklist, 'url');
+            var blDiv = $("#blacklist");
+            populateDivWithList(blDiv,userVal.blacklist, "url");
         }
 
         console.log("Hello world yeah yeah 63 from options.js");
@@ -74,41 +74,41 @@ $(document).ready(function() {
         // Populate username and logged-in status
         //
 
-        var liDiv = $('#loggedIn');
+        var liDiv = $("#loggedIn");
         if (userVal.loggedIn != undefined) {
-            liDiv.append($('<div>').text(userVal.loggedIn));
+            liDiv.append($("<div>").text(userVal.loggedIn));
         } else {
-            liDiv.append($('<div>').text("FFalse")); 
+            liDiv.append($("<div>").text("FFalse")); 
         }
 
         if (userVal.username) {
-            var unDiv = $('#username');
-            unDiv.append($('<div>').text(userVal.username));
+            var unDiv = $("#username");
+            unDiv.append($("<div>").text(userVal.username));
         }
 
         // 
         // Display raw json of user item
         //
-        var rjDiv = $('#rawJson');
-        rjDiv.append($('<div>').text(JSON.stringify(userVal)));
+        var rjDiv = $("#rawJson");
+        rjDiv.append($("<div>").text(JSON.stringify(userVal)));
     }
 
     //
     // button to clear localStorage and reload page
     //
     var clearLocalStorage = function() {
-        localStorage.removeItem('user');
-        localStorage.removeItem('local_history');
-        //localStorage.removeItem('baseUrl');
+        localStorage.removeItem("user");
+        localStorage.removeItem("local_history");
+        //localStorage.removeItem("baseUrl");
     };
 
-    var myButton = $('<button/>',
+    var myButton = $("<button/>",
     {
-        text: 'Clear localStorage',
+        text: "Clear localStorage",
         click: function () { clearLocalStorage();window.location.reload();}
     });
 
-    $('#options').append(myButton);
+    $("#options").append(myButton);
 
 
 });

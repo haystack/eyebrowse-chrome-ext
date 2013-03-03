@@ -1,7 +1,7 @@
 function sendMessage(action) {
     var message = {
-            'action' : 'idle',
-            'type': action,
+            "action" : "idle",
+            "type": action,
     };
     chrome.extension.sendMessage(JSON.stringify(message));
 }
@@ -11,12 +11,12 @@ function sendMessage(action) {
 */
 $(window).idle(
     function() {
-       sendMessage('closeItem'); //on idle 
+       sendMessage("closeItem"); //on idle 
     },
     function() {
 
-        sendMessage('openItem'); //on active
+        sendMessage("openItem"); //on active
     },  
     {
-        'after': 50000, //5 min max idle
+        "after": 50000, //5 min max idle
 });
