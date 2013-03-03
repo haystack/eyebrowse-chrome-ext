@@ -183,8 +183,12 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     if (!user.inWhitelist(url) && !user.inBlackList(url)) {
 
         timeCheck.allow = false; // we need to wait for prompt callback
-        chrome.tabs.sendMessage(tabId, {"action": "prompt"},function(res){
-                if (res !== undefined && res.prompRes == 'allow') {
+        chrome.tabs.sendMessage(tabId, {
+            "action": "prompt", 
+            "baseUrl": baseUrl,
+        }, function(message){
+                handleFilterListMsg(message);
+                if (message.type === 'whitelist') {
                     finishOpen(tabId, url, favIconUrl, title, event_type);
                 }
             });
@@ -381,6 +385,7 @@ function localSetIfNull(key, value) {
 //converts the data to JSON serialized
 function serializePayload(payload) {
     payload.user = user.getResourceURI();
+    payload.src = "chrome"
     return JSON.stringify(payload);
 }
 

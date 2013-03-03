@@ -5,11 +5,11 @@
     "description" : "Eyebrowse by CSAIL",
     "browser_action" : {
         "default_icon" : "img/eye.png",
-        "default_popup" : "popup.html",
+        "default_popup" : "html/popup.html",
         "default_title" : "Eyebrowse"
     },
     "background" : {
-        "page": "background.html"
+        "page": "html/background.html"
     },
     "content_scripts": [
             {
@@ -31,5 +31,5 @@
           "128": "img/eye-128.png" 
     },
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
-    // "options_page": "options.html"
+    // "options_page": "html/options.html"
 }

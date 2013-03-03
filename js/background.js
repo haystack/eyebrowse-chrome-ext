@@ -97,9 +97,7 @@ function initBadge() {
 function executeMessage(request, sender, sendResponse) {
     var message = JSON.parse(request);
     var action = message.action;
-    if (action == "filterlist") {
-        handleFilterListMsg(message);
-    } else if (action == "idle") {
+    if (action == "idle") {
        handleIdleMsg(message, sender.tab.id);
     } else {
         console.log("Action not supported");
