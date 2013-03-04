@@ -20,7 +20,7 @@ Wiki Pages:
 
 **Scott Greenwald**
 + [swgreen@mit.edu](mailto:swgreen@mit.edu)
-+ [@swgreen_mit](https://twitter.com/blumua)
++ [@swgreen_mit](https://twitter.com/swgreen_mit)
 
 **Jason Hu**
 
