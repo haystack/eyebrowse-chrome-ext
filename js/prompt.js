@@ -26,12 +26,13 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         setup(request.baseUrl, host);
     
         window.addEventListener("message", function(e){
-                var message = JSON.parse(e.data);
-                message.action = "filterlist";
-                message.url = host;
-                console.log(message)
-                sendResponse(message);
+                if (e.origin === request.baseUrl){
+                    var message = JSON.parse(e.data);
+                    message.action = "filterlist";
+                    message.url = host;
+                    console.log(message);
+                    chrome.extension.sendMessage(JSON.stringify(message));
+                }
         }, false);
     }
-    return true
 });

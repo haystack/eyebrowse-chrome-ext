@@ -74,7 +74,7 @@ function closedWindowListener() {
 //////////////////Content-script to Background script listener//////////////////
 
 /*
-    Listen to messages between the content and background script
+    Listen to messages between the content and background script.
 */
 function messageListener() {
     chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
@@ -87,15 +87,16 @@ function messageListener() {
     helper to execute messages between content and background script
 */
 function executeMessage(request, sender, sendResponse) {
-    var message = JSON.parse(request);
-    var action = message.action;
-    if (action == "idle") {
-       handleIdleMsg(message, sender.tab.id);
-    } else {
+    var msg = JSON.parse(request)
+    var action = handleIdleMsg.action;
+    if (action === "idle") {
+       handleIdleMsg(msg, sender.tab.id);
+    } else if (action === "filterlist"){
+        handleFilterListMsg(msg);
+    }else {
         console.log("Action not supported");
     }
 }
-
   
 /*
     run each listener type

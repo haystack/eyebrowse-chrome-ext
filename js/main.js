@@ -191,12 +191,14 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         chrome.tabs.sendMessage(tabId, {
             "action": "prompt", 
             "baseUrl": baseUrl,
-        }, function(message){
-                handleFilterListMsg(message);
-                if (message.type === "whitelist") {
-                    finishOpen(tabId, url, favIconUrl, title, event_type);
-                }
-            });
+        });
+        tmpItem = {
+            "tabId" : tabId,
+            "url" : url,
+            "favIconUrl" : favIconUrl,
+            "title" : title,
+            "event_type" : event_type,
+        }
 
     } else if (user.inBlackList(url)) {
         return
@@ -283,6 +285,10 @@ function handleFilterListMsg(message) {
     var list;
     if (type == "whitelist") {
         list = user.getWhitelist();
+        if (tmpItem !== null) {
+            finishOpen(tmpItem.tabId, tmpItem.url, tmpItem.favIconUrl, tmpItem.title, tmpItem.event_type)
+            tmpItem = null
+        }
     } else if (type == "blacklist") {
         list = user.getBlacklist();
     } else {
@@ -470,6 +476,7 @@ function initBadge() {
 
 // dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
 var activeItem;
+var tmpItem;
 
 local_history = loadLocalHistory();
 
