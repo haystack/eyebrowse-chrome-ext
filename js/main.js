@@ -4,7 +4,7 @@ var baseUrl = "http://localhost:5000";
 //var baseUrl = "http://eyebrowse.herokuapp.com"
 var siteName = "Eyebrowse";
 
-///////////Models//////////////
+///////////////////models//////////////////////
 
 //This object can represent either a whitelist or blacklist for a given user. On an update send results to server to update stored data. On intialization set is synced with server. Should allow offline syncing in the future.
 var FilterListItem = Backbone.Model.extend({
@@ -18,7 +18,9 @@ var FilterListItem = Backbone.Model.extend({
     },
 });
 
-
+/*
+    collection to hold filterlist items
+*/
 var FilterList = Backbone.Collection.extend({
 
     model: FilterListItem,
@@ -30,7 +32,7 @@ var FilterList = Backbone.Collection.extend({
     },
 
     getType : function() {
-        return this.get('type')
+        return this.get("type")
     },
 
     url : function() {
@@ -54,53 +56,55 @@ var FilterList = Backbone.Collection.extend({
 });
 
 
-//User object holds the status of the user, the cookie from the server, preferences for eyebrowse, whitelist, blacklist, etc
+/*
+    User object holds the status of the user, the cookie from the server, preferences for eyebrowse, whitelist, blacklist, etc.
+*/
 var User = Backbone.Model.extend({
     defaults: {
-        'loggedIn' : false,
-        'whitelist' : new FilterList('whitelist'),
-        'blacklist' : new FilterList('blacklist'),
-        'username' : '',
-        'resourceURI' : '/api/v1/user/',
+        "loggedIn" : false,
+        "whitelist" : new FilterList("whitelist"),
+        "blacklist" : new FilterList("blacklist"),
+        "username" : "",
+        "resourceURI" : "/api/v1/user/",
     },
 
     initialize : function() {
-        _.bindAll(this); //allow access to 'this' in callbacks with 'this' meaning the object not the context of the callback
+        _.bindAll(this); //allow access to 'this' in callbacks with "this" meaning the object not the context of the callback
 
     },
 
     getWhitelist : function() {
-        return this.get('whitelist')
+        return this.get("whitelist")
     },
 
     getBlacklist : function() {
-        return this.get('blacklist')
+        return this.get("blacklist")
     },
 
     getUsername : function() {
-        return this.get('username')
+        return this.get("username")
     },
 
     getResourceURI : function() {
-        return this.get('resourceURI')
+        return this.get("resourceURI")
     },
 
     isLoggedIn : function() {
         if (this.getUsername() === this.defaults.username || this.getResourceURI() === this.defaults.resourceURI) {
             this.logout();
         }
-        return this.get('loggedIn')
+        return this.get("loggedIn")
     },
 
     //when the user is logged in set the boolean to give logged in views.
     setLogin : function(status) {
         this.set({ 
-            'loggedIn': status,
+            "loggedIn": status,
         });
 
         var map = {
-            'true' : 'login',
-            'false' : 'logout'
+            "true" : "login",
+            "false" : "logout"
         };
 
         loginBadge(map[status]);
@@ -116,23 +120,23 @@ var User = Backbone.Model.extend({
     
     setUsername : function(username) {
         this.set({ 
-            'username': username,
+            "username": username,
         });
         this.setResourceURI(username);
     },
 
     setResourceURI : function(username) {
         this.set({
-            'resourceURI' : sprintf('/api/v1/user/%s/', username)
+            "resourceURI" : sprintf("/api/v1/user/%s/", username)
         })
     },
 
     setWhitelist : function(whitelist) {
-        this.setFilterSet('whitelist', whitelist);
+        this.setFilterSet("whitelist", whitelist);
     },
 
     setBlacklist : function(blacklist) {
-        this.setFilterSet('blacklist', blacklist);
+        this.setFilterSet("blacklist", blacklist);
     },
 
     setFilterSet : function(type, list) {
@@ -143,12 +147,12 @@ var User = Backbone.Model.extend({
 
     //check if a url is in the blacklist
     inBlackList : function(url) {
-        return this.inSet('blacklist', url)
+        return this.inSet("blacklist", url)
     },
 
     //check if a url is in the whitelise
     inWhitelist : function(url) {
-        return this.inSet('whitelist', url)
+        return this.inSet("whitelist", url)
     },
 
     //check if url is in a set (either whitelist or blacklist)
@@ -158,7 +162,7 @@ var User = Backbone.Model.extend({
         var uri = new URI(url)
         var hostname = uri.hostname();
         var protocol = uri.protocol();
-        return (set.where({'url' : hostname}).length || set.where({"url" : protocol}).length || set.where(url).length)
+        return (set.where({"url" : hostname}).length || set.where({"url" : protocol}).length || set.where(url).length)
     },
 
     //save the current state to local storage
@@ -168,6 +172,7 @@ var User = Backbone.Model.extend({
 });
 
 
+//////////////////data collection handlers/////////////
 /*
     inputs:
     tabId - indentifer of tab (unique to session only)
@@ -183,8 +188,12 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     if (!user.inWhitelist(url) && !user.inBlackList(url)) {
 
         timeCheck.allow = false; // we need to wait for prompt callback
-        chrome.tabs.sendMessage(tabId, {"action": "prompt"},function(res){
-                if (res !== undefined && res.prompRes == 'allow') {
+        chrome.tabs.sendMessage(tabId, {
+            "action": "prompt", 
+            "baseUrl": baseUrl,
+        }, function(message){
+                handleFilterListMsg(message);
+                if (message.type === "whitelist") {
                     finishOpen(tabId, url, favIconUrl, title, event_type);
                 }
             });
@@ -198,26 +207,31 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     }
 }
 
+
+/*
+    change the active item state of an item.
+    called after a prompt is allowed or timecheck passes
+*/
 function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
     
     if (activeItem !== undefined) {
-        closeItem(activeItem.tabId, activeItem.url, 'blur', time);
+        closeItem(activeItem.tabId, activeItem.url, "blur", time);
     };
         
     //reassign the active item to be the current tab
     activeItem = {
-        'tabId' : tabId,
-        'url' : url,
-        'favIconUrl' : favIconUrl,
-        'title' : title,
-        'start_event' : event_type,
-        'start_time' : new Date(),
+        "tabId" : tabId,
+        "url" : url,
+        "favIconUrl" : favIconUrl,
+        "title" : title,
+        "start_event" : event_type,
+        "start_time" : new Date(),
     };
 }
 
 /* 
     There is only ever one activeItem at a time so only close out the active one. 
-    This event will be fired when a tab is closed or unfocused but we would have already 'closed' the item so we don't want to do it again.
+    This event will be fired when a tab is closed or unfocused but we would have already "closed" the item so we don"t want to do it again.
 */
 function closeItem(tabId, url, event_type, time) {
     if (activeItem === undefined) return;
@@ -241,49 +255,76 @@ function closeItem(tabId, url, event_type, time) {
     }
 }
 
+/*
+    checks if the time between the current event and the active item is greater than the delta. Default delta is 900ms
+*/
+function checkTimeDelta(delta) {
+    var delta = delta || 900
+    var now = new Date();
+    var allow = true; // default to true allows active item to be set initially
+    if (activeItem !== undefined) { 
+        allow = (now.getTime() - activeItem.start_time) > delta
+    }
+
+    return {
+        "allow" : allow,
+        "time" : now,
+    }
+}
+
+
+///////////////message handlers///////////////
+/*
+    create a whitelist or blacklist item when the message comes in from the prompt
+*/
 function handleFilterListMsg(message) {
     var type = message.type;
     var url = message.url;
     var list;
-    if (type == 'whitelist') {
+    if (type == "whitelist") {
         list = user.getWhitelist();
-    } else if (type == 'blacklist') {
+    } else if (type == "blacklist") {
         list = user.getBlacklist();
     } else {
         return
     }
     m = list.create({
-        'url' : url,
-        'user' : user.getResourceURI(),
+        "url" : url,
+        "user" : user.getResourceURI(),
     });
 
-    localStorage['user'] = JSON.stringify(user);
+    localStorage.user = JSON.stringify(user);
 }
 
+/*
+    close an item if the tab is idle
+*/
 function handleIdleMsg(message, tabId) { 
     var type = message.type;
-    if (type == 'openItem')  {
-        openTab(tabId, 'focus');
-    } else if (type == 'closeItem' && activeItem !== undefined) { 
-        closeTab(tabId, 'idle', function() {
+    if (type == "openItem")  {
+        openTab(tabId, "focus");
+    } else if (type == "closeItem" && activeItem !== undefined) { 
+        closeTab(tabId, "idle", function() {
                 activeItem = undefined;
             });
     }
 }
+
+///////////////////server comm utils///////////////////
 
 /*
     Posts data to server
 */
 function dumpData() {
     var backlog = []
-    var url = getApiURL('history-data');
+    var url = getApiURL("history-data");
     var stop = false;
     $.each(local_history, function(index, item){
         if (stop) return; //stop sending on error
         payload = serializePayload(item);
         var that = this;
         $.ajax({
-            type: 'POST',
+            type: "POST",
             url: url,
             data: payload,
             dataType: "text",
@@ -301,42 +342,47 @@ function dumpData() {
 }
 
 /*
-    checks if the time between the current event and the active item is greater than the delta. Default delta is 900ms
+    converts the data to JSON serialized
 */
-function checkTimeDelta(delta) {
-    var delta = delta || 900
-    var now = new Date();
-    var allow = true; // default to true allows active item to be set initially
-    if (activeItem !== undefined) { 
-        allow = (now.getTime() - activeItem.start_time) > delta
-    }
-
-    return {
-        'allow' : allow,
-        'time' : now,
-    }
+function serializePayload(payload) {
+    payload.user = user.getResourceURI();
+    payload.src = "chrome"
+    return JSON.stringify(payload);
 }
 
+/*
+    build an API url for the given inputs
+*/
 function getApiURL(resource, id, params) {
     params = params || {};
-    var apiBase = sprintf('%s/api/v1/%s', baseUrl, resource);
-    var getParams = ''
+    var apiBase = sprintf("%s/api/v1/%s", baseUrl, resource);
+    var getParams = ""
     for (var key in params) {
       getParams += sprintf("&%s=%s", key, params[key]);
     }
     
-    if (getParams !== '') {
+    if (getParams !== "") {
         apiBase += "?" + getParams.slice(1);
     }
     if (id != null) {
-        apiBase += '/' + id;
+        apiBase += "/" + id;
     } 
     return apiBase
 }
 
-/////////init models///////
+/*
+Helper to open urls from the extension to the main website
+*/
+function openLink(url) {
+    chrome.tabs.create({"url": url});
+}
+
+///////////////////local storage methods//////////////
+/*
+    create or parase and return localhistory object
+*/
 function loadLocalHistory() {
-    localString = localStorage['local_history'];
+    localString = localStorage.local_history;
     localString = (localString) ? localString : "[]"; // catch undefined case
     return JSON.parse(localString);
 }
@@ -371,17 +417,55 @@ function clearLocalStorage(key) {
     localStorage[key] = null;
 }
 
-//  Check if these are already set to avoid overwriting.
+/*
+    Check if these are already set to avoid overwriting.
+*/
 function localSetIfNull(key, value) {
     if (localStorage.getItem(key) === null) {
         localStorage.setItem(key, value);
     }
 }
 
-//converts the data to JSON serialized
-function serializePayload(payload) {
-    payload.user = user.getResourceURI();
-    return JSON.stringify(payload);
+/*
+    remove all local history from storage
+*/
+function clearStorage(){
+    localStorage.removeItem("local_history")
+    local_history = []
+}
+
+//////////////////badge utils////////////////////
+
+
+/*
+    wraps the chrome badge update function
+*/
+function updateBadge(text) {
+    chrome.browserAction.setBadgeText(
+        {
+            "text" : text
+        });
+}
+
+/*
+    clear login flag
+*/
+function loginBadge(e) {
+    if (e == "logout") {
+        updateBadge("!");
+    } else if(e == "login") {
+        updateBadge("");
+    }
+}
+
+/*
+    initialize the badge with login flag
+*/
+function initBadge() {
+    chrome.browserAction.setBadgeBackgroundColor({"color":"#cd5c5c"});
+    if (!user.isLoggedIn()) {
+        loginBadge("logout");
+    }
 }
 
 // dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
@@ -393,4 +477,3 @@ user = getLocalStorageUser();
 initBadge()
 
 localSetIfNull("baseUrl", baseUrl);
-

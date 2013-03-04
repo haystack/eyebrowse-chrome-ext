@@ -1,5 +1,5 @@
 LoginView = Backbone.View.extend({
-    'el' : $('.content-container'),
+    "el" : $(".content-container"),
 
     initialize : function() {
         _.bindAll(this);
@@ -8,15 +8,15 @@ LoginView = Backbone.View.extend({
 
     render : function() {
         if (!user.isLoggedIn()) {
-            $('.content-container').empty();
-            $('body').css('width', '300px');
+            $(".content-container").empty();
+            $("body").css("width", "300px");
             var template = _.template($("#login_template").html(), {
-                    'baseUrl' : baseUrl,
+                    "baseUrl" : baseUrl,
                 });
 
             $(this.el).html(template);
-            $('#errors').fadeOut();
-            $('#id_username').focus();
+            $("#errors").fadeOut();
+            $("#id_username").focus();
         }
     },
 
@@ -33,12 +33,12 @@ LoginView = Backbone.View.extend({
     },
 
     getLogin : function() {
-        $('#errors').fadeOut();
-        $('#login').button('loading');
+        $("#errors").fadeOut();
+        $("#login").button("loading");
         var self = this;
-        var username = $('#id_username').val();
-        var password = $('#id_password').val();
-        if (username === '' || password === '') {
+        var username = $("#id_username").val();
+        var password = $("#id_password").val();
+        if (username === " || password === ") {
             self.displayErrors("Enter a username and a password")
         } else {
             $.get(url_login(), function(data) {
@@ -48,7 +48,7 @@ LoginView = Backbone.View.extend({
     },
 
     postLogin : function(data, username, password) {
-        var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
+        var REGEX = /name\="csrfmiddlewaretoken" value\=".*"/; //regex to find the csrf token
         var match = data.match(REGEX);
         var self = this;
         if (match) {
@@ -62,12 +62,12 @@ LoginView = Backbone.View.extend({
                         "username": username,
                         "password": password,
                         "csrfmiddlewaretoken" : csrfmiddlewaretoken,
-                        "remember_me": 'on', // for convenience
+                        "remember_me": "on", // for convenience
                 },
                 dataType: "html",
                 success: function(data) {
                     var match = data.match(REGEX)
-                    if(match) { // we didn't log in successfully
+                    if(match) { // we didn"t log in successfully
                         
                         self.displayErrors("Invalid username or password");
                     } else {
@@ -85,12 +85,12 @@ LoginView = Backbone.View.extend({
     },
 
     completeLogin : function(username) {
-        $('#login_container').remove();
-        $('body').css('width', '400px');
+        $("#login_container").remove();
+        $("body").css("width", "400px");
 
         user.login();
         user.setUsername(username);
-        navView.render('home_tab');
+        navView.render("home_tab");
         homeView = new HomeView();
         //
         // Update user attributes in localStorage
@@ -110,13 +110,13 @@ LoginView = Backbone.View.extend({
     logout : function() {
         $.get(url_logout());
         user.logout();
-        backpage.clearLocalStorage('user')
+        backpage.clearLocalStorage("user")
         this.render();
     },
 
     displayErrors : function(errorMsg) {
-        $('#login').button('reset');
-        var $errorDiv = $('#errors');
+        $("#login").button("reset");
+        var $errorDiv = $("#errors");
         $errorDiv.html(errorMsg);
         $errorDiv.fadeIn();
     },
@@ -124,15 +124,15 @@ LoginView = Backbone.View.extend({
 });
 
 NavView = Backbone.View.extend({
-    'el' : $('.nav-container'),
+    "el" : $(".nav-container"),
 
     initialize : function(){
-        this.render('home_tab');
-        $('.brand').blur()
+        this.render("home_tab");
+        $(".brand").blur()
     },
 
     render : function(tab) {
-        $('.nav-container').empty();
+        $(".nav-container").empty();
         var loggedIn = user.isLoggedIn();
         var template = _.template($("#nav_template").html(), {
                 baseUrl : baseUrl,
@@ -143,13 +143,13 @@ NavView = Backbone.View.extend({
         if (!loggedIn) {
             tab = "login_tab"
         }
-        $('nav-tab').removeClass('active');
-        $('#' + tab).addClass('active').click();
+        $("nav-tab").removeClass("active");
+        $("#" + tab).addClass("active").click();
     },
 });
 
 HomeView = Backbone.View.extend({
-    'el' : $('.content-container'),
+    "el" : $(".content-container"),
 
     initialize : function(){
         this.render()
@@ -174,7 +174,7 @@ function clickHandle(e) {
     }else if (url.indexOf("login") !== -1){
         return
     } else {
-        url = url.split('#')[1];
+        url = url.split("#")[1];
         user.setTab(url);
         subNavView.render();
     }
@@ -196,12 +196,12 @@ function sameOrigin(url) {
     // url could be relative or scheme relative or absolute
     var host = document.location.host; // host + port
     var protocol = document.location.protocol;
-    var sr_origin = '//' + host;
+    var sr_origin = "//" + host;
     var origin = protocol + sr_origin;
     // Allow absolute or scheme relative URLs to same origin
-    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-        // or any other URL that isn't scheme relative or absolute i.e relative.
+    return (url == origin || url.slice(0, origin.length + 1) == origin + "/") ||
+        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + "/") ||
+        // or any other URL that isn"t scheme relative or absolute i.e relative.
         !(/^(\/\/|http:|https:).*/.test(url));
 }
 
@@ -220,11 +220,11 @@ function ajaxSetup(csrftoken){
 
 ///////////////////URL BUILDERS///////////////////
 function url_login() {
-    return baseUrl + '/accounts/login/'
+    return baseUrl + "/accounts/login/"
 }
 
 function url_logout() {
-    return baseUrl + '/accounts/logout/'
+    return baseUrl + "/accounts/logout/"
 }
 
 $(document).ready(function() {
@@ -237,8 +237,8 @@ $(document).ready(function() {
 
     /////setup funcs///////
     chrome.cookies.get({
-        'name' :'csrftoken', 
-        'url' : baseUrl
+        "name" :"csrftoken", 
+        "url" : baseUrl
         }, function(cookie){
             ajaxSetup(cookie.value);
     });
@@ -247,10 +247,10 @@ $(document).ready(function() {
     if (user.isLoggedIn()){
         homeView = new HomeView();
     }
-    $(document).click('#home_tab', function(){
+    $(document).click("#home_tab", function(){
         if (homeView !== undefined) {
             homeView.render();
         }
     });
-    $('a').click(clickHandle)
+    $("a").click(clickHandle)
 });

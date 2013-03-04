@@ -1,85 +1,37 @@
-var popups = [];
-var mousein = false;
-function setup() {
-    if ($('#tray').length) {
-        $('#tray').css('z-index', 999999999);
+function setup(baseUrl, host) {
+    if ($("#eyebrowse-frame").length) {
+        $("#eyebrowse-frame").css("z-index", 999999999);
         return;
     }
     var size = 350;
     var height = 200;
     var settings =  {
-        'z-index': 999999999,
-        'border-style': 'none',
-        'width': size,
-        'height': height,
-        'position': 'fixed',
-        'right': '0px',
-        'top': '0px',
+        "z-index": 999999999,
+        "border-style": "none",
+        "width": size,
+        "height": height,
+        "position": "fixed",
+        "right": "0px",
+        "top": "0px",
     };
-    var tray = $("<iframe>").css(settings).attr('id', 'tray');
+    var eyebrowseFrame = $("<iframe>").css(settings).attr("id", "eyebrowse-frame").attr("src", baseUrl + "/ext/?site=" + host);
 
-    $(document.body).append(tray);
-}
-
-function popup(site) {
-    var frame = $('#tray').contents();
-    var body = frame.find('body');
-    $.get(chrome.extension.getURL("/js_templates/prompt.html"),function(templateURL){
-           var data = {
-                "site": site,
-            };
-            $(body).html(Mustache.to_html(templateURL, data));
-
-            var el = frame.find('.popup');
-            frame.find('#allow-btn').click(passMessage('whitelist', site, el));
-            frame.find('#deny-btn').click(passMessage('blacklist', site, el));
-            var to = setTimeout(function() {fade(el)}, 2000);
-            el.hover(function() {
-                
-                mousein = true;
-                clearInterval(to);
-                el.stop();
-                el.css('opacity', 1.0);
-            })
-            el.mouseleave(function() {
-                mousein = false;
-                to = setTimeout(function() {fade(el)}, 2000);
-            })
-            popups.push(el);
-        });
-}
-
-function passMessage(action, url, el){
-    return function(){
-        if (el != undefined) {
-            el.remove();
-            popups.shift();
-        }
-        var message = {
-            "action" : 'filterlist',
-            "type": action,
-            "url": url
-        };
-        chrome.extension.sendMessage(JSON.stringify(message));
-    }
-}
-
-function fade(el) {
-    el.fadeOut(1000, function() {
-        popups.shift().remove();
-        for (var i = 0; i < popups.length; i++) {
-            h = parseInt(popups[i].css('top')) -120;
-            popups[i].animate({'top': h}, 500);
-        };
-        $('#tray').css('z-index', -1)
-    });
+    $("body").append(eyebrowseFrame);
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+    host = window.location.host;
     var action = request.action;
-    if (action == 'prompt') {
-        setup();
-        var host = window.location.host;
-        popup(host)
+    if (action == "prompt") {
+        setup(request.baseUrl, host);
+    
+        window.addEventListener("message", function(e){
+                var message = JSON.parse(e.data);
+                message.action = "filterlist";
+                message.url = host;
+                console.log(message)
+                sendResponse(message);
+        }, false);
     }
+    return true
 });
