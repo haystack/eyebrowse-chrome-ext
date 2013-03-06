@@ -185,6 +185,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     var timeCheck = checkTimeDelta();
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
+    
     if (!user.inWhitelist(url) && !user.inBlackList(url)) {
 
         timeCheck.allow = false; // we need to wait for prompt callback
@@ -215,7 +216,6 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     called after a prompt is allowed or timecheck passes
 */
 function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
-    
     if (activeItem !== undefined) {
         closeItem(activeItem.tabId, activeItem.url, "blur", time);
     };
@@ -249,6 +249,7 @@ function closeItem(tabId, url, event_type, time) {
         local_history.push(item);
 
         // send data for server and sync whitelist/blacklist
+
         if (local_history.length) {
             dumpData();
             user.getWhitelist()._fetch();

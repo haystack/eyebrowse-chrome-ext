@@ -48,7 +48,7 @@ LoginView = Backbone.View.extend({
     },
 
     postLogin : function(data, username, password) {
-        var REGEX = /name\="csrfmiddlewaretoken" value\=".*"/; //regex to find the csrf token
+        var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
         var match = data.match(REGEX);
         var self = this;
         if (match) {
@@ -78,7 +78,9 @@ LoginView = Backbone.View.extend({
                     self.displayErrors("Unable to connect, try again later.")
                 }
             });
-        } else {
+        } else if (match == null){
+            self.displayErrors("Unable to connect, try again later.")
+        }else {
             self.completeLogin(username);
         }
     },

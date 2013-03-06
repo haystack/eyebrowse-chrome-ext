@@ -12,6 +12,6 @@ body {
     background:url(/img/bg-nav.png) repeat top left;
 }
 
-.password-reset {
-    font-size:11px;
+.login-text {
+    font-size:13px;
 }

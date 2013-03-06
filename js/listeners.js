@@ -47,6 +47,7 @@ function openTab(tabId, event_type) {
     if (!user.isLoggedIn()) return
     chrome.tabs.get(tabId, function (tab) {
         if (tab !== undefined && tab.status === 'complete') {
+
             openItem(tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
         }
         
