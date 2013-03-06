@@ -68,9 +68,9 @@
                         <input type="password" placeholder="Password" name="password" id="id_password" />
                     </p>
 
-                    <input class="btn btn-primary" data-loading-text="Loading..." id="login" type="submit" value="Login" />
-                    <a href="<%= baseUrl %>/accounts/password/reset/"> Forgot Password? </a> 
-
+                    <input class="btn btn-primary btn-small" data-loading-text="Loading..." id="login" type="submit" value="Login" />
+                    <a class="password-reset" href="<%= baseUrl %>/accounts/password/reset/">Forgot Password?</a>
+                    <a href="<%= baseUrl %>/accounts/register/" class="btn btn-small">Create Account </a>
                     <input type="hidden" name="next" value="" />
                 </div>
             </div>
