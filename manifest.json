@@ -17,12 +17,9 @@
               "js": ["libs/jquery-1.8.2.js", "libs/mustache.js", "js/prompt.js", "libs/jquery.idle.js", "js/idle-detection.js"]
             }
     ],
-    "web_accessible_resources": [
-        "js_templates/*"
-    ],
     "permissions": [
-        "http://eyebrowse.herokuapp.com/.*",
-        "http://localhost:5000/.*",
+        "http://eyebrowse.herokuapp.com/*",
+        "http://localhost:5000/*",
         "cookies",
         "tabs"
     ],

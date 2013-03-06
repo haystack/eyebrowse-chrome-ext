@@ -71,7 +71,6 @@ LoginView = Backbone.View.extend({
                         
                         self.displayErrors("Invalid username or password");
                     } else {
-                        
                         self.completeLogin(username)
                     }
                 },
@@ -242,8 +241,7 @@ $(document).ready(function() {
         }, function(cookie){
             ajaxSetup(cookie.value);
     });
-
-
+    
     if (user.isLoggedIn()){
         homeView = new HomeView();
     }

@@ -1,7 +1,7 @@
 ///////////Global vars/////////////
-var baseUrl = "http://localhost:5000"; 
+// var baseUrl = "http://localhost:5000"; 
 // global website base, set to localhost for testing
-//var baseUrl = "http://eyebrowse.herokuapp.com"
+var baseUrl = "http://eyebrowse.herokuapp.com"
 var siteName = "Eyebrowse";
 
 ///////////////////models//////////////////////
@@ -402,6 +402,7 @@ function getLocalStorageUser() {
     var storedUser = localStorage.user;
     if (storedUser === undefined || storedUser === "null") {
         user = new User();
+        localStorage.user = JSON.stringify(user)//store user
         return user
     }
 
@@ -421,15 +422,6 @@ function getLocalStorageUser() {
 */ 
 function clearLocalStorage(key) {
     localStorage[key] = null;
-}
-
-/*
-    Check if these are already set to avoid overwriting.
-*/
-function localSetIfNull(key, value) {
-    if (localStorage.getItem(key) === null) {
-        localStorage.setItem(key, value);
-    }
 }
 
 /*
@@ -483,4 +475,4 @@ local_history = loadLocalHistory();
 user = getLocalStorageUser();
 initBadge()
 
-localSetIfNull("baseUrl", baseUrl);
+localStorage.setItem("baseUrl", baseUrl);
