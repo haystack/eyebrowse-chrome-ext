@@ -24,14 +24,18 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     var action = request.action;
     if (action == "prompt") {
         setup(request.baseUrl, host);
-    
+        
         window.addEventListener("message", function(e){
                 if (e.origin === request.baseUrl){
-                    var message = JSON.parse(e.data);
-                    message.action = "filterlist";
-                    message.url = host;
-                    console.log(message);
-                    chrome.extension.sendMessage(JSON.stringify(message));
+                    var msg = JSON.parse(e.data);
+                    if (msg.type === 'fade'){
+                         $("#eyebrowse-frame").remove()
+                    } else {
+                        msg.action = "filterlist";
+                        msg.url = host;
+                        chrome.extension.sendMessage(JSON.stringify(msg));
+                       
+                    }
                 }
         }, false);
     }

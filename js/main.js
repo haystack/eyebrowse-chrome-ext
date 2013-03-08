@@ -1,7 +1,7 @@
 ///////////Global vars/////////////
-// var baseUrl = "http://localhost:5000"; 
+var baseUrl = "http://localhost:5000"; 
 // global website base, set to localhost for testing
-var baseUrl = "http://eyebrowse.herokuapp.com"
+// var baseUrl = "http://eyebrowse.herokuapp.com"
 var siteName = "Eyebrowse";
 
 ///////////////////models//////////////////////
@@ -49,7 +49,9 @@ var FilterList = Backbone.Collection.extend({
     _fetch: function() {
         this.fetch({
             error: _.bind(function(model, xhr, options) {
-                user.logout();
+                if (typeof user !== "undefined"){
+                    user.logout();   
+                }
             }, this)
         });
     },
