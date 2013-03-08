@@ -1,7 +1,7 @@
 ///////////Global vars/////////////
-var baseUrl = "http://localhost:5000"; 
+// var baseUrl = "http://localhost:5000"; 
 // global website base, set to localhost for testing
-// var baseUrl = "http://eyebrowse.herokuapp.com"
+var baseUrl = "http://eyebrowse.herokuapp.com"
 var siteName = "Eyebrowse";
 
 ///////////////////models//////////////////////
@@ -68,6 +68,7 @@ var User = Backbone.Model.extend({
         "blacklist" : new FilterList("blacklist"),
         "username" : "",
         "resourceURI" : "/api/v1/user/",
+        "ignoreLoginPrompt" : false,
     },
 
     initialize : function() {
@@ -98,6 +99,10 @@ var User = Backbone.Model.extend({
         return this.get("loggedIn")
     },
 
+    ignoreLoginPrompt : function(){
+        return this.get("ignoreLoginPrompt");
+    },
+
     //when the user is logged in set the boolean to give logged in views.
     setLogin : function(status) {
         this.set({ 
@@ -114,6 +119,7 @@ var User = Backbone.Model.extend({
 
     login : function() {
         this.setLogin(true);
+        this.setLoginPrompt(false);
     },
 
     logout : function() {
@@ -145,6 +151,12 @@ var User = Backbone.Model.extend({
         this.set({
             type : list
         })
+    },
+
+    setLoginPrompt : function(bool){
+        this.set({
+            "ignoreLoginPrompt" : bool
+        });
     },
 
     //check if a url is in the blacklist
@@ -184,6 +196,16 @@ var User = Backbone.Model.extend({
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
 function openItem(tabId, url, favIconUrl, title, event_type) {
+    if (!user.isLoggedIn()){
+        if (!user.ignoreLoginPrompt()){
+            chrome.tabs.sendMessage(tabId, {
+                "action" : "prompt",
+                "type" : "loginPrompt",
+                "baseUrl" : baseUrl,
+            })
+        }
+      return  
+    } 
     var timeCheck = checkTimeDelta();
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
@@ -192,7 +214,8 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 
         timeCheck.allow = false; // we need to wait for prompt callback
         chrome.tabs.sendMessage(tabId, {
-            "action": "prompt", 
+            "action": "prompt",
+            "type" : "trackPrompt", 
             "baseUrl": baseUrl,
         });
         tmpItem = {
@@ -317,6 +340,20 @@ function handleIdleMsg(message, tabId) {
                 activeItem = undefined;
             });
     }
+}
+
+/*
+    Open the popup so the user can logback in again
+*/
+function handleLoginMsg(){
+    chrome.tabs.create({'url': chrome.extension.getURL('html/popup.html')}, function(tab) {});
+}
+
+/*
+    Store the ignore state so the popup message does not display
+*/
+function handleIgnoreMsg(){
+    user.setLoginPrompt(true);
 }
 
 ///////////////////server comm utils///////////////////

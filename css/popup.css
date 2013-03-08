@@ -15,3 +15,14 @@ body {
 .login-text {
     font-size:13px;
 }
+
+.content-container {
+    margin-top:70px;
+}
+
+@media (max-width: 767px) {
+   .content-container{
+        margin-top: 0px;
+   }
+
+}

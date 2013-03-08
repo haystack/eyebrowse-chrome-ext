@@ -44,10 +44,8 @@ function removedTabListener() {
     Helper function to get the tab with tabId and open the item
 */
 function openTab(tabId, event_type) {
-    if (!user.isLoggedIn()) return
     chrome.tabs.get(tabId, function (tab) {
         if (tab !== undefined && tab.status === 'complete') {
-
             openItem(tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
         }
         
@@ -91,13 +89,19 @@ function messageListener() {
 function executeMessage(request, sender, sendResponse) {
     var msg = JSON.parse(request)
     var action = msg.action;
-    if (action === "idle") {
-       handleIdleMsg(msg, sender.tab.id);
-    } else if (action === "filterlist"){
-        handleFilterListMsg(msg);
-    }else {
-        console.log("Action not supported::", action);
+    console.log(msg)
+    var ACTION_MAP = {
+        "idle" : [handleIdleMsg, msg, sender.tab.id],
+        "filterlist" : [handleFilterListMsg, msg],
+        "login" : [handleLoginMsg],
+        "ignore" : [handleIgnoreMsg],
     }
+
+    if (action in ACTION_MAP){
+        var args = ACTION_MAP[action]; //get mapped function and args
+
+        args[0].apply(this, args.slice(1)); //apply func with args
+    } 
 }
   
 /*
