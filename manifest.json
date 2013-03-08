@@ -1,31 +1,39 @@
 {
-    "manifest_version": 2,
-    "name" : "Eyebrowse",
-    "version" : "0.0.3",
-    "description" : "Eyebrowse by CSAIL",
-    "browser_action" : {
-        "default_icon" : "img/eye.png",
-        "default_popup" : "html/popup.html",
-        "default_title" : "Eyebrowse"
-    },
-    "background" : {
+    "background": {
         "page": "html/background.html"
-    },
+    }, 
+    "browser_action": {
+        "default_icon": "img/eye.png", 
+        "default_popup": "html/popup.html", 
+        "default_title": "Eyebrowse"
+    }, 
     "content_scripts": [
-            {
-              "matches": ["<all_urls>"],
-              "js": ["libs/jquery-1.8.2.js", "libs/mustache.js", "js/prompt.js", "libs/jquery.idle.js", "js/idle-detection.js"]
-            }
-    ],
-    "permissions": [
-        "http://eyebrowse.herokuapp.com/*",
-        "http://localhost:5000/*",
-        "cookies",
-        "tabs"
-    ],
+        {
+            "js": [
+                "libs/jquery-1.8.2.js", 
+                "libs/mustache.js", 
+                "js/prompt.js", 
+                "libs/jquery.idle.js", 
+                "js/idle-detection.js"
+            ], 
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ], 
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'", 
+    "description": "Eyebrowse by CSAIL", 
     "icons": {
-           "48": "img/eye-48.png",
-          "128": "img/eye-128.png" 
-    },
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+        "128": "img/eye-128.png", 
+        "48": "img/eye-48.png"
+    }, 
+    "manifest_version": 2, 
+    "name": "Eyebrowse", 
+    "permissions": [
+        "http://eyebrowse.herokuapp.com/*", 
+        "http://localhost:5000/*", 
+        "cookies", 
+        "tabs"
+    ], 
+    "version": "0.0.5"
 }
