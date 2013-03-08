@@ -14,7 +14,7 @@ function setup(baseUrl, host) {
         "right": "0px",
         "top": "0px",
     };
-    var eyebrowseFrame = $("<iframe>").css(settings).attr("id", "eyebrowse-frame").attr("src", baseUrl + "/ext/?site=" + host);
+    var eyebrowseFrame = $("<iframe>").css(settings).attr("id", "eyebrowse-frame").attr("src", baseUrl + "/ext/prompt?site=" + host);
 
     $("body").append(eyebrowseFrame);
 }
@@ -30,7 +30,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
                     var message = JSON.parse(e.data);
                     message.action = "filterlist";
                     message.url = host;
-                    console.log(message);
                     chrome.extension.sendMessage(JSON.stringify(message));
                 }
         }, false);

@@ -1,7 +1,7 @@
 ///////////Global vars/////////////
-// var baseUrl = "http://localhost:5000"; 
+var baseUrl = "http://localhost:5000"; 
 // global website base, set to localhost for testing
-var baseUrl = "http://eyebrowse.herokuapp.com"
+// var baseUrl = "http://eyebrowse.herokuapp.com"
 var siteName = "Eyebrowse";
 
 ///////////////////models//////////////////////
