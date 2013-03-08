@@ -49,7 +49,9 @@ var FilterList = Backbone.Collection.extend({
     _fetch: function() {
         this.fetch({
             error: _.bind(function(model, xhr, options) {
-                user.logout();
+                if (typeof user !== "undefined"){
+                    user.logout();   
+                }
             }, this)
         });
     },
