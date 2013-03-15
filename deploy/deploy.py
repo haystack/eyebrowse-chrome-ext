@@ -1,8 +1,7 @@
 import json
 
-BASE_PATH = ".."
-MAINJS_PATH = BASE_PATH + "/js/main.js"
-MANIFEST_PATH = BASE_PATH + "/manifest.json"
+MAINJS_PATH = "js/main.js"
+MANIFEST_PATH = "manifest.json"
 DEV_URL = "http://localhost:5000"
 PROD_URL = "http://eyebrowse.herokuapp.com"
 
