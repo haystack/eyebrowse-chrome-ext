@@ -227,7 +227,9 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 
     } else if (user.inBlackList(url)) {
         return
-    } 
+    }
+
+    updateBadge("\u2713");
 
     if (timeCheck.allow){
         finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
