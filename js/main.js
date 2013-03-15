@@ -453,6 +453,10 @@ function getLocalStorageUser() {
 
     u.setUsername(o.username);
     u.setLogin(o.loggedIn);
+    if (o.loggedIn){
+        //if the user is logged in don't ignore the prompt
+        u.setLoginPrompt(false);
+    }
     u.setBlacklist(o.blacklist);
     u.setWhitelist(o.whitelist);
 
