@@ -26,7 +26,7 @@ function setup(baseUrl, promptType, host) {
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     host = window.location.host;
     var action = request.action;
-    if (action == "prompt") {
+    if (action === "prompt") {
         setup(request.baseUrl, request.type, host);
         
         window.addEventListener("message", function(e){

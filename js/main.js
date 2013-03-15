@@ -1,6 +1,6 @@
 ///////////Global vars/////////////
 // global website base, set to localhost for testing, use deploy script to change
-var baseUrl = "http://eyebrowse.herokuapp.com";
+var baseUrl = "http://localhost:5000";
 var siteName = "Eyebrowse";
 
 ///////////////////models//////////////////////
@@ -48,7 +48,8 @@ var FilterList = Backbone.Collection.extend({
     _fetch: function() {
         this.fetch({
             error: _.bind(function(model, xhr, options) {
-                if (typeof user !== "undefined"){
+                console.log(arguments)
+                if (typeof user !== "undefined" && navigator.onLine){
                     user.logout();   
                 }
             }, this)
@@ -67,7 +68,7 @@ var User = Backbone.Model.extend({
         "blacklist" : new FilterList("blacklist"),
         "username" : "",
         "resourceURI" : "/api/v1/user/",
-        "ignoreLoginPrompt" : false,
+        "ignoreLoginPrompt" : true,
     },
 
     initialize : function() {
@@ -304,9 +305,9 @@ function checkTimeDelta(delta) {
 /*
     create a whitelist or blacklist item when the message comes in from the prompt
 */
-function handleFilterListMsg(message) {
-    var type = message.type;
-    var url = message.url;
+function handleFilterListMsg(msg) {
+    var type = msg.type;
+    var url = msg.url;
     var list;
     if (type == "whitelist") {
         list = user.getWhitelist();
@@ -330,8 +331,8 @@ function handleFilterListMsg(message) {
 /*
     close an item if the tab is idle
 */
-function handleIdleMsg(message, tabId) { 
-    var type = message.type;
+function handleIdleMsg(msg, tabId) { 
+    var type = msg.type;
     if (type == "openItem")  {
         openTab(tabId, "focus");
     } else if (type == "closeItem" && activeItem !== undefined) { 
@@ -345,7 +346,7 @@ function handleIdleMsg(message, tabId) {
     Open the popup so the user can logback in again
 */
 function handleLoginMsg(){
-    chrome.tabs.create({'url': chrome.extension.getURL('html/popup.html')}, function(tab) {});
+   openLink(chrome.extension.getURL('html/popup.html'));
 }
 
 /*
@@ -377,7 +378,9 @@ function dumpData() {
             contentType: "application/json",
             error: function(jqXHR, textStatus, errorThrown){
                 stop = true;
-                user.logout(); //notify user of server error
+                if (navigator.onLine){
+                    user.logout(); //notify user of server error
+                }
             },
             success: function(data, textStatus, jqXHR) {
                local_history.splice(index, 1); //remove item from history on success 
@@ -391,7 +394,7 @@ function dumpData() {
 */
 function serializePayload(payload) {
     payload.user = user.getResourceURI();
-    payload.src = "chrome"
+    payload.src = "chrome";
     return JSON.stringify(payload);
 }
 

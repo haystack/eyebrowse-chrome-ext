@@ -89,7 +89,6 @@ function messageListener() {
 function executeMessage(request, sender, sendResponse) {
     var msg = JSON.parse(request)
     var action = msg.action;
-    console.log(msg)
     var ACTION_MAP = {
         "idle" : [handleIdleMsg, msg, sender.tab.id],
         "filterlist" : [handleFilterListMsg, msg],
