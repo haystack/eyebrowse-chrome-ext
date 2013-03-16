@@ -195,6 +195,7 @@ var User = Backbone.Model.extend({
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
 function openItem(tabId, url, favIconUrl, title, event_type) {
+    updateBadge("");
     if (!user.isLoggedIn()){
         if (!user.ignoreLoginPrompt()){
             chrome.tabs.sendMessage(tabId, {
@@ -229,9 +230,8 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         return
     }
 
-    updateBadge("\u2713");
-
     if (timeCheck.allow){
+        updateBadge("\u2713");
         finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
     }
 }
