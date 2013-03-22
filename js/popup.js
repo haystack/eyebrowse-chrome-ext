@@ -75,6 +75,7 @@ LoginView = Backbone.View.extend({
                     }
                 },
                 error : function(data) {
+                    console.log(JSON.stringify(data))
                     self.displayErrors("Unable to connect, try again later.")
                 }
             });
