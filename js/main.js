@@ -231,7 +231,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     }
 
     if (timeCheck.allow){
-        updateBadge("\u2713");
+        trackBadge();
         finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
     }
 }
@@ -493,9 +493,19 @@ function updateBadge(text) {
 }
 
 /*
+    helper to generate a badge on tracked sites
+
+*/
+function trackBadge(){
+    updateBadge("\u2713");
+    //green
+    chrome.browserAction.setBadgeBackgroundColor({"color":"#50ba6a"});
+}
+/*
     clear login flag
 */
 function loginBadge(e) {
+    chrome.browserAction.setBadgeBackgroundColor({"color":"#cd5c5c"});
     if (e == "logout") {
         updateBadge("!");
     } else if(e == "login") {
@@ -507,7 +517,6 @@ function loginBadge(e) {
     initialize the badge with login flag
 */
 function initBadge() {
-    chrome.browserAction.setBadgeBackgroundColor({"color":"#cd5c5c"});
     if (!user.isLoggedIn()) {
         loginBadge("logout");
     }
