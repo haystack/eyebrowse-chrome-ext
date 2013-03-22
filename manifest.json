@@ -30,7 +30,7 @@
     "manifest_version": 2, 
     "name": "Eyebrowse", 
     "permissions": [
-        "http://eyebrowse.herokuapp.com/*", 
+        "http://eyebrowse.csail.mit.edu/*", 
         "http://localhost:5000/*", 
         "cookies", 
         "tabs"
