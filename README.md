@@ -5,8 +5,6 @@ Eyebrowse allows users to automatically track and selectively publish their use 
 
 The concept of Eyebrowse is to gather browsing history from participating users. Depending on the particular distribution, it may either be used in a context where the data goes into a public repository, or it may be used in a context where the data is shared in a controlled way (such as among a group of users, but not publicly). 
 
-The project [eyebrowse-server](https://github.com/haystack/eyebrowse-server) aims to build a server that can receive the data from users' installs of eyebrowse.
-
 ## Contact Info
 
 + [eyebrowse@csail.mit.edu](mailto:eyebrowse@csail.mit.edu)
