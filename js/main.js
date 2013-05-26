@@ -66,7 +66,7 @@ var User = Backbone.Model.extend({
         "loggedIn" : false,
         "whitelist" : new FilterList("whitelist"),
         "blacklist" : new FilterList("blacklist"),
-        "nags" : {"visits":11,"factor":1,"lastNag":(new Date()).getTime()},
+        "nags" : {"visits":11,"factor":1,"lastNag":(new Date()).getTime()-100000},
         "username" : "",
         "resourceURI" : "/api/v1/user/",
         "ignoreLoginPrompt" : true,
@@ -196,7 +196,7 @@ var User = Backbone.Model.extend({
 
     //check if a url should be nagged
     shouldNag : function(url) {
-        var timeThres = 36000//00 //1 hour in milliseconds
+        var timeThres = 3600000 //1 hour in milliseconds
         var visitThres = 5
 
         var overallThres = 10
