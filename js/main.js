@@ -183,7 +183,7 @@ var User = Backbone.Model.extend({
         var lastNag = site["lastNag"]
         var factor = site["factor"]
 
-        var newSite = {"visits":visits,"lastNag":lastNag,"factor":factor*2}
+        var newSite = {"visits":visits,"lastNag":lastNag,"factor":Math.max(factor*2,16)}
         nags[url] = newSite
 
         this.set({ 
