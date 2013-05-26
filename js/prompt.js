@@ -34,6 +34,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
                     var msg = JSON.parse(e.data);
                     if (msg.action === "fade"){
                          $("#eyebrowse-frame").remove()
+                         chrome.extension.sendMessage(JSON.stringify({"action":"nag","url":host}));
                     } else {
                         msg.url = host;
                         chrome.extension.sendMessage(JSON.stringify(msg));

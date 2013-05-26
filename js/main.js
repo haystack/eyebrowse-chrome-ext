@@ -1,6 +1,7 @@
 ///////////Global vars/////////////
 // global website base, set to localhost for testing, use deploy script to change
 var baseUrl = "http://eyebrowse.csail.mit.edu";
+// var baseUrl = "http://localhost:5000";
 var siteName = "Eyebrowse";
 
 ///////////////////models//////////////////////
@@ -65,6 +66,7 @@ var User = Backbone.Model.extend({
         "loggedIn" : false,
         "whitelist" : new FilterList("whitelist"),
         "blacklist" : new FilterList("blacklist"),
+        "nags" : {},
         "username" : "",
         "resourceURI" : "/api/v1/user/",
         "ignoreLoginPrompt" : true,
@@ -81,6 +83,10 @@ var User = Backbone.Model.extend({
 
     getBlacklist : function() {
         return this.get("blacklist")
+    },
+
+    getNags : function() {
+        return this.get("nags")
     },
 
     getUsername : function() {
@@ -168,6 +174,57 @@ var User = Backbone.Model.extend({
         return this.inSet("whitelist", url)
     },
 
+    //sets exponential backoff factor
+    setNagFactor : function(url) {
+        console.log(url)
+        var nags = this.getNags()
+        var site = nags[url]
+        var visits = site["visits"]
+        var lastNag = site["lastNag"]
+        var factor = site["factor"]
+
+        var newSite = {"visits":visits,"lastNag":lastNag,"factor":factor*2}
+        nags[url] = newSite
+
+        this.set({ 
+            "nags": nags,
+        });
+    },
+
+    //check if a url should be nagged
+    shouldNag : function(url) {
+        var timeThres = 3600000 //1 hour in milliseconds
+        var visitThres = 10
+        var nags = this.getNags()
+
+        var newSite = undefined
+        var b_Nag = false
+        var now = (new Date()).getTime()
+        if (url in nags) {
+            var site = nags[url]
+            var visits = site["visits"]
+            var lastNag = site["lastNag"]
+            var factor = site["factor"]
+
+            if (visits >= visitThres || now - lastNag > timeThres*factor) {
+                b_Nag = true
+                newSite = {"visits":0,"lastNag":now,"factor":factor}
+            } else {
+                newSite = {"visits":visits+1,"lastNag":lastNag,"factor":factor}
+            }
+        } else {
+            b_Nag = true
+            newSite = {"visits":1,"lastNag":now,"factor":1}
+        }
+        nags[url] = newSite
+
+        this.set({ 
+            "nags": nags,
+        });
+
+        return b_Nag
+    },
+
     //check if url is in a set (either whitelist or blacklist)
     // documentation for URL.js : http://medialize.github.com/URI.js/docs.html
     inSet : function(setType, url) {
@@ -210,7 +267,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
     
-    if (!user.inWhitelist(url) && !user.inBlackList(url)) {
+    if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(url)) {
 
         timeCheck.allow = false; // we need to wait for prompt callback
         chrome.tabs.sendMessage(tabId, {
@@ -230,7 +287,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         return
     }
 
-    if (timeCheck.allow){
+    if (user.inWhitelist(url) && timeCheck.allow){
         trackBadge();
         finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
     }
@@ -351,6 +408,13 @@ function handleLoginMsg(){
 }
 
 /*
+    Set the nag factor for exponential backoff
+*/
+function handleNagMsg(url){
+   user.setNagFactor("http://"+url+"/");
+}
+
+/*
     Store the ignore state so the popup message does not display
 */
 function handleIgnoreMsg(){
@@ -379,9 +443,9 @@ function dumpData() {
             contentType: "application/json",
             error: function(jqXHR, textStatus, errorThrown){
                 stop = true;
-                if (navigator.onLine){
-                    user.logout(); //notify user of server error
-                }
+                // if (navigator.onLine){
+                //     user.logout(); //notify user of server error
+                // }
             },
             success: function(data, textStatus, jqXHR) {
                local_history.splice(index, 1); //remove item from history on success 
