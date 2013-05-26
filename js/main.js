@@ -66,7 +66,7 @@ var User = Backbone.Model.extend({
         "loggedIn" : false,
         "whitelist" : new FilterList("whitelist"),
         "blacklist" : new FilterList("blacklist"),
-        "nags" : {},
+        "nags" : {"visits":11,"factor":1,"lastNag":(new Date()).getTime()},
         "username" : "",
         "resourceURI" : "/api/v1/user/",
         "ignoreLoginPrompt" : true,
@@ -175,49 +175,67 @@ var User = Backbone.Model.extend({
     },
 
     //sets exponential backoff factor
-    setNagFactor : function(url) {
-        console.log(url)
-        var nags = this.getNags()
-        var site = nags[url]
-        var visits = site["visits"]
-        var lastNag = site["lastNag"]
-        var factor = site["factor"]
-
-        var newSite = {"visits":visits,"lastNag":lastNag,"factor":Math.max(factor*2,16)}
-        nags[url] = newSite
-
-        this.set({ 
-            "nags": nags,
-        });
-    },
-
-    //check if a url should be nagged
-    shouldNag : function(url) {
-        var timeThres = 3600000 //1 hour in milliseconds
-        var visitThres = 10
-        var nags = this.getNags()
-
-        var newSite = undefined
-        var b_Nag = false
-        var now = (new Date()).getTime()
-        if (url in nags) {
+    setNagFactor : function(url,rate) {
+        if (url != "") {
+            console.log(url)
+            var nags = this.getNags()
+            nags["factor"] = Math.max(Math.min(nags["factor"]*rate,4),1) 
             var site = nags[url]
             var visits = site["visits"]
             var lastNag = site["lastNag"]
             var factor = site["factor"]
 
-            if (visits >= visitThres || now - lastNag > timeThres*factor) {
-                b_Nag = true
-                newSite = {"visits":0,"lastNag":now,"factor":factor}
-            } else {
-                newSite = {"visits":visits+1,"lastNag":lastNag,"factor":factor}
-            }
-        } else {
-            b_Nag = true
-            newSite = {"visits":1,"lastNag":now,"factor":1}
-        }
-        nags[url] = newSite
+            var newSite = {"visits":visits,"lastNag":lastNag,"factor":Math.max(Math.min(factor*rate,4),1)}
+            nags[url] = newSite
 
+            this.set({ 
+                "nags": nags,
+            });
+        }
+    },
+
+    //check if a url should be nagged
+    shouldNag : function(url) {
+        var timeThres = 36000//00 //1 hour in milliseconds
+        var visitThres = 5
+
+        var overallThres = 10
+
+        var nags = this.getNags()
+
+        var overallFactor = nags["factor"]
+        var overallVisits = nags["visits"]
+        var overallLastNag = nags["lastNag"]
+
+        var b_Nag = false
+        var now = (new Date()).getTime()
+        if (overallVisits >= overallThres || now - overallLastNag > timeThres*overallFactor) {
+            var newSite = undefined
+            if (url in nags) {
+                var site = nags[url]
+                var visits = site["visits"]
+                var lastNag = site["lastNag"]
+                var factor = site["factor"]
+
+                if (visits >= visitThres || now - lastNag > timeThres*factor) {
+                    b_Nag = true
+                    newSite = {"visits":0,"lastNag":now,"factor":factor}
+                    nags["visits"] = 0
+                    nags["lastNag"] = now
+                } else {
+                    newSite = {"visits":visits+1,"lastNag":lastNag,"factor":factor}
+                    nags["visits"]++
+                }
+            } else {
+                b_Nag = true
+                newSite = {"visits":1,"lastNag":now,"factor":1}
+                nags["visits"] = 1
+                nags["lastNag"] = now
+            }
+            nags[url] = newSite
+        } else {
+            nags["visits"]++
+        }
         this.set({ 
             "nags": nags,
         });
@@ -367,6 +385,7 @@ function handleFilterListMsg(msg) {
     var type = msg.type;
     var url = msg.url;
     var list;
+    user.setNagFactor((new URI(url)).hostname(),.5);
     if (type == "whitelist") {
         list = user.getWhitelist();
         if (tmpItem !== null) {
@@ -411,7 +430,7 @@ function handleLoginMsg(){
     Set the nag factor for exponential backoff
 */
 function handleNagMsg(url){
-   user.setNagFactor((new URI(url)).hostname());
+   user.setNagFactor((new URI(url)).hostname(),2);
 }
 
 /*
