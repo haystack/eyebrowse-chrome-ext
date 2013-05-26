@@ -30,11 +30,11 @@
     "manifest_version": 2, 
     "name": "Eyebrowse", 
     "permissions": [
-        "http://eyebrowse-staging.csail.mit.edu/*",
+        "http://eyebrowse-staging.csail.mit.edu/*", 
         "http://eyebrowse.csail.mit.edu/*", 
         "http://localhost:5000/*", 
         "cookies", 
         "tabs"
     ], 
-    "version": "0.0.8"
+    "version": "0.0.12"
 }

@@ -1,7 +1,7 @@
 ///////////Global vars/////////////
 // global website base, set to localhost for testing, use deploy script to change
 var baseUrl = "http://eyebrowse.csail.mit.edu";
-// var baseUrl = "http://localhost:5000";
+// var baseUrl = "http://eyebrowse.csail.mit.edu";
 var siteName = "Eyebrowse";
 
 ///////////////////models//////////////////////
