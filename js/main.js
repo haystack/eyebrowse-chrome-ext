@@ -214,7 +214,7 @@ var User = Backbone.Model.extend({
                 var lastNag = site["lastNag"]
                 var factor = site["factor"]
 
-                if (visits >= visitThres || now - lastNag > timeThres*factor) {
+                if (visits >= visitThres*factor || now - lastNag > timeThres*factor) {
                     b_Nag = true
                     newSite = {"visits":0,"lastNag":now,"factor":factor}
                     nags["visits"] = 0
