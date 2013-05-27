@@ -177,7 +177,6 @@ var User = Backbone.Model.extend({
     //sets exponential backoff factor
     setNagFactor : function(url,rate) {
         if (url != "") {
-            console.log(url)
             var nags = this.getNags()
             var site = nags[url]
             var visits = site["visits"]
@@ -208,7 +207,6 @@ var User = Backbone.Model.extend({
         var b_Nag = false
         var now = (new Date()).getTime()
         if (overallVisits >= overallThres || now - overallLastNag > timeThres) {
-            console.log("GLOBAL ABLE TO NAG")
             var newSite = undefined
             if (url in nags) {
                 var site = nags[url]
@@ -233,7 +231,6 @@ var User = Backbone.Model.extend({
             }
             nags[url] = newSite
         } else {
-            console.log("NOT GLOBAL ABLE TO NAG")
             nags["visits"]++
             var newSite = undefined
             if (url in nags) {
