@@ -294,7 +294,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
     
-    if (!user.inBlackList(url) && user.shouldNag(uri.hostname()) && !user.inWhitelist(url)) {
+    if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(uri.hostname())) {
 
         timeCheck.allow = false; // we need to wait for prompt callback
         chrome.tabs.sendMessage(tabId, {
