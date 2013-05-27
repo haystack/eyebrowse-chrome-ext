@@ -66,7 +66,7 @@ var User = Backbone.Model.extend({
         "loggedIn" : false,
         "whitelist" : new FilterList("whitelist"),
         "blacklist" : new FilterList("blacklist"),
-        "nags" : {"visits":11,"factor":1,"lastNag":(new Date()).getTime()-100000},
+        "nags" : {"visits":11,"lastNag":(new Date()).getTime()-24*360000},
         "username" : "",
         "resourceURI" : "/api/v1/user/",
         "ignoreLoginPrompt" : true,
@@ -179,13 +179,12 @@ var User = Backbone.Model.extend({
         if (url != "") {
             console.log(url)
             var nags = this.getNags()
-            nags["factor"] = Math.max(Math.min(nags["factor"]*rate,4),1) 
             var site = nags[url]
             var visits = site["visits"]
             var lastNag = site["lastNag"]
             var factor = site["factor"]
 
-            var newSite = {"visits":visits,"lastNag":lastNag,"factor":Math.max(Math.min(factor*rate,4),1)}
+            var newSite = {"visits":visits,"lastNag":lastNag,"factor":Math.max(Math.min(factor*rate,16),1)}
             nags[url] = newSite
 
             this.set({ 
@@ -203,13 +202,13 @@ var User = Backbone.Model.extend({
 
         var nags = this.getNags()
 
-        var overallFactor = nags["factor"]
         var overallVisits = nags["visits"]
         var overallLastNag = nags["lastNag"]
 
         var b_Nag = false
         var now = (new Date()).getTime()
-        if (overallVisits >= overallThres || now - overallLastNag > timeThres*overallFactor) {
+        if (overallVisits >= overallThres || now - overallLastNag > timeThres) {
+            console.log("GLOBAL ABLE TO NAG")
             var newSite = undefined
             if (url in nags) {
                 var site = nags[url]
@@ -229,12 +228,25 @@ var User = Backbone.Model.extend({
             } else {
                 b_Nag = true
                 newSite = {"visits":1,"lastNag":now,"factor":1}
-                nags["visits"] = 1
                 nags["lastNag"] = now
+                nags["visits"] = 0
             }
             nags[url] = newSite
         } else {
+            console.log("NOT GLOBAL ABLE TO NAG")
             nags["visits"]++
+            var newSite = undefined
+            if (url in nags) {
+                var site = nags[url]
+                var visits = site["visits"]
+                var lastNag = site["lastNag"]
+                var factor = site["factor"]
+
+                newSite = {"visits":visits+1,"lastNag":lastNag,"factor":factor}
+            } else {
+                newSite = {"visits":1,"lastNag":now-24*timeThres,"factor":1}
+            }
+            nags[url] = newSite
         }
         this.set({ 
             "nags": nags,
@@ -285,7 +297,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
     
-    if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(uri.hostname())) {
+    if (!user.inBlackList(url) && user.shouldNag(uri.hostname()) && !user.inWhitelist(url)) {
 
         timeCheck.allow = false; // we need to wait for prompt callback
         chrome.tabs.sendMessage(tabId, {
