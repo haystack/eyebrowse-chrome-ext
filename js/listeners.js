@@ -94,6 +94,7 @@ function executeMessage(request, sender, sendResponse) {
         "filterlist" : [handleFilterListMsg, msg],
         "login" : [handleLoginMsg],
         "ignore" : [handleIgnoreMsg],
+        "nag" : [handleNagMsg,msg.url],
     }
 
     if (action in ACTION_MAP){
