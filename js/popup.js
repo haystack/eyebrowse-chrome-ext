@@ -1,3 +1,41 @@
+////// MODELS //////////
+
+var ChatUser = Backbone.Model.extend({
+    defaults: {
+        username: null,
+        pic_url: null,
+    },
+});
+
+var ChatUserCollection = Backbone.Collection.extend({
+	model: ChatUser
+});
+
+/////// VIEWS /////////////
+
+var ChatUserView = Backbone.View.extend({
+	tagName: 'div',
+	render: function(){
+		this.$el.html('<img src="' + baseUrl + this.model.get('pic_url') + '" alt="' + this.model.get('username') + '" class="nav-prof-img img-rounded">');
+		return this
+	}
+});
+
+var ChatCollectionView = Backbone.View.extend({
+	tagName: 'div',
+	
+	initialize: function(){
+		console.log(this.collection);
+	},
+	render: function(){
+		this.collection.each(function(person) {
+			var userView = new ChatUserView({model: person});
+			this.$el.append(userView.render().el);
+		}, this);
+		return this;
+	}
+});
+
 LoginView = Backbone.View.extend({
     "el" : $(".content-container"),
 
@@ -161,10 +199,32 @@ HomeView = Backbone.View.extend({
         if (!user.isLoggedIn()) {
             return
         }
-        var template = _.template($("#splash_template").html());
-        $(this.el).html(template);
+        chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+    		populateActiveUsers(tabs[0]);
+    	});	
+    	
+    	var template = _.template($("#splash_template").html());
+	    $(this.el).html(template);
+
     },
 });
+
+//get all the active users on a page and populate the view
+function populateActiveUsers(tab) {
+	var text = getActiveUsers(tab.url);
+	var parsed = JSON.parse(text);
+	var users = parsed["result"];
+	var active_users = [];
+	$.each(users, function(index,value) {
+		console.log(value["username"]);
+		active_users.push({"username": value["username"], "pic_url": value["pic_url"]});
+	});
+	var user_coll = new ChatUserCollection(active_users);
+	var user_view = new ChatCollectionView({ collection: user_coll });
+    
+    $("#chatuser").empty().append(user_view.render().el);
+
+}
 
 function clickHandle(e) {
     e.preventDefault();
@@ -219,6 +279,22 @@ function ajaxSetup(csrftoken){
         }
     });
 }
+
+///////////////////CHAT AND MESSAGE FUNCTIONALITY///////////////////
+/*
+	Get active users from server
+*/
+function getActiveUsers(url) {
+	var encoded_url = encodeURIComponent(url);
+	var req_url = sprintf("%s/ext/getActiveUsers?url=%s", baseUrl, encoded_url);
+	return $.ajax({
+		type: "GET",
+		url: req_url,
+		dataType: "json",
+		async: false
+    }).responseText;
+}
+
 
 ///////////////////URL BUILDERS///////////////////
 function url_login() {

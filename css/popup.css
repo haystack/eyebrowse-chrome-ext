@@ -31,3 +31,14 @@ body {
     width:27px;
     height:27px;
 }
+
+.nav-prof-img {
+    height:24px;
+    width:24px;
+}
+
+.img-rounded {
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
