@@ -11,18 +11,59 @@ var ChatUserCollection = Backbone.Collection.extend({
 	model: ChatUser
 });
 
+var ChatMessage = Backbone.Model.extend({
+    defaults: {
+        from_user: null,
+        to_user: null,
+        message: '',
+        url: null,
+        date: null,
+    },
+});
+
+var ChatMessageCollection = Backbone.Collection.extend({
+	model: ChatMessage
+});
+
+
 /////// VIEWS /////////////
 
 var ChatUserView = Backbone.View.extend({
 	tagName: 'div',
+	className: 'chatuser_pic',
 	render: function(){
-		this.$el.html('<img src="' + baseUrl + this.model.get('pic_url') + '" alt="' + this.model.get('username') + '" class="nav-prof-img img-rounded">');
+		this.$el.html('<img id="chatuser" src="' + baseUrl + this.model.get('pic_url') + '" title="' + this.model.get('username') + '" class="nav-prof-img img-rounded">');
 		return this
+	},
+	events: {
+		'click': "getChatMessages"
+	},
+	getChatMessages: function() {
+		$("#textbox").attr('readonly', false);
+		$("#textbox").focus();
+		var message_text = getMessages(window.g_url, this.model.get('username'));
+		console.log(message_text);
+		var parsed = JSON.parse(message_text)["result"];
+		var messages = [];
+		$.each(parsed, function(index,value) {
+			messages.push(value);
+		});
+		if (messages.length != 0) {
+			var messages_coll = new ChatMessageCollection(messages);
+			var messages_view = new ChatMessageCollectionView({ collection: messages_coll });
+		    
+		    var c = messages_view.render().el;
+		    $("#chatmessage").empty().append(c);
+		}
+		else {
+			$("#chatmessage").empty()
+		}
 	}
 });
 
 var ChatCollectionView = Backbone.View.extend({
-	tagName: 'div',
+	tagName: "div",
+	className: "chatuser_row",
 	
 	initialize: function(){
 		console.log(this.collection);
@@ -31,6 +72,36 @@ var ChatCollectionView = Backbone.View.extend({
 		this.collection.each(function(person) {
 			var userView = new ChatUserView({model: person});
 			this.$el.append(userView.render().el);
+		}, this);
+		return this;
+	}
+});
+
+var ChatMessageView = Backbone.View.extend({
+	tagName: 'div',
+	className: 'chatmessage',
+	render: function(){
+		if (this.model.get('from_user') == user.get('username')) {
+			this.$el.html('<div class="my_message"><div class="message-text">' + this.model.get('message') + '</div><div class="date">' + this.model.get('date') + '</div></div>');
+		} else {
+			this.$el.html('<div class="their_message"><div class="message-text">' + this.model.get('message') + '</div><div class="date">' + this.model.get('date') + '</div></div>');
+		}
+		
+		return this
+	},
+});
+
+var ChatMessageCollectionView = Backbone.View.extend({
+	tagName: "div",
+	className: "chatmessages",
+	
+	initialize: function(){
+		console.log(this.collection);
+	},
+	render: function(){
+		this.collection.each(function(message) {
+			var messageView = new ChatMessageView({model: message});
+			this.$el.append(messageView.render().el);
 		}, this);
 		return this;
 	}
@@ -55,12 +126,33 @@ LoginView = Backbone.View.extend({
             $(this.el).html(template);
             $("#errors").fadeOut();
             $("#id_username").focus();
+            
+            $("#id_username").bind("enterKey",function(e){
+				e.preventDefault();
+            	this.getLogin()
+			});
+			$('#id_username').keyup(function(e){
+				if(e.keyCode == 13){
+			  		$(this).trigger("enterKey");
+				}
+			});
+			
+			$("#password").bind("enterKey",function(e){
+				e.preventDefault();
+            	this.getLogin()
+			});
+			$('#password').keyup(function(e){
+				if(e.keyCode == 13){
+			  		$(this).trigger("enterKey");
+				}
+			});
         }
     },
 
     events : {
         "click #login" : "getLogin",
-        "keypress input" : "filterKey"
+        "keypress #id_username" : "filterKey",
+        "keypress #id_password" : "filterKey"
     },
 
     filterKey : function(e) {
@@ -75,6 +167,7 @@ LoginView = Backbone.View.extend({
         $("#login").button("loading");
         var self = this;
         var username = $("#id_username").val();
+        g_username = username;
         var password = $("#id_password").val();
         if (username === " || password === ") {
             self.displayErrors("Enter a username and a password")
@@ -200,6 +293,7 @@ HomeView = Backbone.View.extend({
             return
         }
         chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+        	window.g_url = tabs[0].url;
     		populateActiveUsers(tabs[0]);
     	});	
     	
@@ -217,12 +311,29 @@ function populateActiveUsers(tab) {
 	var active_users = [];
 	$.each(users, function(index,value) {
 		console.log(value["username"]);
-		active_users.push({"username": value["username"], "pic_url": value["pic_url"]});
+		active_users.push(value);
 	});
-	var user_coll = new ChatUserCollection(active_users);
-	var user_view = new ChatCollectionView({ collection: user_coll });
-    
-    $("#chatuser").empty().append(user_view.render().el);
+	if (active_users.length == 0) {
+		$("#chatuserbox").empty().append("No one currently online");
+	}
+	else {
+		var user_coll = new ChatUserCollection(active_users);
+		var user_view = new ChatCollectionView({ collection: user_coll });
+	    
+	    var c = user_view.render().el;
+	    $("#chatuserbox").empty().append(c);
+	    
+	    $('#textbox').bind("enterKey",function(e){
+			console.log('enter');
+		});
+		$('#textbox').keyup(function(e){
+			if(e.keyCode == 13){
+		  		$(this).trigger("enterKey");
+			}
+		});
+
+	    
+	}
 
 }
 
@@ -280,13 +391,41 @@ function ajaxSetup(csrftoken){
     });
 }
 
-///////////////////CHAT AND MESSAGE FUNCTIONALITY///////////////////
+///////////////////CHAT AND MESSAGE API CALLS///////////////////
 /*
 	Get active users from server
 */
 function getActiveUsers(url) {
 	var encoded_url = encodeURIComponent(url);
 	var req_url = sprintf("%s/ext/getActiveUsers?url=%s", baseUrl, encoded_url);
+	return $.ajax({
+		type: "GET",
+		url: req_url,
+		dataType: "json",
+		async: false
+    }).responseText;
+}
+
+/*
+	Get messages between two users given the page they are both on
+*/
+function getMessages(url, username) {
+	var g_user = user.get("username");
+	var user1;
+	var user2;
+	if (g_user.toString() < username.toString()) {
+		user1 = g_user;
+		user2 = username;
+	} else {
+		user1 = username;
+		user2 = g_user;
+	}
+	console.log(user1);
+	console.log(user2);
+	var encoded_url = encodeURIComponent(url);
+	
+	var req_url = sprintf("%s/ext/getMessages?url=%s&user1=%s&user2=%s", baseUrl, encoded_url, user1, user2);
+	console.log(req_url);
 	return $.ajax({
 		type: "GET",
 		url: req_url,
@@ -324,9 +463,11 @@ $(document).ready(function() {
     if (user.isLoggedIn()){
         homeView = new HomeView();
     }
-    $(document).click("#home_tab", function(){
+    $("#home_tab").click(function(){
         if (homeView !== undefined) {
+        	$(document.html).css({"height": "550px"});
             homeView.render();
+            console.log('rerendered homeview');
         }
     });
     $("a").click(clickHandle)

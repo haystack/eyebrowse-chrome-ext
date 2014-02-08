@@ -39,6 +39,9 @@
                         <li id="home_tab" class="nav-tab">
                             <a href="<%= baseUrl %>">Home</a>
                         </li>
+                        <li id="settings">
+                        	<a href="<%= baseUrl %>/accounts/profile/edit" target="_blank">Settings</a>
+                        </li>
                         <li id="logout">
                             <a href="<%= baseUrl %>/accounts/logout/">Logout</a>
                         </li>
@@ -79,12 +82,12 @@
         <script type="text/template" id="splash_template">
 
             <div class="row well offset1 span4">
-                <div id="chatuser"></div>
-                    <p>
-                        <a href="<%= baseUrl %>/accounts/profile/edit" target="_blank" class="btn btn-primary">
-                            Manage Settings
-                        </a>
-                    </p>
+            <div id="chatwrapper">
+                <div id="chatuserbox"></div>
+                <div id="chatmessage"></div>
+                <input type="text" readonly="readonly" id="textbox">
+            </div>
+                
             </div>
 
         </script>

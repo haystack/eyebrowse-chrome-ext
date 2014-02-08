@@ -6,6 +6,8 @@ body {
     padding-top: 0px;
     padding-bottom:15px;
     width:400px;
+    font-size: 100%;
+    line-height: 1.125em;
 }
 
 .nav-bg {
@@ -41,4 +43,66 @@ body {
   -webkit-border-radius: 6px;
      -moz-border-radius: 6px;
           border-radius: 6px;
+}
+
+#chatuserbox {
+	float: left;
+	display: block;
+	width: 200px;
+	height: 35px;
+	color: #d3d3d3;
+	font-size: 0.75em;
+}
+
+#chatmessage {
+	float: left;
+	display: block;
+	width: 175px;
+	height: 150px;
+	background-color:#ffffff;
+}
+
+#chatwrapper {
+	float: left;
+	width: 175px;
+}
+
+#textbox {
+    border: 1px solid #d3d3d3s; 
+    background-color: #ffffff;
+    padding: 0px;
+    outline:0; 
+    font-size: 0.75em;
+    height:20px; 
+    width: 173px; 
+ }
+ 
+.chatuser_pic {
+    display:inline-block;
+    min-width:24px;
+    min-height:24px;
+    margin-right:10px;
+    white-space:normal;
+}
+
+.chatuser_row {
+	white-space: nowrap;
+}
+
+.their_message {
+	float: left;
+}
+
+.my_message {
+	float: right;
+}
+
+.date {
+	color: #d3d3d3;
+	font-size: .5em;
+}
+
+.message-text {
+	color: #A9A9A9;
+	font-size: .8em;
 }
