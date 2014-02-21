@@ -82,11 +82,18 @@
         <script type="text/template" id="splash_template">
 
             <div class="row well offset1 span4">
-            <div id="chatwrapper">
-                <div id="chatuserbox"></div>
-                <div id="chatmessage"></div>
-                <input type="text" readonly="readonly" id="textbox">
-            </div>
+	            <div id="pagefeed"></div>
+		        <textarea id="messagebox">Leave a Post</textarea>
+		        <button id="submitmessage">Submit Post</button>
+	        </div>
+            <div class="row well offset1 span4">
+            	<div id="chatwrapper">
+	                <div id="chatuserbox"></div>
+	                <div id="chattingarea">
+	                <div id="chatmessage"></div>
+	                <input type="text" readonly="readonly" id="textbox">
+	                </div>
+	            </div>
                 
             </div>
 
@@ -101,6 +108,7 @@
         <script type="text/javascript" src="../libs/backbone.js"></script>
          <script type="text/javascript" src="../libs/bootstrap-button.js"></script>
         <script type="text/javascript" src="../libs/sprintf-0.7-beta1.js"></script>
+        <script type="text/javascript" src="../libs/moment.min.js"></script>
         <script type="text/javascript" src="../js/popup.js"></script>
     </body>
 </html>
