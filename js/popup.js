@@ -95,7 +95,12 @@ var ChatUserView = Backbone.View.extend({
 			 this.model.get('username') + '</span></div>';
 		
 		this.$el.html(code);
-		 
+		
+		if ((window.selected_user != null && window.selected_user != undefined) &&
+			(this.model.get('username') == window.selected_user.get('username'))) {
+			$(this.el).css('padding', '0px');
+			$(this.el).css('border', 'solid 2px');
+		}
 		return this;
 	},
 	events: {
@@ -134,9 +139,6 @@ var ChatUserView = Backbone.View.extend({
 		populateChatMessageBox();
 		
 		$('#chatmessage').scrollTop($('#chatmessage')[0].scrollHeight);
-		
-		var id = window.setInterval(function() {populateChatMessageBox();}, 6000);
-		window.message_interval = id;
 		
 	}
 });
@@ -423,17 +425,21 @@ function populateActiveUsers() {
 	});
 	if (active_users.length == 0) {
 		$("#chatuserbox").empty().append("No one currently online");
+		window.selected_user = null;
 	}
 	else {
 		var user_coll = new ChatUserCollection(active_users);
 		var user_view = new ChatCollectionView({ collection: user_coll });
-	    
 	    var c = user_view.render().el;
 	    $("#chatuserbox").empty().append(c);  
+	    
+	    if (window.selected_user != undefined && window.selected_user != null) {
+	    	populateChatMessageBox();
+	    }
 	}
 }
 
-//get all the active users on a page and populate the view
+//populate feed for a page
 function populateFeed() {
 	var tab_url = window.g_url;
 	var text = getFeed(tab_url);
