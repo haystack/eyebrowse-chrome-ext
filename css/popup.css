@@ -6,6 +6,8 @@ body {
     padding-top: 0px;
     padding-bottom:15px;
     width:400px;
+    font-size: 100%;
+    line-height: 1.125em;
 }
 
 .nav-bg {
@@ -30,4 +32,137 @@ body {
 .logo {
     width:27px;
     height:27px;
+}
+
+.nav-prof-img {
+    height:24px;
+    width:24px;
+}
+
+.img-rounded {
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+#chatuserbox {
+	float: left;
+	display: block;
+	width: 150px;
+	color: #d3d3d3;
+	font-size: 0.75em;
+	overflow-y: auto;
+}
+
+#chatmessage {
+	float: right;
+	display: block;
+	width: 154px;
+	height: 140px;
+	background-color:#ffffff;
+	overflow-y: auto;
+	padding-left: 8px;
+	padding-right: 12px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+#chatwrapper {
+	width: 350px;
+}
+
+#chattingarea {
+	float: right;
+	width: 154px;
+}
+
+#textbox {
+	float: right;
+    border: 1px solid #d3d3d3s; 
+    background-color: #ffffff;
+    padding: 0px;
+    outline:0; 
+    font-size: 0.75em;
+    height:20px; 
+    width: 173px; 
+ }
+ 
+#messagebox {
+    border: 1px solid #d3d3d3s; 
+    background-color: #ffffff;
+    padding: 0px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    outline:0; 
+    font-size: 0.8em;
+    height:40px; 
+    width: 358px; 
+ }
+
+#submitmessage {
+	display: block;
+	float: right;
+	font-size: .9em;
+	width: 100px;
+	height: 23px;
+}
+ 
+.chatuser_pic {
+    min-width:24px;
+    min-height:24px;
+    margin-right:10px;
+    white-space:normal;
+    padding: 2px;
+}
+
+.chatuser_row {
+	white-space: nowrap;
+}
+
+.their_message {
+	float: left;
+}
+
+.my_message {
+	float: right;
+	text-align: right;
+}
+
+.date {
+	color: #d3d3d3;
+	font-size: .5em;
+}
+
+.message-name {
+	color: #d3d3d3;
+	font-size: .7em;
+}
+
+.right {
+	text-align: right;
+}
+
+.pagefeed_item {
+	display: block;
+}
+
+.message-text {
+	color: #A9A9A9;
+	font-size: .8em;
+}
+
+.unread {
+	display: inline-block;
+	width: 15px;
+	font-size: 1em;
+	color: blue;
+}
+
+
+#pagefeed {
+	width: 350px;
+	display: block;
+	height: 120px;
+	overflow-y: auto;
+	font-size: 0.8em;
 }

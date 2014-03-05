@@ -1,10 +1,11 @@
 ///////////Global vars/////////////
 // global website base, set to localhost for testing, use deploy script to change
-var baseUrl = "http://eyebrowse.csail.mit.edu";
+var baseUrl = "http://localhost:8000";
 // var baseUrl = "http://eyebrowse.csail.mit.edu";
 var siteName = "Eyebrowse";
 
 ///////////////////models//////////////////////
+
 
 //This object can represent either a whitelist or blacklist for a given user. On an update send results to server to update stored data. On intialization set is synced with server. Should allow offline syncing in the future.
 var FilterListItem = Backbone.Model.extend({
@@ -623,4 +624,4 @@ local_history = loadLocalHistory();
 user = getLocalStorageUser();
 initBadge()
 
-localStorage.setItem("baseUrl", baseUrl);
+localStorage.setItem("baseUrl", baseUrl);

@@ -22,7 +22,7 @@
         }
     ], 
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'", 
-    "description": "Eyebrowse by CSAIL", 
+    "description": "Eyebrowse by MIT CSAIL", 
     "icons": {
         "128": "img/eye-128.png", 
         "48": "img/eye-48.png"
@@ -32,9 +32,9 @@
     "permissions": [
         "http://eyebrowse-staging.csail.mit.edu/*", 
         "http://eyebrowse.csail.mit.edu/*", 
-        "http://localhost:5000/*", 
+        "http://localhost:8000/*", 
         "cookies", 
         "tabs"
     ], 
-    "version": "0.0.12"
+    "version": "0.0.15"
 }

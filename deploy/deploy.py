@@ -2,7 +2,7 @@ import json
 
 MAINJS_PATH = "js/main.js"
 MANIFEST_PATH = "manifest.json"
-DEV_URL = "http://localhost:5000"
+DEV_URL = "http://localhost:8000"
 PROD_URL = "http://eyebrowse.csail.mit.edu"
 
 def rewriteBaseUrl():
