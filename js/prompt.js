@@ -18,15 +18,17 @@ function setup(baseUrl, promptType, host) {
         "right": "0px",
         "top": "0px",
     };
+    
     var eyebrowseFrame = $("<iframe>").css(settings).attr("id", "eyebrowse-frame").attr("src", baseUrl + "/ext/" +  promptType +"?site=" + host);
-
     $("body").append(eyebrowseFrame);
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-    host = window.location.host;
+    var host = window.location.host;
+    var protocol = window.location.protocol;
     var action = request.action;
-    if (action === "prompt") {
+
+    if (action === "prompt" && protocol === "http:") {
         setup(request.baseUrl, request.type, host);
         
         window.addEventListener("message", function(e){
