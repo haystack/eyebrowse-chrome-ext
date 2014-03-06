@@ -89,7 +89,7 @@ var ChatUserView = Backbone.View.extend({
 		} else {
 			code = code + '<span class="unread">' + this.model.get('unread_messages') + '</span>';
 		}
-		code = code + '<img src="' + baseUrl + this.model.get('pic_url') + 
+		code = code + '<img src="' + this.model.get('pic_url') + 
 			 '" title="' + this.model.get('username') + 
 			 '" class="nav-prof-img img-rounded"> <span class="name">' + 
 			 this.model.get('username') + '</span></div>';
