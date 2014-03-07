@@ -19,8 +19,7 @@
     <body>
         <div class="nav-container"></div>
 
-        <div class="container">
-            <div class="subnav-container"></div>
+        <div class="container2">
             <div class="content-container"></div>
         </div>
         
@@ -29,10 +28,10 @@
         <!-- Nav template -->
         <script type="text/template" id="nav_template">
 
-        <div class="navbar navbar-fixed-top">
+        <div class="navbar">
             <div class="navbar-inner nav-bg">
                 <a class="brand" href="<%= baseUrl %>/">
-                    <img class="logo" src="/img/eye.png"/> eyebrowse
+                    <img class="logo" src="/img/eye.png"/>
                 </a>
                 <ul class="nav topbar">
                     <% if( loggedIn ) { %>
@@ -81,12 +80,13 @@
         <!-- Welcome template -->
         <script type="text/template" id="splash_template">
 
-            <div class="row well offset1 span4">
+			<div class="row well3 offset1 span4">
+				<div id="stats"></div>
 	            <div id="pagefeed"></div>
 		        <textarea id="messagebox">Leave a Post</textarea>
 		        <button id="submitmessage">Submit Post</button>
 	        </div>
-            <div class="row well offset1 span4">
+            <div class="row well3 offset1 span4">
             	<div id="chatwrapper">
 	                <div id="chatuserbox"></div>
 	                <div id="chattingarea">

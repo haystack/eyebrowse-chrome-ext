@@ -41,6 +41,19 @@ var PageFeedCollection = Backbone.Collection.extend({
 	model: PageFeedItem
 });
 
+var Stats = Backbone.Model.extend({
+	defaults: {
+		my_time: 0,
+		my_count: 0,
+		total_time: 0,
+		total_count: 0,
+		my_dtime: 0,
+		my_dcount: 0,
+		total_dtime: 0,
+		total_dcount: 0,
+	}
+});
+
 
 /////// VIEWS /////////////
 
@@ -50,15 +63,17 @@ var PageFeedItemView = Backbone.View.extend({
 	render: function(){
 		var messages = this.model.get('message');
 		var username = this.model.get('username');
-		var hum_time = moment(this.model.get('start_time'), 'YYYY-MM-SSTHH:mm:ssZ').fromNow();
+		
 		if (messages.length > 0) {
 			var code_str = "";
 			$.each(messages, function(index, message) {
+				var hum_time = moment(message.post_time, 'YYYY-MM-SSTHH:mm:ssZ').fromNow();
 				code_str += '<div class="pagefeed_item"><span class="pagefeed_text">' + message.message + '</span><div class="right"><span class="message-name">' + 
 				username + '</span> <span class="date">' + hum_time + '</span></div></div>';
 			});
 			this.$el.html(code_str);
 		} else {
+			var hum_time = moment(this.model.get('start_time'), 'YYYY-MM-SSTHH:mm:ssZ').fromNow();
 			this.$el.html('<div class="pagefeed_item"><div class="right"><span class="message-name">' + 
 			 username + '</span> <span class="date">was here ' + hum_time + '</span></div></div>');
 		
@@ -183,6 +198,26 @@ var ChatMessageCollectionView = Backbone.View.extend({
 	}
 });
 
+var StatsView = Backbone.View.extend({
+	tagName: 'div',
+	className: 'stat_info',
+	render: function(){
+		var title = window.g_title;
+		if (title.length > 50) {
+			title = window.g_title.substring(0,50) + '...';
+		}
+			
+		this.$el.html('<div class="stat_title">This Page</div>' +
+					  '<div class="my_stats">I logged ' + this.model.get('my_count') + ' visits in ' + this.model.get('my_time') +
+					  ' | Everyone logged ' + this.model.get('total_count') + ' visits in ' + this.model.get('total_time') + '</div>' +
+					  '<div class="stat_title">' + window.g_url.match(/^[\w-]+:\/*\[?([\w\.:-]+)\]?(?::\d+)?/)[1] + '</div>' +
+					  '<div class="my_stats">I logged ' + this.model.get('my_dcount') + ' visits in ' + this.model.get('my_dtime') +
+					  ' | Everyone logged ' + this.model.get('total_dcount') + ' visits in ' + this.model.get('total_dtime') + '</div>');
+		return this;
+	},
+});
+
+
 LoginView = Backbone.View.extend({
     "el" : $(".content-container"),
 
@@ -195,6 +230,7 @@ LoginView = Backbone.View.extend({
         if (!user.isLoggedIn()) {
             $(".content-container").empty();
             $("body").css("width", "300px");
+            $("body").css("height", "190px");
             var template = _.template($("#login_template").html(), {
                     "baseUrl" : baseUrl,
                 });
@@ -332,9 +368,9 @@ NavView = Backbone.View.extend({
         $(this.el).html(template);
         if (!loggedIn) {
             tab = "login_tab";
+            $("#" + tab).addClass("active").click();
         }
         $("nav-tab").removeClass("active");
-        $("#" + tab).addClass("active").click();
     },
 });
 
@@ -352,6 +388,7 @@ HomeView = Backbone.View.extend({
         chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
         	window.g_url = tabs[0].url;
         	window.g_title = tabs[0].title;
+        	populateStats();
         	window.g_favIcon = tabs[0].favIconUrl;
         	populateActiveUsers();
         	window.setInterval(function() {populateActiveUsers();}, 6000);
@@ -413,6 +450,21 @@ function populateChatMessageBox() {
 	}
 }
 
+
+//get all the stats for a page and domain and populate the view
+function populateStats() {
+	var tab_url = window.g_url;
+	var title = window.g_title;
+	var info = getStats(tab_url);
+	var parsed = JSON.parse(info);
+	var values = parsed["result"];
+	var stats = new Stats(values);
+	var statview = new StatsView({model: stats});
+	var c = statview.render().el;
+    $("#stats").empty().append(c);  
+}
+
+
 //get all the active users on a page and populate the view
 function populateActiveUsers() {
 	var tab_url = window.g_url;
@@ -456,7 +508,7 @@ function populateFeed() {
 		 var feed_coll = new PageFeedCollection(feed_items);
 		 var feed_view = new PageFeedCollectionView({ collection: feed_coll });	    
 	     var c = feed_view.render().el;
-	     $("#pagefeed").empty().append(c);  
+	     $("#pagefeed").empty().append(c);
 	 }
 }
 
@@ -537,6 +589,20 @@ function getFeed(url) {
 function getActiveUsers(url) {
 	var encoded_url = encodeURIComponent(url);
 	var req_url = sprintf("%s/ext/getActiveUsers?url=%s", baseUrl, encoded_url);
+	return $.ajax({
+		type: "GET",
+		url: req_url,
+		dataType: "json",
+		async: false
+    }).responseText;
+}
+
+/*
+	Get stats from server
+*/
+function getStats(url) {
+	var encoded_url = encodeURIComponent(url);
+	var req_url = sprintf("%s/ext/getStats?url=%s", baseUrl, encoded_url);
 	return $.ajax({
 		type: "GET",
 		url: req_url,
