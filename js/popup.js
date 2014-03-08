@@ -208,11 +208,11 @@ var StatsView = Backbone.View.extend({
 		}
 			
 		this.$el.html('<div class="stat_title">This Page</div>' +
-					  '<div class="my_stats">I logged ' + this.model.get('my_count') + ' visits in ' + this.model.get('my_time') +
-					  ' | Everyone logged ' + this.model.get('total_count') + ' visits in ' + this.model.get('total_time') + '</div>' +
+					  '<div class="my_stats">I logged ' + this.model.get('my_count') + ' in ' + this.model.get('my_time') +
+					  ' | Everyone logged ' + this.model.get('total_count') + ' in ' + this.model.get('total_time') + '</div>' +
 					  '<div class="stat_title">' + window.g_url.match(/^[\w-]+:\/*\[?([\w\.:-]+)\]?(?::\d+)?/)[1] + '</div>' +
-					  '<div class="my_stats">I logged ' + this.model.get('my_dcount') + ' visits in ' + this.model.get('my_dtime') +
-					  ' | Everyone logged ' + this.model.get('total_dcount') + ' visits in ' + this.model.get('total_dtime') + '</div>');
+					  '<div class="my_stats">I logged ' + this.model.get('my_dcount') + ' in ' + this.model.get('my_dtime') +
+					  ' | Everyone logged ' + this.model.get('total_dcount') + ' in ' + this.model.get('total_dtime') + '</div>');
 		return this;
 	},
 });
