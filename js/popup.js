@@ -67,13 +67,15 @@ var PageFeedItemView = Backbone.View.extend({
 		if (messages.length > 0) {
 			var code_str = "";
 			$.each(messages, function(index, message) {
-				var hum_time = moment(message.post_time, 'YYYY-MM-SSTHH:mm:ssZ').fromNow();
+				var time = new Date(message.post_time + ' UTC').toString();
+				var hum_time = moment(time).fromNow();
 				code_str += '<div class="pagefeed_item"><span class="pagefeed_text">' + message.message + '</span><div class="right"><span class="message-name">' + 
 				username + '</span> <span class="date">' + hum_time + '</span></div></div>';
 			});
 			this.$el.html(code_str);
 		} else {
-			var hum_time = moment(this.model.get('start_time'), 'YYYY-MM-SSTHH:mm:ssZ').fromNow();
+			var time = new Date(this.model.get('start_time') + ' UTC').toString();
+			var hum_time = moment(time).fromNow();
 			this.$el.html('<div class="pagefeed_item"><div class="right"><span class="message-name">' + 
 			 username + '</span> <span class="date">was here ' + hum_time + '</span></div></div>');
 		
