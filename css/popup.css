@@ -205,6 +205,7 @@ a:focus {
 .date {
 	color: #d3d3d3;
 	font-size: .5em;
+	cursor: default;
 }
 
 .message-name {

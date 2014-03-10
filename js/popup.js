@@ -71,7 +71,7 @@ var PageFeedItemView = Backbone.View.extend({
 				var time = new Date(time_str);
 				var hum_time = moment(time).fromNow();
 				code_str += '<div class="pagefeed_item"><span class="pagefeed_text">' + message.message + '</span><div class="right"><span class="message-name">' + 
-				username + '</span> <span title="' + time + '" class="date">' + hum_time + '</span></div></div>';
+				username + '</span> <span class="date">' + hum_time + '</span></div></div>';
 			});
 			this.$el.html(code_str);
 		} else {
@@ -79,7 +79,7 @@ var PageFeedItemView = Backbone.View.extend({
 			var time = new Date(time_str);
 			var hum_time = moment(time).fromNow();
 			this.$el.html('<div class="pagefeed_item"><div class="right"><span class="message-name">' + 
-			 username + '</span> <span title="' + time + '" class="date">was here ' + hum_time + '</span></div></div>');
+			 username + '</span> <span class="date">was here ' + hum_time + '</span></div></div>');
 		
 		}
 		return this;
