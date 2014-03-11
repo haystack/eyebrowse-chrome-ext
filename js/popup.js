@@ -70,16 +70,18 @@ var PageFeedItemView = Backbone.View.extend({
 				var time_str = message.post_time.substring(0,10) + ' ' + message.post_time.substring(11,19) + ' UTC';
 				var time = new Date(time_str);
 				var hum_time = moment(time).fromNow();
-				code_str += '<div class="pagefeed_item"><span class="pagefeed_text">' + message.message + '</span><div class="right"><span class="message-name">' + 
-				username + '</span> <span class="date">' + hum_time + '</span></div></div>';
+				code_str += '<div class="pagefeed_item"><span class="pagefeed_text">' + message.message + '</span><div class="right">' + 
+				'<span class="message-name"><a target="_blank" href="' + baseUrl + '/users/' + username + '">' + username + '</a></span> ' +
+				'<span class="date">' + hum_time + '</span></div></div>';
 			});
 			this.$el.html(code_str);
 		} else {
 			var time_str = this.model.get('start_time').substring(0,10) + ' ' + this.model.get('start_time').substring(11,19) + ' UTC';
 			var time = new Date(time_str);
 			var hum_time = moment(time).fromNow();
-			this.$el.html('<div class="pagefeed_item"><div class="right"><span class="message-name">' + 
-			 username + '</span> <span class="date">was here ' + hum_time + '</span></div></div>');
+			this.$el.html('<div class="pagefeed_item"><div class="right">' +
+			'<span class="message-name"><a target="_blank" href="' + baseUrl + '/users/' + username + '">' + username + '</a></span> ' +
+			'<span class="date">was here ' + hum_time + '</span></div></div>');
 		
 		}
 		return this;
@@ -118,7 +120,7 @@ var ChatUserView = Backbone.View.extend({
 		if ((window.selected_user != null && window.selected_user != undefined) &&
 			(this.model.get('username') == window.selected_user.get('username'))) {
 			$(this.el).css('padding', '0px');
-			$(this.el).css('border', 'solid 2px');
+			$(this.el).css('border', 'solid 2px #e5b75b');
 		}
 		return this;
 	},
@@ -139,7 +141,7 @@ var ChatUserView = Backbone.View.extend({
 		
 		
 		$(event.currentTarget).css('padding', '0px');
-		$(event.currentTarget).css('border', 'solid 2px');
+		$(event.currentTarget).css('border', 'solid 2px #e5b75b');
 		
 		$("#textbox").attr('readonly', false);
 		$("#textbox").focus();
@@ -210,11 +212,13 @@ var StatsView = Backbone.View.extend({
 		if (title.length > 50) {
 			title = window.g_title.substring(0,50) + '...';
 		}
+		
+		var domain = window.g_url.match(/^[\w-]+:\/*\[?([\w\.:-]+)\]?(?::\d+)?/)[1];
 			
-		this.$el.html('<div class="stat_title">This Page</div>' +
+		this.$el.html('<div class="stat_title"><a target="_blank" href="' + window.g_url +'">This Page</a></div>' +
 					  '<div class="my_stats">I logged ' + this.model.get('my_count') + ' in ' + this.model.get('my_time') +
 					  ' | Everyone logged ' + this.model.get('total_count') + ' in ' + this.model.get('total_time') + '</div>' +
-					  '<div class="stat_title">' + window.g_url.match(/^[\w-]+:\/*\[?([\w\.:-]+)\]?(?::\d+)?/)[1] + '</div>' +
+					  '<div class="stat_title"><a target="_blank" href="http://' + domain + '">' + domain + '</a></div>' +
 					  '<div class="my_stats">I logged ' + this.model.get('my_dcount') + ' in ' + this.model.get('my_dtime') +
 					  ' | Everyone logged ' + this.model.get('total_dcount') + ' in ' + this.model.get('total_dtime') + '</div>');
 		return this;
@@ -474,20 +478,44 @@ function populateActiveUsers() {
 	var tab_url = window.g_url;
 	var text = getActiveUsers(tab_url);
 	var parsed = JSON.parse(text);
-	var users = parsed["result"];
+	
+	var users = parsed["result"]['page'];
 	var active_users = [];
 	$.each(users, function(index,value) {
 		active_users.push(value);
 	});
-	if (active_users.length == 0) {
+	
+	var dusers = parsed["result"]['domain'];
+	var active_dusers = [];
+	$.each(dusers, function(index,value) {
+		active_dusers.push(value);
+	});
+	
+	if (active_users.length == 0 && active_dusers.length == 0) {
 		$("#chatuserbox").empty().append("No one currently online");
 		window.selected_user = null;
 	}
 	else {
-		var user_coll = new ChatUserCollection(active_users);
-		var user_view = new ChatCollectionView({ collection: user_coll });
-	    var c = user_view.render().el;
-	    $("#chatuserbox").empty().append(c);  
+		var page, domain;
+		if (active_users.length != 0) {
+			var user_coll = new ChatUserCollection(active_users);
+			var user_view = new ChatCollectionView({ collection: user_coll });
+	    	var c = user_view.render().el;
+	    	page = $('<div class="chattitle">Page level</div>').append(c);
+		} else {
+			page = '';
+		}
+		
+	    if (active_dusers.length != 0) {
+		    var user_coll = new ChatUserCollection(active_dusers);
+			var user_view = new ChatCollectionView({ collection: user_coll });
+			var d = user_view.render().el;
+			domain = $('<div class="chattitle">Domain level</div>').append(d);
+		} else {
+			domain = '';
+		}
+		
+	    $("#chatuserbox").empty().append(page).append(domain);  
 	    
 	    if (window.selected_user != undefined && window.selected_user != null) {
 	    	populateChatMessageBox();

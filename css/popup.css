@@ -116,16 +116,27 @@ a:focus {
 	float: left;
 	display: block;
 	width: 150px;
+	height: 203px;
 	color: #d3d3d3;
 	font-size: 0.75em;
 	overflow-y: auto;
+	position: relative;
+	top: -30px;
+	left: 10px;
+	padding: 4px;
+	border:1px solid #e3e3e3;
+	-webkit-border-radius:4px;
+	-moz-border-radius:4px;
+	border-radius:4px;
+	-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
+	-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
 }
 
 #chatmessage {
 	float: right;
 	display: block;
 	width: 154px;
-	height: 140px;
+	height: 148px;
 	background-color:#f5f5f5;
 	overflow-y: auto;
 	padding-left: 8px;
@@ -138,6 +149,14 @@ a:focus {
 	border-radius:4px;
 	-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
 	-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
+}
+
+.chattitle {
+	color: #000000;
+}
+
+.name {
+	color: #767676;
 }
 
 #chatwrapper {
@@ -203,7 +222,7 @@ a:focus {
 }
 
 .date {
-	color: #d3d3d3;
+	color: #a9a9a9;;
 	font-size: .5em;
 	cursor: default;
 }
@@ -215,6 +234,10 @@ a:focus {
 
 .right {
 	text-align: right;
+}
+
+.pagefeed_text {
+	color: #000000;
 }
 
 .pagefeed_item {
@@ -265,10 +288,15 @@ a:focus {
 	font-size: 0.8em;
 }
 
-.stat_title {
+.stat_title a {
 	color: #336699;
 	font-weight: bold;
 	font-size: 1.2em;
+}
+
+a:hover {
+	color: #e5b75b;
+	text-decoration: none;
 }
 
 
