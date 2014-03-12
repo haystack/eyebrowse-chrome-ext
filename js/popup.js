@@ -147,6 +147,8 @@ var ChatUserView = Backbone.View.extend({
 		$("#textbox").focus();
 		
 		$('#textbox').unbind();
+		
+		$('#to_field').val(window.selected_user.get('username') + ',');
 				    
 	    $('#textbox').bind("enterKey",function(e){
 	    	var text = $("#textbox").val();
@@ -432,7 +434,10 @@ function setupMessageBox() {
 	
 	$('#submitmessage').click( function(e){
 		var text = $("#messagebox").val();
-			postMessage(text, window.g_url);
+		if (text == "Leave a Scribble") {
+			text = null;
+		}
+		postMessage(text, window.g_url);
 		});
 
 }
@@ -501,7 +506,7 @@ function populateActiveUsers() {
 			var user_coll = new ChatUserCollection(active_users);
 			var user_view = new ChatCollectionView({ collection: user_coll });
 	    	var c = user_view.render().el;
-	    	page = $('<div class="chattitle">Page level</div>').append(c);
+	    	page = $('<div class="chattitle">On this page:</div>').append(c);
 		} else {
 			page = '';
 		}
@@ -510,7 +515,7 @@ function populateActiveUsers() {
 		    var user_coll = new ChatUserCollection(active_dusers);
 			var user_view = new ChatCollectionView({ collection: user_coll });
 			var d = user_view.render().el;
-			domain = $('<div class="chattitle">Domain level</div>').append(d);
+			domain = $('<div class="chattitle">On this site:</div>').append(d);
 		} else {
 			domain = '';
 		}
@@ -653,7 +658,9 @@ function postMessage(message, url) {
 	
 	active_tab.user = user.getResourceURI();
     active_tab.src = "chrome";
-	active_tab.message = message;
+    if (message != null) {
+    	active_tab.message = message;
+    }
 	data = JSON.stringify(active_tab);
 	
 	console.log(data);

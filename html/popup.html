@@ -30,7 +30,7 @@
 
         <div class="navbar">
             <div class="navbar-inner nav-bg">
-                <a class="brand" href="<%= baseUrl %>/">
+                <a class="brand" href="<%= baseUrl %>">
                     <img class="logo" src="/img/eye.png"/>
                 </a>
                 <ul class="nav topbar">
@@ -83,11 +83,14 @@
 			<div class="row well3 offset1 span4">
 				<div id="stats"></div>
 	            <div id="pagefeed"></div>
-		        <textarea id="messagebox">Leave a Post</textarea>
-		        <button id="submitmessage">Submit Post</button>
+		        <textarea id="messagebox">Leave a Scribble</textarea>
+		        <button id="submitmessage">Submit Scribble</button>
 	        </div>
             <div class="row well3 offset1 span4">
             	<div id="chatwrapper">
+            		<div id="to_area">
+            		To: <input type="text" id="to_field">
+            		</div>
 	                <div id="chatuserbox"></div>
 	                <div id="chattingarea">
 	                <div id="chatmessage"></div>

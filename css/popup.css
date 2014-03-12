@@ -115,14 +115,14 @@ a:focus {
 #chatuserbox {
 	float: left;
 	display: block;
-	width: 150px;
-	height: 203px;
+	width: 160px;
+	height: 253px;
 	color: #d3d3d3;
 	font-size: 0.75em;
 	overflow-y: auto;
 	position: relative;
 	top: -30px;
-	left: 10px;
+	left: 0px;
 	padding: 4px;
 	border:1px solid #e3e3e3;
 	-webkit-border-radius:4px;
@@ -135,8 +135,10 @@ a:focus {
 #chatmessage {
 	float: right;
 	display: block;
-	width: 154px;
-	height: 148px;
+	position: relative;
+	top: -2px;
+	width: 174px;
+	height: 178px;
 	background-color:#f5f5f5;
 	overflow-y: auto;
 	padding-left: 8px;
@@ -166,9 +168,32 @@ a:focus {
 #chattingarea {
 	float: right;
 	width: 154px;
+	height: 200px;
+}
+
+#to_area {
+	position: relative;
+	top: -10px;
+	float: right;
+	padding: 0px;
+    margin: 0px;
+    width: 193px; 
+}
+
+#to_field {
+	height:20px;
+	width: 162px;
+    font-size: 0.75em;
+    border: 1px solid #d3d3d3s; 
+    background-color: #ffffff;
+    padding: 0px;
+    padding-left: 2px;
+    margin: 0px;
 }
 
 #textbox {
+	position: relative;
+	top: -2px;
 	float: right;
     border: 1px solid #d3d3d3s; 
     background-color: #ffffff;
@@ -176,7 +201,7 @@ a:focus {
     outline:0; 
     font-size: 0.75em;
     height:20px; 
-    width: 173px; 
+    width: 193px; 
  }
  
 #messagebox {
@@ -195,7 +220,9 @@ a:focus {
 #submitmessage {
 	display: block;
 	float: right;
-	font-size: .9em;
+	font-size: .8em;
+	padding: 1px;
+	margin: 1px;
 	width: 100px;
 	height: 23px;
 }
