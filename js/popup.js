@@ -398,10 +398,12 @@ HomeView = Backbone.View.extend({
         chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
         	window.g_url = tabs[0].url;
         	window.g_title = tabs[0].title;
+        	populateSubNav();
         	populateStats();
         	window.g_favIcon = tabs[0].favIconUrl;
         	populateActiveUsers();
-        	window.setInterval(function() {populateActiveUsers();}, 6000);
+        	window.setInterval(function() {populateActiveUsers();}, 12000);
+        	window.setInterval(function() {populateFeed();}, 12000);
         	populateFeed();
         	setupMessageBox();
 	        	
@@ -440,6 +442,50 @@ function setupMessageBox() {
 		postMessage(text, window.g_url);
 		});
 
+}
+
+function populateSubNav() {
+	$("#userpic").empty().append('<a target="_blank" href="' + baseUrl + '/users/'  + user.get('username') + '"><img class="img-rounded" src="' + baseUrl + '/ext/profilepic"></a>');
+	
+	$("#username").append(user.get('username'));
+	
+	$("#navSubLinks").append(' <a href="" id="mark_visit">Mark a visit to this page</a> | ');
+
+	$("#navSubLinks").append('<a href="" id="whitelist"></a>');
+	if (user.inWhitelist(window.g_url)) {
+		$("#whitelist").text("Domain is whitelisted");
+		$("#whitelist").css('cursor','default');
+		$("#whitelist").css('color','#000000');
+	} else {
+		$("#whitelist").text("Whitelist this domain");
+	}
+	
+	$("#mark_visit").click(function(e) {
+		e.preventDefault();
+		postMessage(null, window.g_url);
+	});
+	
+	$("#whitelist").click(function(e) {
+		e.preventDefault();
+		if ($("#whitelist").text() == "Whitelist this domain") {
+			var whitelist = user.getWhitelist();
+			var uri = new URI(window.g_url);
+        	var hostname = uri.hostname();
+        	
+        	if (!user.inWhitelist(hostname)) {
+				m = whitelist.create({
+		        	"url" : hostname,
+		        	"user" : user.getResourceURI(),
+		    	});
+		    }
+
+			postMessage(null, window.g_url);
+			$("#whitelist").text("Domain is whitelisted");
+			$("#whitelist").css('cursor','default');
+			$("#whitelist").css('color','#000000');
+		}
+	});
+	
 }
 
 
@@ -539,7 +585,7 @@ function populateFeed() {
 		feed_items.push(value);
 	});
 	 if (feed_items.length == 0) {
-		 $("#pagefeed").empty().append("No activity on this feed.");
+		 $("#pagefeed").empty().append("No activity on this wall.");
 	 }
 	 else {
 		 var feed_coll = new PageFeedCollection(feed_items);
@@ -551,7 +597,9 @@ function populateFeed() {
 
 function clickHandle(e) {
     e.preventDefault();
-    var url = $(e.target).context.href;
+    console.log(e);
+    var a = $(e.target).closest('a');
+    var url = $(e.target).closest('a')[0].href;
     if (url.indexOf("logout") !== -1) {
         loginView.logout();
     } else if (url.indexOf("http") !== -1){
@@ -678,10 +726,9 @@ function postMessage(message, url) {
             },
 		success: function(data) {
 			populateFeed();
-			$("#messagebox").val("");
+			$("#messagebox").val("Leave a Scribble");
 		}
     });
-
 }
 
 /* Post chat message to server 

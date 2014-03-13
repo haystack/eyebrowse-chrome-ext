@@ -79,14 +79,20 @@
 
         <!-- Welcome template -->
         <script type="text/template" id="splash_template">
-
+			<div id="navlinks">
+				<div id="userpic"></div>
+				<div id="rightnav">
+					<div id="username"></div>
+					<div id="navSubLinks"></div>
+				</div>
+			</div>
 			<div class="row well3 offset1 span4">
 				<div id="stats"></div>
 	            <div id="pagefeed"></div>
 		        <textarea id="messagebox">Leave a Scribble</textarea>
 		        <button id="submitmessage">Submit Scribble</button>
 	        </div>
-            <div class="row well3 offset1 span4">
+            <div class="row well3 offset1 span4" id="lowerarea">
             	<div id="chatwrapper">
             		<div id="to_area">
             		To: <input type="text" id="to_field">
@@ -112,6 +118,7 @@
          <script type="text/javascript" src="../libs/bootstrap-button.js"></script>
         <script type="text/javascript" src="../libs/sprintf-0.7-beta1.js"></script>
         <script type="text/javascript" src="../libs/moment.min.js"></script>
+        <script type="text/javascript" src="../libs/URL.js"></script>
         <script type="text/javascript" src="../js/popup.js"></script>
     </body>
 </html>

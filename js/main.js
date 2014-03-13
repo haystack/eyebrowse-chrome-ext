@@ -260,7 +260,9 @@ var User = Backbone.Model.extend({
         var uri = new URI(url)
         var hostname = uri.hostname();
         var protocol = uri.protocol();
-        return (set.where({"url" : hostname}).length || set.where({"url" : protocol}).length || set.where(url).length)
+        console.log(hostname);
+        console.log(protocol);
+        return (set.where({"url" : hostname}).length || set.where({"url" : protocol + '://' + hostname}).length || set.where(url).length)
     },
 
     //save the current state to local storage
