@@ -697,7 +697,7 @@ function getStats(url) {
 }
 
 
-/* Post chat message to server 
+/* Post message to server 
 */
 
 function postMessage(message, url) {
