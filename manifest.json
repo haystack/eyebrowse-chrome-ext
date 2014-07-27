@@ -25,6 +25,7 @@
     "description": "Eyebrowse by MIT CSAIL", 
     "icons": {
         "128": "img/eye-128.png", 
+        "16": "img/eye-16.png", 
         "48": "img/eye-48.png"
     }, 
     "manifest_version": 2, 
@@ -36,5 +37,5 @@
         "cookies", 
         "tabs"
     ], 
-    "version": "0.0.21"
+    "version": "0.0.23"
 }

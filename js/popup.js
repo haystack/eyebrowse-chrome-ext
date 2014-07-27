@@ -15,8 +15,7 @@ var ChatUserCollection = Backbone.Collection.extend({
 
 var ChatMessage = Backbone.Model.extend({
     defaults: {
-        from_user: null,
-        to_user: null,
+        author: null,
         message: '',
         url: null,
         date: null,
@@ -63,6 +62,7 @@ var PageFeedItemView = Backbone.View.extend({
 	render: function(){
 		var messages = this.model.get('message');
 		var username = this.model.get('username');
+		var pic_url = this.model.get('pic_url');
 		
 		if (messages.length > 0) {
 			var code_str = "";
@@ -70,19 +70,23 @@ var PageFeedItemView = Backbone.View.extend({
 				var time_str = message.post_time.substring(0,10) + ' ' + message.post_time.substring(11,19) + ' UTC';
 				var time = new Date(time_str);
 				var hum_time = moment(time).fromNow();
-				code_str += '<div class="pagefeed_item"><span class="pagefeed_text">' + message.message + '</span><div class="right">' + 
+				code_str += '<div class="pagefeed_item"><span class="pagefeed_text"> ' +
+				'<a target="_blank" href="' + baseUrl + '/users/' + username + '">' + 
+				 '<img align="left" src="' + pic_url + 
+				 '" title="' + username + 
+				 '" class="nav-prof-img2 img-rounded"></a>' + 
+				message.message + '<div class="right">' + 
 				'<span class="message-name"><a target="_blank" href="' + baseUrl + '/users/' + username + '">' + username + '</a></span> ' +
-				'<span class="date">' + hum_time + '</span></div></div>';
+				'<span class="date">' + hum_time + '</span> </div></span></div>';
 			});
 			this.$el.html(code_str);
 		} else {
 			var time_str = this.model.get('start_time').substring(0,10) + ' ' + this.model.get('start_time').substring(11,19) + ' UTC';
 			var time = new Date(time_str);
 			var hum_time = moment(time).fromNow();
-			this.$el.html('<div class="pagefeed_item"><div class="right">' +
+			this.$el.html('<div class="pagefeed_item2"><div class="right">' +
 			'<span class="message-name"><a target="_blank" href="' + baseUrl + '/users/' + username + '">' + username + '</a></span> ' +
 			'<span class="date">was here ' + hum_time + '</span></div></div>');
-		
 		}
 		return this;
 	},
@@ -105,15 +109,12 @@ var ChatUserView = Backbone.View.extend({
 	className: 'chatuser_pic',
 	render: function(){
 		var code = '<div id="' + this.model.get('username') +'">';
-		if (this.model.get('unread_messages') == '0') {
-			code = code + '<span class="unread"> </span>';
-		} else {
-			code = code + '<span class="unread">' + this.model.get('unread_messages') + '</span>';
-		}
-		code = code + '<img src="' + this.model.get('pic_url') + 
-			 '" title="' + this.model.get('username') + 
+		var username = this.model.get('username');
+		code = code + '<a target="_blank" href="' + baseUrl + '/users/' + username + '">' +
+			 '<img src="' + this.model.get('pic_url') + 
+			 '" title="' + username + 
 			 '" class="nav-prof-img img-rounded"> <span class="name">' + 
-			 this.model.get('username') + '</span></div>';
+			 username + '</span></a></div>';
 		
 		this.$el.html(code);
 		
@@ -125,45 +126,11 @@ var ChatUserView = Backbone.View.extend({
 		return this;
 	},
 	events: {
-		'click': "getChatMessages",
 		'hover': "hoverUser"
 	},
 	hoverUser: function(event) {
 		$(".chatuser_pic").css('cursor', 'pointer');
 	},
-	getChatMessages: function(event) {
-		window.selected_user = this.model;
-		
-		clearInterval(window.message_interval);
-		
-		$(".chatuser_pic").css('border', '0px');
-		$(".chatuser_pic").css('padding', '2px');
-		
-		
-		$(event.currentTarget).css('padding', '0px');
-		$(event.currentTarget).css('border', 'solid 2px #e5b75b');
-		
-		$("#textbox").attr('readonly', false);
-		$("#textbox").focus();
-		
-		$('#textbox').unbind();
-		
-		$('#to_field').val(window.selected_user.get('username') + ',');
-				    
-	    $('#textbox').bind("enterKey",function(e){
-	    	var text = $("#textbox").val();
-			postChatMessage(window.selected_user.get('resourceURI'), text, window.g_url);
-		});
-		$('#textbox').keyup(function(e){
-			if(e.keyCode == 13){
-		  		$(this).trigger("enterKey");
-			}
-		});
-		populateChatMessageBox();
-		
-		$('#chatmessage').scrollTop($('#chatmessage')[0].scrollHeight);
-		
-	}
 });
 
 var ChatCollectionView = Backbone.View.extend({
@@ -183,10 +150,19 @@ var ChatMessageView = Backbone.View.extend({
 	tagName: 'div',
 	className: 'chatmessageline',
 	render: function(){
-		if (this.model.get('from_user') == user.get('username')) {
-			this.$el.html('<div class="my_message"><div class="message-text">' + this.model.get('message') + '</div><div class="date">' + this.model.get('date') + '</div></div>');
+		var date = this.model.get('date');
+		var time_str = date.substring(0,10) + ' ' + date.substring(11,19) + ' UTC';
+		var time = new Date(time_str);
+		var hum_time = moment(time).fromNow();
+		if (this.model.get('author') == user.get('username')) {
+			this.$el.html('<div class="my_message"><div class="message-text">' + this.model.get('message') + '</div>' +
+			'<div class="date">' + hum_time + '</div></div>');
 		} else {
-			this.$el.html('<div class="their_message"><div class="message-text">' + this.model.get('message') + '</div><div class="date">' + this.model.get('date') + '</div></div>');
+			this.$el.html('<div class="their_message"><div class="message-text">' + 
+			this.model.get('message') + '</div>' +
+			'<div class="date">' +
+			'<a target="_blank" href="' + baseUrl + '/users/' + this.model.get('author') + '">' + this.model.get('author') + '</a> ' +
+			hum_time + '</div></div>');
 		}
 		
 		return this;
@@ -403,9 +379,12 @@ HomeView = Backbone.View.extend({
         	window.g_favIcon = tabs[0].favIconUrl;
         	populateActiveUsers();
         	window.setInterval(function() {populateActiveUsers();}, 12000);
-        	window.setInterval(function() {populateFeed();}, 12000);
-        	populateFeed();
+        	populateFeed(0);
+        	window.setInterval(function() {populateFeed(1);}, 12000);
+        	
         	setupMessageBox();
+        	populateChatMessageBox(0);
+        	window.setInterval(function() {populateChatMessageBox(1);}, 12000);	
 	        	
     	});	
     	
@@ -489,9 +468,9 @@ function populateSubNav() {
 }
 
 
-//populate chat message box once you've clicked on a chatuser
-function populateChatMessageBox() {
-	var message_text = getMessages(window.g_url, window.selected_user.get('username'));
+//populate chat message box
+function populateChatMessageBox(first) {
+	var message_text = getMessages(window.g_url);
 	var parsed = JSON.parse(message_text)["objects"];
 	var messages = [];
 	$.each(parsed, function(index,value) {
@@ -505,8 +484,24 @@ function populateChatMessageBox() {
 	    $("#chatmessage").empty().append(c);
 	}
 	else {
-		$("#chatmessage").empty();
+		$("#chatmessage").empty().append('No Chat Messages on this page.');
 	}
+	
+	
+	if ( first == 0 ) {
+		$('#chatmessage').scrollTop($('#chatmessage')[0].scrollHeight);
+	}
+
+	
+	$('#textbox').bind("enterKey",function(e){
+    	var text = $("#textbox").val();
+		postChatMessage(text, window.g_url);
+	});
+	$('#textbox').keyup(function(e){
+		if(e.keyCode == 13){
+	  		$(this).trigger("enterKey");
+		}
+	});
 }
 
 
@@ -567,15 +562,11 @@ function populateActiveUsers() {
 		}
 		
 	    $("#chatuserbox").empty().append(page).append(domain);  
-	    
-	    if (window.selected_user != undefined && window.selected_user != null) {
-	    	populateChatMessageBox();
-	    }
 	}
 }
 
 //populate feed for a page
-function populateFeed() {
+function populateFeed(first) {
 	var tab_url = window.g_url;
 	var text = getFeed(tab_url);
 	var parsed = JSON.parse(text);
@@ -592,6 +583,9 @@ function populateFeed() {
 		 var feed_view = new PageFeedCollectionView({ collection: feed_coll });	    
 	     var c = feed_view.render().el;
 	     $("#pagefeed").empty().append(c);
+	 }
+	 if (first == 0) {
+	 	$("#pagefeed").scrollTop(0);
 	 }
 }
 
@@ -725,8 +719,9 @@ function postMessage(message, url) {
         	console.log(errorThrown);
             },
 		success: function(data) {
-			populateFeed();
+			populateFeed(0);
 			$("#messagebox").val("Leave a Scribble");
+			$("#messagebox").blur();
 		}
     });
 }
@@ -734,17 +729,15 @@ function postMessage(message, url) {
 /* Post chat message to server 
 */
 
-function postChatMessage(userURI, message, url) {
+function postChatMessage(message, url) {
 	var g_user = user.get("resourceURI");
 	var req_url = sprintf("%s/api/v1/chatmessages", baseUrl);
 	var date = moment();
 	var data = {
 		url: url,
-		from_user: g_user,
-		to_user: userURI,
+		author: g_user,
 		message: message,
 		date: date,
-		read: 0,
 		};
 	data = JSON.stringify(data);
 	console.log(data);
@@ -792,13 +785,11 @@ function getActiveTab() {
 }
 
 /*
-	Get messages between two users given the page they are both on
+	Get Chat messages on a page
 */
-function getMessages(url, username) {
-	var g_user = user.get("username");
+function getMessages(url) {
 	var encoded_url = encodeURIComponent(url);
-	
-	var req_url = sprintf("%s/api/v1/chatmessages?format=json&url=%s&username1=%s&username2=%s", baseUrl, encoded_url, g_user, username);
+	var req_url = sprintf("%s/api/v1/chatmessages?format=json&url=%s", baseUrl, encoded_url);
 	return $.ajax({
 		type: "GET",
 		url: req_url,
