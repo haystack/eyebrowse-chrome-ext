@@ -428,9 +428,19 @@ function populateSubNav() {
 	
 	$("#username").append(user.get('username'));
 	
+	$("#navSubLinks").append(' <a href="" id="incognito"></a> | ');
+	
 	$("#navSubLinks").append(' <a href="" id="mark_visit">Mark a visit to this page</a> | ');
 
 	$("#navSubLinks").append('<a href="" id="whitelist"></a>');
+	
+	if (user.incognito == true) {
+		$("#incognito").text('Incognito: On');
+	} else {
+		$("#incognito").text('Incognito: Off');
+	}
+	
+	
 	if (user.inWhitelist(window.g_url)) {
 		$("#whitelist").text("Domain is whitelisted");
 		$("#whitelist").css('cursor','default');
@@ -442,6 +452,21 @@ function populateSubNav() {
 	$("#mark_visit").click(function(e) {
 		e.preventDefault();
 		postMessage(null, window.g_url);
+	});
+	
+	$("#incognito").click(function(e) {
+		e.preventDefault();
+		if (user.getIncognito() == false) {
+			user.setIncognito(true);
+			$("#incognito").text('Incognito: On');
+			chrome.browserAction.setIcon({path: '/img/eyes-closed.png'});
+			updateBadge('');
+			emptyData();
+		} else {
+			user.setIncognito(false);
+			$("#incognito").text('Incognito: Off');
+			chrome.browserAction.setIcon({path: '/img/eye-48.png'});
+		}
 	});
 	
 	$("#whitelist").click(function(e) {

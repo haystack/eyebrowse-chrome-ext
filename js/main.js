@@ -69,6 +69,7 @@ var User = Backbone.Model.extend({
         "blacklist" : new FilterList("blacklist"),
         "nags" : {"visits":11,"lastNag":(new Date()).getTime()-24*360000},
         "username" : "",
+        "incognito" : false,
         "resourceURI" : "/api/v1/user/",
         "ignoreLoginPrompt" : true,
     },
@@ -77,6 +78,17 @@ var User = Backbone.Model.extend({
         _.bindAll(this); //allow access to 'this' in callbacks with "this" meaning the object not the context of the callback
 
     },
+    
+    getIncognito : function() {
+        return this.get("incognito")
+    },
+
+    setIncognito : function(val) {
+        this.set({ 
+            "incognito": val,
+        });
+    },
+
 
     getWhitelist : function() {
         return this.get("whitelist")
@@ -295,30 +307,32 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
     
-    if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(uri.hostname())) {
-
-        timeCheck.allow = false; // we need to wait for prompt callback
-        chrome.tabs.sendMessage(tabId, {
-            "action": "prompt",
-            "type" : "trackPrompt", 
-            "baseUrl": baseUrl,
-        });
-        tmpItem = {
-            "tabId" : tabId,
-            "url" : url,
-            "favIconUrl" : favIconUrl,
-            "title" : title,
-            "event_type" : event_type,
-        }
-
-    } else if (user.inBlackList(url)) {
-        return
-    }
-
-    if (user.inWhitelist(url) && timeCheck.allow){
-        trackBadge();
-        finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
-    }
+    if (user.getIncognito() == false) {
+	    if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(uri.hostname())) {
+	
+	        timeCheck.allow = false; // we need to wait for prompt callback
+	        chrome.tabs.sendMessage(tabId, {
+	            "action": "prompt",
+	            "type" : "trackPrompt", 
+	            "baseUrl": baseUrl,
+	        });
+	        tmpItem = {
+	            "tabId" : tabId,
+	            "url" : url,
+	            "favIconUrl" : favIconUrl,
+	            "title" : title,
+	            "event_type" : event_type,
+	        };
+	
+	    } else if (user.inBlackList(url)) {
+	        return;
+	    }
+	
+	    if (user.inWhitelist(url) && timeCheck.allow){
+	        trackBadge();
+	        finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
+	    }
+	}
 }
 
 
@@ -348,6 +362,7 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
 */
 function closeItem(tabId, url, event_type, time) {
     if (activeItem === undefined) return;
+    if (user.getIncognito() == true) return;
     var time = time || new Date(); // time is undefined for destroy event
     if (activeItem.tabId === tabId && !user.inBlackList(url)) {
         //write to local storage
@@ -362,10 +377,11 @@ function closeItem(tabId, url, event_type, time) {
         // send data for server and sync whitelist/blacklist
 
         if (local_history.length) {
-            dumpData();
+    		dumpData();
             user.getWhitelist()._fetch();
-            user.getBlacklist()._fetch();   
+            user.getBlacklist()._fetch(); 
         }
+             
     }
 }
 
@@ -482,6 +498,16 @@ function dumpData() {
         });
     });
 }
+
+/*
+    Empty data
+*/
+function emptyData() {
+    $.each(local_history, function(index, item){
+        local_history.splice(index, 1); //remove item from history
+    });
+}
+
 
 /*
     converts the data to JSON serialized
