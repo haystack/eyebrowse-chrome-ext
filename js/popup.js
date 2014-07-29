@@ -434,7 +434,7 @@ function populateSubNav() {
 
 	$("#navSubLinks").append('<a href="" id="whitelist"></a>');
 	
-	if (user.incognito == true) {
+	if (user.getIncognito() == true) {
 		$("#incognito").text('Incognito: On');
 	} else {
 		$("#incognito").text('Incognito: Off');

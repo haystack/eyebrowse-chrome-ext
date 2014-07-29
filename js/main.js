@@ -306,7 +306,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     var timeCheck = checkTimeDelta();
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
-    
+
     if (user.getIncognito() == false) {
 	    if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(uri.hostname())) {
 	
