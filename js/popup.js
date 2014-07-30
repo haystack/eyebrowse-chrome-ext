@@ -193,12 +193,13 @@ var StatsView = Backbone.View.extend({
 		
 		var domain = window.g_url.match(/^[\w-]+:\/*\[?([\w\.:-]+)\]?(?::\d+)?/)[1];
 			
-		this.$el.html('<div class="stat_title"><a target="_blank" href="' + window.g_url +'">This Page</a></div>' +
-					  '<div class="my_stats">I logged ' + this.model.get('my_count') + ' in ' + this.model.get('my_time') +
-					  ' | Everyone logged ' + this.model.get('total_count') + ' in ' + this.model.get('total_time') + '</div>' +
-					  '<div class="stat_title"><a target="_blank" href="http://' + domain + '">' + domain + '</a></div>' +
-					  '<div class="my_stats">I logged ' + this.model.get('my_dcount') + ' in ' + this.model.get('my_dtime') +
-					  ' | Everyone logged ' + this.model.get('total_dcount') + ' in ' + this.model.get('total_dtime') + '</div>');
+		this.$el.html('<table class="stat_table"><tr><td><div class="stat_title"><a target="_blank" href="' + window.g_url +'">This Page</a></div>' +
+					  '<div class="my_stats">Me: ' + this.model.get('my_count') + ' in ' + this.model.get('my_time') +
+					  '<BR />Everyone: ' + this.model.get('total_count') + ' in ' + this.model.get('total_time') + '</div>' +
+					  '</td><td><div class="stat_title"><a target="_blank" href="http://' + domain + '">' + domain + '</a></div>' +
+					  '<div class="my_stats">Me: ' + this.model.get('my_dcount') + ' in ' + this.model.get('my_dtime') +
+					  '<BR />Everyone: ' + this.model.get('total_dcount') + ' in ' + this.model.get('total_dtime') + '</div>' +
+					  '</tr></table>');
 		return this;
 	},
 });
@@ -415,7 +416,7 @@ function setupMessageBox() {
 	
 	$('#submitmessage').click( function(e){
 		var text = $("#messagebox").val();
-		if (text == "Leave a Scribble") {
+		if (text == "Publish a Bulletin to this page and to your Eyebrowse feed simultaneously") {
 			text = null;
 		}
 		postMessage(text, window.g_url);
@@ -745,7 +746,7 @@ function postMessage(message, url) {
             },
 		success: function(data) {
 			populateFeed(0);
-			$("#messagebox").val("Leave a Scribble");
+			$("#messagebox").val("Publish a Bulletin to this page and to your Eyebrowse feed simultaneously");
 			$("#messagebox").blur();
 		}
     });

@@ -12,6 +12,15 @@ body {
     line-height: 1.125em;
 }
 
+.stat_table {
+	width: 100%;
+}
+
+.stat_table td {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
 #login_container {
 	margin-bottom: 0px;
 }
@@ -123,13 +132,13 @@ a:focus {
 #chatuserbox {
 	float: left;
 	display: block;
-	width: 160px;
-	height: 223px;
+	width: 130px;
+	height: 216px;
 	color: #d3d3d3;
 	font-size: 0.75em;
 	overflow-y: auto;
 	position: relative;
-	top: -30px;
+	top: 0px;
 	left: 0px;
 	padding: 4px;
 	border:1px solid #e3e3e3;
@@ -140,12 +149,14 @@ a:focus {
 	-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
 }
 
+
+
 #chatmessage {
 	float: right;
 	display: block;
 	position: relative;
-	top: -2px;
-	width: 174px;
+	top: 0px;
+	width: 204px;
 	height: 170px;
 	background-color:#f5f5f5;
 	overflow-y: auto;
@@ -176,23 +187,15 @@ a:focus {
 }
 
 #lowerarea {
+	position: relative;
+	top: -20px;
 	height: 225px;
 }
 
 #chattingarea {
 	float: right;
-	width: 154px;
+	width: 224px;
 	height: 160px;
-}
-
-#to_area {
-	position: relative;
-	top: -10px;
-	float: right;
-	padding: 0px;
-    margin: 0px;
-    width: 193px; 
-    font-size: .9em;
 }
 
 #navlinks {
@@ -242,7 +245,7 @@ a:focus {
     outline:0; 
     font-size: 0.75em;
     height:20px; 
-    width: 194px; 
+    width: 224px; 
  }
  
 #messagebox {
@@ -254,7 +257,7 @@ a:focus {
     font-size: 0.8em;
     line-height: 15px;
     height:40px; 
-    width: 378px; 
+    width: 308px; 
     resize: none;
  }
 
@@ -264,7 +267,8 @@ a:focus {
 	font-size: .8em;
 	padding: 1px;
 	margin: 1px;
-	width: 100px;
+	margin-top: 10px;
+	width: 60px;
 	height: 23px;
 }
  
@@ -283,17 +287,22 @@ a:focus {
 .their_message {
 	float: left;
 	width: 100%;
+	padding-top: 2px;
+	padding-bottom: 2px;
 }
 
 .my_message {
 	float: right;
 	text-align: right;
 	width: 100%;
+	padding-top: 2px;
+	padding-bottom: 2px;
 }
 
 .date {
 	color: #a9a9a9;;
-	font-size: .5em;
+	font-size: .6em;
+	line-height: 1.2em;
 	cursor: default;
 }
 
@@ -331,8 +340,9 @@ a:focus {
 }
 
 .message-text {
-	color: #A9A9A9;
-	font-size: .8em;
+	color: #000000;
+	font-size: .9em;
+	line-height: 1.4em;
 }
 
 .unread {
@@ -344,12 +354,12 @@ a:focus {
 
 
 #pagefeed {
-	width: 378px;
+	width: 368px;
 	display: block;
 	height: 115px;
 	overflow-y: auto;
 	font-size: 0.8em;
-	padding: 5px 0px 5px 0px;
+	padding: 5px 5px 5px 5px;
 	background-color:#f5f5f5;
 	border:1px solid #e3e3e3;
 	-webkit-border-radius:4px;
@@ -362,9 +372,17 @@ a:focus {
 #stats {
 	width: 350px;
 	display: block;
-	height: 80px;
+	height: 45px;
 	font-size: 0.8em;
 	margin-bottom:0px;
+	line-height: 1.1em;
+}
+
+#btitle {
+	padding-top: 4px;
+	padding-bottom: 0px;
+	font-size: .8em;
+	font-weight: bold;
 }
 
 .my_stats {
@@ -378,7 +396,7 @@ a:focus {
 .stat_title a {
 	color: #336699;
 	font-weight: bold;
-	font-size: 1.2em;
+	font-size: 1em;
 }
 
 a:hover {
