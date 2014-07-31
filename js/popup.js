@@ -416,7 +416,7 @@ function setupMessageBox() {
 	
 	$('#submitmessage').click( function(e){
 		var text = $("#messagebox").val();
-		if (text == "Publish a Bulletin to this page and to your Eyebrowse feed simultaneously") {
+		if (text == "Post a Bulletin to this page and to your Eyebrowse feed simultaneously") {
 			text = null;
 		}
 		postMessage(text, window.g_url);
@@ -746,7 +746,7 @@ function postMessage(message, url) {
             },
 		success: function(data) {
 			populateFeed(0);
-			$("#messagebox").val("Publish a Bulletin to this page and to your Eyebrowse feed simultaneously");
+			$("#messagebox").val("Post a Bulletin to this page and to your Eyebrowse feed simultaneously");
 			$("#messagebox").blur();
 		}
     });
