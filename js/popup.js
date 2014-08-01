@@ -436,9 +436,9 @@ function populateSubNav() {
 	$("#navSubLinks").append('<a href="" id="whitelist"></a>');
 	
 	if (user.getIncognito() == true) {
-		$("#incognito").text('Incognito: On');
+		$("#incognito").html('Incognito: <span class="red">On</span>');
 	} else {
-		$("#incognito").text('Incognito: Off');
+		$("#incognito").html('Incognito: <span class="green">Off</span>');
 	}
 	
 	
@@ -459,13 +459,15 @@ function populateSubNav() {
 		e.preventDefault();
 		if (user.getIncognito() == false) {
 			user.setIncognito(true);
-			$("#incognito").text('Incognito: On');
+			$("#incognito").html('Incognito: <span class="red">On</span>');
+			$('.logo').attr("src",'/img/eyes-closed.png');
 			chrome.browserAction.setIcon({path: '/img/eyes-closed.png'});
 			updateBadge('');
 			emptyData();
 		} else {
 			user.setIncognito(false);
-			$("#incognito").text('Incognito: Off');
+			$("#incognito").html('Incognito: <span class="off">Off</span>');
+			$('.logo').attr("src",'/img/eye.png');
 			chrome.browserAction.setIcon({path: '/img/eye-48.png'});
 		}
 	});

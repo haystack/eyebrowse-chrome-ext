@@ -17,8 +17,18 @@ body {
 }
 
 .stat_table td {
-	padding-left: 10px;
-	padding-right: 10px;
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
+.green {
+	color: green;
+	font-weight: bold;
+}
+
+.red {
+	color: red;
+	font-weight: bold;
 }
 
 #login_container {
