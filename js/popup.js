@@ -518,18 +518,17 @@ function populateChatMessageBox(first) {
 	
 	if ( first == 0 ) {
 		$('#chatmessage').scrollTop($('#chatmessage')[0].scrollHeight);
-	}
 
-	
-	$('#textbox').bind("enterKey",function(e){
-    	var text = $("#textbox").val();
-		postChatMessage(text, window.g_url);
-	});
-	$('#textbox').keyup(function(e){
-		if(e.keyCode == 13){
-	  		$(this).trigger("enterKey");
-		}
-	});
+		$('#textbox').bind("enterKey",function(e){
+	    	var text = $("#textbox").val();
+			postChatMessage(text, window.g_url);
+		});
+		$('#textbox').keyup(function(e){
+			if(e.keyCode == 13){
+		  		$(this).trigger("enterKey");
+			}
+		});
+	}
 }
 
 
@@ -782,7 +781,8 @@ function postChatMessage(message, url) {
         	console.log(errorThrown);
             },
 		success: function(data) {
-			populateChatMessageBox();
+			populateChatMessageBox(1);
+			$('#chatmessage').scrollTop($('#chatmessage')[0].scrollHeight);
 			$("#textbox").val("");
 		}
     });
