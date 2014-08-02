@@ -431,14 +431,14 @@ function populateSubNav() {
 	
 	$("#navSubLinks").append(' <a href="" id="incognito"></a> | ');
 	
-	$("#navSubLinks").append(' <a href="" id="mark_visit">Mark a visit to this page</a> | ');
+	$("#navSubLinks").append(' <a href="" id="mark_visit">Mark visit to this page</a> | ');
 
 	$("#navSubLinks").append('<a href="" id="whitelist"></a>');
 	
 	if (user.getIncognito() == true) {
-		$("#incognito").html('Incognito: <span class="red">On</span>');
+		$("#incognito").html('<span class="red">Eyebrowse Off</span>');
 	} else {
-		$("#incognito").html('Incognito: <span class="green">Off</span>');
+		$("#incognito").html('<span class="green">Eyebrowse On</span>');
 	}
 	
 	
@@ -459,14 +459,14 @@ function populateSubNav() {
 		e.preventDefault();
 		if (user.getIncognito() == false) {
 			user.setIncognito(true);
-			$("#incognito").html('Incognito: <span class="red">On</span>');
+			$("#incognito").html('<span class="red">Eyebrowse Off</span>');
 			$('.logo').attr("src",'/img/eyes-closed.png');
 			chrome.browserAction.setIcon({path: '/img/eyes-closed.png'});
 			updateBadge('');
 			emptyData();
 		} else {
 			user.setIncognito(false);
-			$("#incognito").html('Incognito: <span class="off">Off</span>');
+			$("#incognito").html('<span class="off">Eyebrowse On</span>');
 			$('.logo').attr("src",'/img/eye.png');
 			chrome.browserAction.setIcon({path: '/img/eye-48.png'});
 		}
