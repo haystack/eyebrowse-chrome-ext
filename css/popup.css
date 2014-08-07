@@ -21,6 +21,10 @@ body {
 	padding-right: 6px;
 }
 
+#navSubLinks {
+	font-size: .9em;
+}
+
 .green {
 	color: green;
 	font-weight: bold;
@@ -148,7 +152,7 @@ a:focus {
 	font-size: 0.75em;
 	overflow-y: auto;
 	position: relative;
-	top: 0px;
+	top: 10px;
 	left: 0px;
 	padding: 4px;
 	border:1px solid #e3e3e3;
@@ -165,7 +169,7 @@ a:focus {
 	float: right;
 	display: block;
 	position: relative;
-	top: 0px;
+	top: 10px;
 	width: 204px;
 	height: 170px;
 	background-color:#f5f5f5;
@@ -219,7 +223,7 @@ a:focus {
 }
 
 #navlinks a {
-	font-size: .8em;
+	font-size: .9em;
 	color: #336699;
 }
 
@@ -247,7 +251,7 @@ a:focus {
 
 #textbox {
 	position: relative;
-	top: -2px;
+	top: 10px;
 	float: right;
     border: 1px solid #d3d3d3s; 
     background-color: #ffffff;
@@ -393,6 +397,16 @@ a:focus {
 	padding-bottom: 0px;
 	font-size: .8em;
 	font-weight: bold;
+	position: relative;
+}
+
+#btitle2 {
+	padding-top: 4px;
+	padding-bottom: 0px;
+	font-size: .8em;
+	font-weight: bold;
+	position: relative;
+	top: 10px;
 }
 
 .my_stats {

@@ -453,6 +453,7 @@ function populateSubNav() {
 	$("#mark_visit").click(function(e) {
 		e.preventDefault();
 		postMessage(null, window.g_url);
+		$("#mark_visit").replaceWith('Page Marked');
 	});
 	
 	$("#incognito").click(function(e) {
@@ -466,7 +467,7 @@ function populateSubNav() {
 			emptyData();
 		} else {
 			user.setIncognito(false);
-			$("#incognito").html('<span class="off">Eyebrowse On</span>');
+			$("#incognito").html('<span class="green">Eyebrowse On</span>');
 			$('.logo').attr("src",'/img/eye.png');
 			chrome.browserAction.setIcon({path: '/img/eye-48.png'});
 		}
