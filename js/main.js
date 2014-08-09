@@ -299,15 +299,16 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
                 "action" : "prompt",
                 "type" : "loginPrompt",
                 "baseUrl" : baseUrl,
-            })
+            });
         }
-      return  
+      return;
     } 
     var timeCheck = checkTimeDelta();
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
 
     if (user.getIncognito() == false) {
+    	
 	    if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(uri.hostname())) {
 	
 	        timeCheck.allow = false; // we need to wait for prompt callback
@@ -327,8 +328,8 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 	    } else if (user.inBlackList(url)) {
 	        return;
 	    }
-	
-	    if (user.inWhitelist(url) && timeCheck.allow){
+	    
+	    if (user.inWhitelist(url) && timeCheck.allow) {
 	        trackBadge();
 	        finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
 	    }
@@ -341,31 +342,46 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     called after a prompt is allowed or timecheck passes
 */
 function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
-    if (activeItem !== undefined) {
-        closeItem(activeItem.tabId, activeItem.url, "blur", time);
-    };
-        
-    //reassign the active item to be the current tab
-    activeItem = {
-        "tabId" : tabId,
-        "url" : url,
-        "favIconUrl" : favIconUrl,
-        "title" : title,
-        "start_event" : event_type,
-        "start_time" : new Date(),
-    };
+	
+	if (activeItem !== undefined) {
+		if ((activeItem.url !== url && activeItem.tabId !== tabId)) {
+			closeItem(activeItem.tabId, activeItem.url, "blur", time);
+		} 
+
+		activeItem = {
+	        "tabId" : tabId,
+	        "url" : url,
+	        "favIconUrl" : favIconUrl,
+	        "title" : title,
+	        "start_event" : event_type,
+	        "start_time" : new Date(),
+	    };
+	    
+	}
+	else {
+		activeItem = {
+	        "tabId" : tabId,
+	        "url" : url,
+	        "favIconUrl" : favIconUrl,
+	        "title" : title,
+	        "start_event" : event_type,
+	        "start_time" : new Date(),
+	    };
+	}
 }
 
 /* 
     There is only ever one activeItem at a time so only close out the active one. 
-    This event will be fired when a tab is closed or unfocused but we would have already "closed" the item so we don"t want to do it again.
+    This event will be fired when a tab is closed or unfocused but we would have 
+    already "closed" the item so we don"t want to do it again.
 */
 function closeItem(tabId, url, event_type, time) {
     if (activeItem === undefined) return;
-    if (user.getIncognito() == true) return;
+    if (user.getIncognito() === true) return;
+    
     var time = time || new Date(); // time is undefined for destroy event
     if (activeItem.tabId === tabId && !user.inBlackList(url)) {
-        //write to local storage
+		//write to local storage
         var item = $.extend({}, activeItem); //copy activeItem
 
         item.end_event = event_type;
@@ -375,12 +391,12 @@ function closeItem(tabId, url, event_type, time) {
         local_history.push(item);
 
         // send data for server and sync whitelist/blacklist
-
         if (local_history.length) {
     		dumpData();
             user.getWhitelist()._fetch();
             user.getBlacklist()._fetch(); 
         }
+        activeItem = undefined;
              
     }
 }

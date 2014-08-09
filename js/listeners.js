@@ -7,16 +7,20 @@
 
 ///////////////Event listeners/////////////// 
 /*
-    Specific to Chrome. Each calls the data processor function in main.js to be processed and recorded if necessary. The handler checks for things like restricted sites and user permissions that are set. This allows firefox to use the same main. 
+    Specific to Chrome. Each calls the data processor function in main.js to be processed and recorded if necessary. 
+    The handler checks for things like restricted sites and user permissions that are set. 
+    This allows firefox to use the same main. 
 
-    Fires when the active tab in a window changes. Note that the tab's URL may not be set at the time this event fired, but you can listen to onUpdated events to be notified when a URL is set.
+    Fires when the active tab in a window changes. 
+    Note that the tab's URL may not be set at the time this event fired, but you can listen to onUpdated events 
+    to be notified when a URL is set.
 
     We need to listen for both (so we know when new tabs/windows appear). But no double counting.
 */
 function activeTabListener() {
     chrome.tabs.onActivated.addListener(function(activeInfo) {
         var event_type = 'focus';
-        openTab(activeInfo.tabId, event_type)
+        openTab(activeInfo.tabId, event_type);
     });
 }
 
@@ -26,7 +30,7 @@ function activeTabListener() {
 function updatedTabListener() {
    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         var event_type = 'update';
-        openTab(tabId, event_type)
+        openTab(tabId, event_type);
     }); 
 }
 
@@ -39,6 +43,29 @@ function removedTabListener() {
         closeTab(tabId, event_type);
     });
 }
+
+/*
+    Fired when window focus has changed
+*/
+function focusedWindowListener() {
+    chrome.windows.onFocusChanged.addListener(function(windowId) {
+    	if (windowId === chrome.windows.WINDOW_ID_NONE) {
+    		var event_type = 'blur';
+    		if (activeItem !== undefined) {
+	        	closeTab(activeItem.tabId, event_type);
+	        }
+	    }
+	    else {
+	        chrome.tabs.query({active: true, currentWindow: true}, function(tabarr) {
+	        	var activeTab = tabarr[0];
+	        	var event_type = 'focus';
+        		openTab(activeTab.id, event_type);
+	        });
+	    }
+        
+    });
+}
+
 
 /*
     Helper function to get the tab with tabId and open the item
@@ -55,10 +82,12 @@ function openTab(tabId, event_type) {
 /*
     Helper function to get the tab with tabId and close the item
 */
-function closeTab(tab, event_type) {
-    if (tab !== undefined && tab.status === 'complete') {
-        closeItem(tab.id, tab.url, event_type, false);
-    }
+function closeTab(tabId, event_type) {
+	chrome.tabs.get(tabId, function (tab) {
+		if (tab != undefined) {
+    		closeItem(tab.id, tab.url, event_type, false);
+    	}
+  });
 }
 
 /*
@@ -111,6 +140,7 @@ function runListeners(){
     activeTabListener();
     updatedTabListener();
     removedTabListener();
+    focusedWindowListener();
     closedWindowListener();
     messageListener();
 }
