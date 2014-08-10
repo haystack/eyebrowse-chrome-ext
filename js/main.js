@@ -292,7 +292,6 @@ var User = Backbone.Model.extend({
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
 function openItem(tabId, url, favIconUrl, title, event_type) {
-    updateBadge("");
     if (!user.isLoggedIn()){
         if (!user.ignoreLoginPrompt()){
             chrome.tabs.sendMessage(tabId, {
@@ -324,16 +323,23 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 	            "title" : title,
 	            "event_type" : event_type,
 	        };
+	        updateBadge("");
 	
 	    } else if (user.inBlackList(url)) {
+	    	updateBadge("");
 	        return;
 	    }
 	    
-	    if (user.inWhitelist(url) && timeCheck.allow) {
+	    if (user.inWhitelist(url)) {
+	    	if (timeCheck.allow) {
+	        	finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
+	        }
 	        trackBadge();
-	        finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
+	    } else {
+	    	updateBadge("");
 	    }
 	}
+	
 }
 
 
@@ -347,7 +353,7 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
 		if ((activeItem.url !== url && activeItem.tabId !== tabId)) {
 			closeItem(activeItem.tabId, activeItem.url, "blur", time);
 		} 
-
+	
 		activeItem = {
 	        "tabId" : tabId,
 	        "url" : url,
@@ -356,6 +362,7 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
 	        "start_event" : event_type,
 	        "start_time" : new Date(),
 	    };
+	    sendInitialData();
 	    
 	}
 	else {
@@ -367,6 +374,7 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
 	        "start_event" : event_type,
 	        "start_time" : new Date(),
 	    };
+	    sendInitialData();
 	}
 }
 
@@ -431,8 +439,9 @@ function handleFilterListMsg(msg) {
     if (type == "whitelist") {
         list = user.getWhitelist();
         if (tmpItem !== null) {
-            finishOpen(tmpItem.tabId, tmpItem.url, tmpItem.favIconUrl, tmpItem.title, tmpItem.event_type)
-            tmpItem = null
+        	var now = new Date();
+            finishOpen(tmpItem.tabId, tmpItem.url, tmpItem.favIconUrl, tmpItem.title, tmpItem.event_type, now);
+            tmpItem = null;
         }
     } else if (type == "blacklist") {
         list = user.getBlacklist();
@@ -483,6 +492,37 @@ function handleIgnoreMsg(){
 }
 
 ///////////////////server comm utils///////////////////
+
+
+/*
+    Send initial data to server
+*/
+function sendInitialData() {
+
+    var url = getApiURL("history-data");
+    
+    var item = $.extend({}, activeItem); //copy activeItem
+    item.end_event = '';
+    item.end_time = new Date();
+    item.total_time = item.end_time - item.start_time;
+    item.humanize_time = moment.humanizeDuration(item.total_time);
+
+    payload = serializePayload(item);
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: payload,
+        dataType: "text",
+        processData:  false,
+        contentType: "application/json",
+        error: function(jqXHR, textStatus, errorThrown){
+        },
+        success: function(data, textStatus, jqXHR) {
+        },
+    });
+}
+
 
 /*
     Posts data to server
