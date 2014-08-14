@@ -345,7 +345,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 		updateBadge("");
 	}
 	
-	checkForUsers(url);
+	//checkForUsers(url);
 	
 }
 
