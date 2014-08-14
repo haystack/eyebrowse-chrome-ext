@@ -306,6 +306,9 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
 
+	setTimeout( popupInfo(tabId, url), 2000 );
+
+
     if (user.getIncognito() == false) {
     	
 	    if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(uri.hostname())) {
@@ -338,8 +341,25 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 	    } else {
 	    	updateBadge("");
 	    }
+	} else {
+		updateBadge("");
 	}
 	
+	checkForUsers(url);
+	
+}
+
+function popupInfo(tabId, url) {
+	chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+		activeTabId = arrayOfTabs[0].id;
+		if (activeTabId === tabId) {
+		    chrome.tabs.sendMessage(tabId, {
+		        "action": "prompt",
+		        "type" : "getInfo", 
+		        "baseUrl": baseUrl,
+		    });
+		}
+	});
 }
 
 
@@ -492,6 +512,31 @@ function handleIgnoreMsg(){
 }
 
 ///////////////////server comm utils///////////////////
+
+
+/*
+	Get active users from server
+*/
+function checkForUsers(url) {
+	var encoded_url = encodeURIComponent(url);
+	var req_url = sprintf("%s/ext/getActiveUsers?url=%s", baseUrl, encoded_url);
+	var text = $.ajax({
+		type: "GET",
+		url: req_url,
+		dataType: "json",
+		async: false
+    }).responseText;
+    
+    var parsed = JSON.parse(text);
+	
+	var users = parsed["result"]['page'];
+	var count = users.length;
+	if (count > 0) {
+		updateBadge(count.toString());
+		chrome.browserAction.setBadgeBackgroundColor({"color":"#0000ff"});
+	}
+}
+
 
 
 /*

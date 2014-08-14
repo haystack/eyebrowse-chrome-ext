@@ -463,13 +463,13 @@ function populateSubNav() {
 			$("#incognito").html('<span class="red">Eyebrowse Off</span>');
 			$('.logo').attr("src",'/img/eyes-closed.png');
 			chrome.browserAction.setIcon({path: '/img/eyes-closed.png'});
-			updateBadge('');
+			chrome.browserAction.setBadgeText({"text" : ""});
 			emptyData();
 		} else {
 			user.setIncognito(false);
 			$("#incognito").html('<span class="green">Eyebrowse On</span>');
 			$('.logo').attr("src",'/img/eye.png');
-			chrome.browserAction.setIcon({path: '/img/eye-48.png'});
+			chrome.browserAction.setIcon({path: '/img/eye.png'});
 		}
 	});
 	
