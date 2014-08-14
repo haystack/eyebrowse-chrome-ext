@@ -269,10 +269,10 @@ var User = Backbone.Model.extend({
     // documentation for URL.js : http://medialize.github.com/URI.js/docs.html
     inSet : function(setType, url) {
         var set = this.get(setType);
-        var uri = new URI(url)
+        var uri = new URI(url);
         var hostname = uri.hostname();
         var protocol = uri.protocol();
-        return (set.where({"url" : hostname}).length || set.where({"url" : protocol + '://' + hostname}).length || set.where(url).length)
+        return (set.where({"url" : hostname}).length || set.where({"url" : protocol + '://' + hostname}).length || set.where({"url" : url}).length);
     },
 
     //save the current state to local storage
