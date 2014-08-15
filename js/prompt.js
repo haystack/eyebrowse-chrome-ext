@@ -8,7 +8,7 @@ function setup(baseUrl, promptType, host, url) {
         return;
     }
     
-    if (promptType === "trackPrompt") {
+    if (promptType === "trackPrompt" || promptType === "loginPrompt") {
 	    var size = 350;
 	    var height = 200;
 	    var settings =  {
