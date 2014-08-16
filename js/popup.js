@@ -60,34 +60,27 @@ var PageFeedItemView = Backbone.View.extend({
 	tagName: 'div',
 	className: 'pagefeedline',
 	render: function(){
-		var messages = this.model.get('message');
+		var user_url = this.model.get('user_url');
 		var username = this.model.get('username');
 		var pic_url = this.model.get('pic_url');
+		var hum_time = this.model.get('hum_time');
+		var post_time = this.model.get('post_time');
+		var message = this.model.get('message');
 		
-		if (messages.length > 0) {
-			var code_str = "";
-			$.each(messages, function(index, message) {
-				var time_str = message.post_time.substring(0,10) + ' ' + message.post_time.substring(11,19) + ' UTC';
-				var time = new Date(time_str);
-				var hum_time = moment(time).fromNow();
-				code_str += '<div class="pagefeed_item"><span class="pagefeed_text"> ' +
-				'<a target="_blank" href="' + baseUrl + '/users/' + username + '">' + 
-				 '<img align="left" src="' + pic_url + 
-				 '" title="' + username + 
-				 '" class="nav-prof-img2 img-rounded"></a>' + 
-				message.message + '<div class="right">' + 
-				'<span class="message-name"><a target="_blank" href="' + baseUrl + '/users/' + username + '">' + username + '</a></span> ' +
-				'<span class="date">' + hum_time + '</span> </div></span></div>';
-			});
-			this.$el.html(code_str);
-		} else {
-			var time_str = this.model.get('start_time').substring(0,10) + ' ' + this.model.get('start_time').substring(11,19) + ' UTC';
-			var time = new Date(time_str);
-			var hum_time = moment(time).fromNow();
-			this.$el.html('<div class="pagefeed_item2"><div class="right">' +
-			'<span class="message-name"><a target="_blank" href="' + baseUrl + '/users/' + username + '">' + username + '</a></span> ' +
-			'<span class="date">was here ' + hum_time + '</span></div></div>');
-		}
+		var code_str = '';
+		var time_str = post_time.substring(0,10) + ' ' + post_time.substring(11,19) + ' UTC';
+		var time = new Date(time_str);
+		code_str += '<div class="pagefeed_item"><span class="pagefeed_text"> ' +
+		'<a target="_blank" href="' + baseUrl + '/users/' + username + '">' + 
+		 '<img align="left" src="' + pic_url + 
+		 '" title="' + username + 
+		 '" class="nav-prof-img2 img-rounded"></a>' + 
+		message + '<div class="right">' + 
+		'<span class="message-name"><a target="_blank" href="' + baseUrl + '/users/' + username + '">' + username + '</a></span> ' +
+		'<span class="date">' + hum_time + '</span> </div></span></div>';
+
+		this.$el.html(code_str);
+		
 		return this;
 	},
 });
@@ -110,19 +103,35 @@ var ChatUserView = Backbone.View.extend({
 	render: function(){
 		var code = '<div id="' + this.model.get('username') +'">';
 		var username = this.model.get('username');
-		code = code + '<a target="_blank" href="' + baseUrl + '/users/' + username + '">' +
-			 '<img src="' + this.model.get('pic_url') + 
+		code = code + '<a target="_blank" href="' + baseUrl + '/users/' + username + '">';
+		
+		if (this.model.get('old_level') == 0) {
+			code = code + '<img src="' + this.model.get('pic_url') + 
 			 '" title="' + username + 
-			 '" class="nav-prof-img img-rounded"> <span class="name">' + 
-			 username + '</span></a></div>';
+			 '" class="nav-prof-img img-rounded older0">';
+		} else if (this.model.get('old_level') == 1) {
+			code = code + '<img src="' + this.model.get('pic_url') + 
+			 '" title="' + username + 
+			 '" class="nav-prof-img img-rounded older1">';			
+		} else if (this.model.get('old_level') == 2) {
+			code = code + '<img src="' + this.model.get('pic_url') + 
+			 '" title="' + username + 
+			 '" class="nav-prof-img img-rounded older2">';			
+		} else if (this.model.get('old_level') == 3) {
+			code = code + '<img src="' + this.model.get('pic_url') + 
+			 '" title="' + username + 
+			 '" class="nav-prof-img img-rounded older3">';			
+		} else {
+			code = code + '<img src="' + this.model.get('pic_url') + 
+			 '" title="' + username + 
+			 '" class="nav-prof-img img-rounded older4">';			
+		}
+		
+		code = code + '<span class="name">' + 
+			 username + '</span></a><BR/><span class="ago-time">' + this.model.get('time_ago') + ' ago</span></div>';
 		
 		this.$el.html(code);
-		
-		if ((window.selected_user != null && window.selected_user != undefined) &&
-			(this.model.get('username') == window.selected_user.get('username'))) {
-			$(this.el).css('padding', '0px');
-			$(this.el).css('border', 'solid 2px #e5b75b');
-		}
+
 		return this;
 	},
 	events: {
@@ -566,7 +575,7 @@ function populateActiveUsers() {
 	});
 	
 	if (active_users.length == 0 && active_dusers.length == 0) {
-		$("#chatuserbox").empty().append("No one currently online");
+		$("#chatuserbox").empty().append("No one's been here recently");
 		window.selected_user = null;
 	}
 	else {
@@ -598,13 +607,13 @@ function populateFeed(first) {
 	var tab_url = window.g_url;
 	var text = getFeed(tab_url);
 	var parsed = JSON.parse(text);
-	var histories = parsed["objects"];
+	var histories = parsed["result"]["messages"];
 	var feed_items = [];
 	$.each(histories, function(index,value) {
 		feed_items.push(value);
 	});
 	 if (feed_items.length == 0) {
-		 $("#pagefeed").empty().append("No activity on this wall.");
+		 $("#pagefeed").empty().append("No bulletins yet.");
 	 }
 	 else {
 		 var feed_coll = new PageFeedCollection(feed_items);
@@ -681,7 +690,7 @@ function ajaxSetup(csrftoken){
 
 function getFeed(url) {
 	var encoded_url = encodeURIComponent(url);
-	var req_url = sprintf("%s/api/v1/history-data?format=json&url=%s", baseUrl, encoded_url);
+	var req_url = sprintf("%s/ext/getMessages?url=%s", baseUrl, encoded_url);
 	return $.ajax({
 		type: "GET",
 		url: req_url,

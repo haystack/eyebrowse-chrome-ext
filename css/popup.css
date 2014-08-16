@@ -16,6 +16,39 @@ body {
 	width: 100%;
 }
 
+
+.older0 {
+	border: #ffff00 solid 2px;
+	margin: 0px;
+}
+
+.older1 {
+	opacity: .9;
+}
+
+.older2 {
+	opacity: .7;
+}
+
+.older3 {
+	opacity: .4;
+}
+
+.older4 {
+	opacity: .1;
+}
+
+
+.ago-time {
+	font-size: 9px;
+	line-height: 9px;
+	padding: 0px;
+	margin: 0px;
+	position: relative;
+	top: -5px;
+	color: #767676;
+}
+
 .stat_table td {
 	padding-left: 6px;
 	padding-right: 6px;
@@ -129,6 +162,7 @@ a:focus {
     height:24px;
     width:24px;
     margin-right: 5px;
+    float: left;
 }
 
 .nav-prof-img2 {
@@ -192,7 +226,10 @@ a:focus {
 }
 
 .name {
-	color: #767676;
+	color: #000000;
+	line-height: 10px;
+	margin: 0px;
+	padding: 0px;
 }
 
 #chatwrapper {
