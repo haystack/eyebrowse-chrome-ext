@@ -23,8 +23,8 @@ function setup(baseUrl, promptType, host, url) {
     	var eyebrowseFrame = $("<iframe>").css(settings).attr("id", "eyebrowse-frame").attr("src", baseUrl + "/ext/" +  promptType +"?site=" + host);
     } else {
     	
-    	var size = 200;
-	    var height = 50;
+    	var size = 400;
+	    var height = 70;
 	    var settings =  {
 	        "z-index": 999999999,
 	        "border-style": "none",
