@@ -628,7 +628,6 @@ function populateFeed(first) {
 
 function clickHandle(e) {
     e.preventDefault();
-    console.log(e);
     var a = $(e.target).closest('a');
     var url = $(e.target).closest('a')[0].href;
     if (url.indexOf("logout") !== -1) {
@@ -742,7 +741,6 @@ function postMessage(message, url) {
     }
 	data = JSON.stringify(active_tab);
 	
-	console.log(data);
 	$.ajax({
         type: "POST",
         url: req_url,
@@ -777,7 +775,6 @@ function postChatMessage(message, url) {
 		date: date,
 		};
 	data = JSON.stringify(data);
-	console.log(data);
 	$.ajax({
         type: "POST",
         url: req_url,
