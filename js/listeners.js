@@ -73,7 +73,7 @@ function focusedWindowListener() {
 function openTab(tabId, event_type) {
     chrome.tabs.get(tabId, function (tab) {
         if (tab !== undefined && tab.status === 'complete') {
-            openItem(tabId, tab.url, tab.favIconUrl,  tab.title, event_type);
+            openItem(tabId, tab.url, tab.favIconUrl, tab.title, event_type);
         }
         
     });

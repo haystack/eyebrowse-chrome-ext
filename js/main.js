@@ -307,7 +307,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
 
-	setTimeout( popupInfo(tabId, url), 2000 );
+	setTimeout( function() {popupInfo(tabId, url);}, 3000 );
 
 
     if (user.getIncognito() == false) {
@@ -383,7 +383,7 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
 	        "start_event" : event_type,
 	        "start_time" : new Date(),
 	    };
-	    sendInitialData();
+	    setTimeout( function() {sendInitialData(tabId);}, 5000 );
 	    
 	}
 	else {
@@ -395,7 +395,7 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
 	        "start_event" : event_type,
 	        "start_time" : new Date(),
 	    };
-	    sendInitialData();
+	    setTimeout( function() {sendInitialData(tabId);}, 5000 );
 	}
 }
 
@@ -409,13 +409,16 @@ function closeItem(tabId, url, event_type, time) {
     if (user.getIncognito() === true) return;
     
     var time = time || new Date(); // time is undefined for destroy event
-    if (activeItem.tabId === tabId && !user.inBlackList(url)) {
+    
+    var total_time = time - activeItem.start_time;
+    
+    if (activeItem.tabId === tabId && !user.inBlackList(url) && total_time > 5000) {
 		//write to local storage
         var item = $.extend({}, activeItem); //copy activeItem
 
         item.end_event = event_type;
         item.end_time = time;
-        item.total_time = item.end_time - item.start_time;
+        item.total_time = total_time;
         item.humanize_time = moment.humanizeDuration(item.total_time);
         local_history.push(item);
 
@@ -427,6 +430,8 @@ function closeItem(tabId, url, event_type, time) {
         }
         activeItem = undefined;
              
+    } else {
+    	activeItem = undefined;
     }
 }
 
@@ -543,30 +548,46 @@ function checkForUsers(url) {
 /*
     Send initial data to server
 */
-function sendInitialData() {
+function sendInitialData(tabId) {
 
-    var url = getApiURL("history-data");
-    
-    var item = $.extend({}, activeItem); //copy activeItem
-    item.end_event = '';
-    item.end_time = new Date();
-    item.total_time = item.end_time - item.start_time;
-    item.humanize_time = moment.humanizeDuration(item.total_time);
-
-    payload = serializePayload(item);
-
-    $.ajax({
-        type: "POST",
-        url: url,
-        data: payload,
-        dataType: "text",
-        processData:  false,
-        contentType: "application/json",
-        error: function(jqXHR, textStatus, errorThrown){
-        },
-        success: function(data, textStatus, jqXHR) {
-        },
-    });
+	chrome.tabs.query(
+	  	{currentWindow: true, active : true},
+	  	function(tabArray){
+	  		var active = tabArray[0];
+	  	
+	  		if(tabId === active.id) {
+				
+				var end_time = new Date();
+				var total_time = end_time - activeItem.start_time;
+				
+				if (total_time > 5000) {
+				    var url = getApiURL("history-data");
+				    
+				    var item = $.extend({}, activeItem); //copy activeItem
+				    item.end_event = '';
+				    item.end_time = end_time;
+				    item.total_time = total_time;
+				    item.humanize_time = moment.humanizeDuration(item.total_time);
+				
+				    payload = serializePayload(item);
+				
+				    $.ajax({
+				        type: "POST",
+				        url: url,
+				        data: payload,
+				        dataType: "text",
+				        processData:  false,
+				        contentType: "application/json",
+				        error: function(jqXHR, textStatus, errorThrown){
+				        },
+				        success: function(data, textStatus, jqXHR) {
+				        },
+				    });
+				}
+			}
+	  	
+	  	}
+	);
 }
 
 
