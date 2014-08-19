@@ -309,9 +309,21 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 
 	setTimeout( function() {popupInfo(tabId, url);}, 3000 );
 
+	
+	if (user.getIncognito() == false) {
+	
+		//close previous activeItem
+		if (activeItem !== undefined) {
+			if (activeItem.url !== url && activeItem.tabId !== tabId) {
+				closeItem(activeItem.tabId, activeItem.url, "blur", timeCheck.time);
+				activeItem = undefined;
+				updateBadge("");
+			}
+		} 
 
-    if (user.getIncognito() == false) {
-    	
+
+
+    	//check to nag
 	    if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(uri.hostname())) {
 	
 	        timeCheck.allow = false; // we need to wait for prompt callback
@@ -334,6 +346,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 	        return;
 	    }
 	    
+	    //open new activeItem
 	    if (user.inWhitelist(url)) {
 	    	if (timeCheck.allow) {
 	        	finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
@@ -369,34 +382,16 @@ function popupInfo(tabId, url) {
     called after a prompt is allowed or timecheck passes
 */
 function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
-	
-	if (activeItem !== undefined) {
-		if ((activeItem.url !== url && activeItem.tabId !== tabId)) {
-			closeItem(activeItem.tabId, activeItem.url, "blur", time);
-		} 
-	
-		activeItem = {
-	        "tabId" : tabId,
-	        "url" : url,
-	        "favIconUrl" : favIconUrl,
-	        "title" : title,
-	        "start_event" : event_type,
-	        "start_time" : new Date(),
-	    };
-	    setTimeout( function() {sendInitialData(tabId);}, 5000 );
-	    
-	}
-	else {
-		activeItem = {
-	        "tabId" : tabId,
-	        "url" : url,
-	        "favIconUrl" : favIconUrl,
-	        "title" : title,
-	        "start_event" : event_type,
-	        "start_time" : new Date(),
-	    };
-	    setTimeout( function() {sendInitialData(tabId);}, 5000 );
-	}
+	activeItem = {
+        "tabId" : tabId,
+        "url" : url,
+        "favIconUrl" : favIconUrl,
+        "title" : title,
+        "start_event" : event_type,
+        "start_time" : new Date(),
+    };
+    setTimeout( function() {sendInitialData(tabId);}, 5000 );
+
 }
 
 /* 
