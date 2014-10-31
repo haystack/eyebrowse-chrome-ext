@@ -66,21 +66,21 @@ var PageFeedItemView = Backbone.View.extend({
 		var hum_time = this.model.get('hum_time');
 		var post_time = this.model.get('post_time');
 		var message = this.model.get('message');
-		
+
 		var code_str = '';
 		var time_str = post_time.substring(0,10) + ' ' + post_time.substring(11,19) + ' UTC';
 		var time = new Date(time_str);
 		code_str += '<div class="pagefeed_item"><span class="pagefeed_text"> ' +
-		'<a target="_blank" href="' + baseUrl + '/users/' + username + '">' + 
-		 '<img align="left" src="' + pic_url + 
-		 '" title="' + username + 
-		 '" class="nav-prof-img2 img-rounded"></a>' + 
-		message + '<div class="right">' + 
+		'<a target="_blank" href="' + baseUrl + '/users/' + username + '">' +
+		 '<img align="left" src="' + pic_url +
+		 '" title="' + username +
+		 '" class="nav-prof-img2 img-rounded"></a>' +
+		message + '<div class="right">' +
 		'<span class="message-name"><a target="_blank" href="' + baseUrl + '/users/' + username + '">' + username + '</a></span> ' +
 		'<span class="date">' + hum_time + '</span> </div></span></div>';
 
 		this.$el.html(code_str);
-		
+
 		return this;
 	},
 });
@@ -104,32 +104,28 @@ var ChatUserView = Backbone.View.extend({
 		var code = '<div id="' + this.model.get('username') +'">';
 		var username = this.model.get('username');
 		code = code + '<a target="_blank" href="' + baseUrl + '/users/' + username + '">';
-		
+
 		if (this.model.get('old_level') == 0) {
-			code = code + '<img src="' + this.model.get('pic_url') + 
-			 '" title="' + username + 
+			code = code + '<img src="' + this.model.get('pic_url') +
+			 '" title="' + username +
 			 '" class="nav-prof-img img-rounded older0">';
 		} else if (this.model.get('old_level') == 1) {
-			code = code + '<img src="' + this.model.get('pic_url') + 
-			 '" title="' + username + 
-			 '" class="nav-prof-img img-rounded older1">';			
+			code = code + '<img src="' + this.model.get('pic_url') +
+			 '" title="' + username +
+			 '" class="nav-prof-img img-rounded older1">';
 		} else if (this.model.get('old_level') == 2) {
-			code = code + '<img src="' + this.model.get('pic_url') + 
-			 '" title="' + username + 
-			 '" class="nav-prof-img img-rounded older2">';			
-		} else if (this.model.get('old_level') == 3) {
-			code = code + '<img src="' + this.model.get('pic_url') + 
-			 '" title="' + username + 
-			 '" class="nav-prof-img img-rounded older3">';			
+			code = code + '<img src="' + this.model.get('pic_url') +
+			 '" title="' + username +
+			 '" class="nav-prof-img img-rounded older2">';
 		} else {
-			code = code + '<img src="' + this.model.get('pic_url') + 
-			 '" title="' + username + 
-			 '" class="nav-prof-img img-rounded older4">';			
+			code = code + '<img src="' + this.model.get('pic_url') +
+			 '" title="' + username +
+			 '" class="nav-prof-img img-rounded older3">';
 		}
-		
-		code = code + '<span class="name">' + 
+
+		code = code + '<span class="name">' +
 			 username + '</span></a><BR/><span class="ago-time">' + this.model.get('time_ago') + ' ago</span></div>';
-		
+
 		this.$el.html(code);
 
 		return this;
@@ -167,13 +163,13 @@ var ChatMessageView = Backbone.View.extend({
 			this.$el.html('<div class="my_message"><div class="message-text">' + this.model.get('message') + '</div>' +
 			'<div class="date">' + hum_time + '</div></div>');
 		} else {
-			this.$el.html('<div class="their_message"><div class="message-text">' + 
+			this.$el.html('<div class="their_message"><div class="message-text">' +
 			this.model.get('message') + '</div>' +
 			'<div class="date">' +
 			'<a target="_blank" href="' + baseUrl + '/users/' + this.model.get('author') + '">' + this.model.get('author') + '</a> ' +
 			hum_time + '</div></div>');
 		}
-		
+
 		return this;
 	},
 });
@@ -199,9 +195,9 @@ var StatsView = Backbone.View.extend({
 		if (title.length > 50) {
 			title = window.g_title.substring(0,50) + '...';
 		}
-		
+
 		var domain = window.g_url.match(/^[\w-]+:\/*\[?([\w\.:-]+)\]?(?::\d+)?/)[1];
-			
+
 		this.$el.html('<table class="stat_table"><tr><td><div class="stat_title"><a target="_blank" href="' + window.g_url +'">This Page</a></div>' +
 					  '<div class="my_stats">Me: ' + this.model.get('my_count') + ' in ' + this.model.get('my_time') +
 					  '<BR />Everyone: ' + this.model.get('total_count') + ' in ' + this.model.get('total_time') + '</div>' +
@@ -287,7 +283,7 @@ LoginView = Backbone.View.extend({
                 success: function(data) {
                     var match = data.match(REGEX);
                     if(match) { // we didn"t log in successfully
-                        
+
                         self.displayErrors("Invalid username or password");
                     } else {
                         self.completeLogin(username);
@@ -391,13 +387,13 @@ HomeView = Backbone.View.extend({
         	window.setInterval(function() {populateActiveUsers();}, 12000);
         	populateFeed(0);
         	window.setInterval(function() {populateFeed(1);}, 12000);
-        	
+
         	setupMessageBox();
         	populateChatMessageBox(0);
-        	window.setInterval(function() {populateChatMessageBox(1);}, 12000);	
-	        	
-    	});	
-    	
+        	window.setInterval(function() {populateChatMessageBox(1);}, 12000);
+
+    	});
+
     	var template = _.template($("#splash_template").html());
 	    $(this.el).html(template);
     },
@@ -415,14 +411,14 @@ function setupMessageBox() {
 	            this.value = this.defaultValue;
 	        }
 		});
-	
+
 	$('#messagebox').keypress(function(e){
 		if (e.which == 13) {
 			var text = $("#messagebox").val();
 				postMessage(text, window.g_url);
 			}
 		});
-	
+
 	$('#submitmessage').click( function(e){
 		var text = $("#messagebox").val();
 		if (text == "Post a Bulletin to this page and to your Eyebrowse feed simultaneously") {
@@ -435,22 +431,22 @@ function setupMessageBox() {
 
 function populateSubNav() {
 	$("#userpic").empty().append('<a target="_blank" href="' + baseUrl + '/users/'  + user.get('username') + '"><img class="img-rounded" src="' + baseUrl + '/ext/profilepic"></a>');
-	
+
 	$("#username").append(user.get('username'));
-	
+
 	$("#navSubLinks").append(' <a href="" id="incognito"></a> | ');
-	
+
 	$("#navSubLinks").append(' <a href="" id="mark_visit">Mark visit to this page</a> | ');
 
 	$("#navSubLinks").append('<a href="" id="whitelist"></a>');
-	
+
 	if (user.getIncognito() == true) {
 		$("#incognito").html('<span class="red">Eyebrowse Off</span>');
 	} else {
 		$("#incognito").html('<span class="green">Eyebrowse On</span>');
 	}
-	
-	
+
+
 	if (user.inWhitelist(window.g_url)) {
 		$("#whitelist").text("Domain is whitelisted");
 		$("#whitelist").css('cursor','default');
@@ -458,13 +454,13 @@ function populateSubNav() {
 	} else {
 		$("#whitelist").text("Whitelist this domain");
 	}
-	
+
 	$("#mark_visit").click(function(e) {
 		e.preventDefault();
 		postMessage(null, window.g_url);
 		$("#mark_visit").replaceWith('Page Marked');
 	});
-	
+
 	$("#incognito").click(function(e) {
 		e.preventDefault();
 		if (user.getIncognito() == false) {
@@ -481,14 +477,14 @@ function populateSubNav() {
 			chrome.browserAction.setIcon({path: '/img/eye.png'});
 		}
 	});
-	
+
 	$("#whitelist").click(function(e) {
 		e.preventDefault();
 		if ($("#whitelist").text() == "Whitelist this domain") {
 			var whitelist = user.getWhitelist();
 			var uri = new URI(window.g_url);
         	var hostname = uri.hostname();
-        	
+
         	if (!user.inWhitelist(hostname)) {
 				m = whitelist.create({
 		        	"url" : hostname,
@@ -502,7 +498,7 @@ function populateSubNav() {
 			$("#whitelist").css('color','#000000');
 		}
 	});
-	
+
 }
 
 
@@ -517,15 +513,15 @@ function populateChatMessageBox(first) {
 	if (messages.length != 0) {
 		var messages_coll = new ChatMessageCollection(messages);
 		var messages_view = new ChatMessageCollectionView({ collection: messages_coll });
-	    
+
 	    var c = messages_view.render().el;
 	    $("#chatmessage").empty().append(c);
 	}
 	else {
 		$("#chatmessage").empty().append('No Chat Messages on this page.');
 	}
-	
-	
+
+
 	if ( first == 0 ) {
 		$('#chatmessage').scrollTop($('#chatmessage')[0].scrollHeight);
 
@@ -552,7 +548,7 @@ function populateStats() {
 	var stats = new Stats(values);
 	var statview = new StatsView({model: stats});
 	var c = statview.render().el;
-    $("#stats").empty().append(c);  
+    $("#stats").empty().append(c);
 }
 
 
@@ -561,19 +557,19 @@ function populateActiveUsers() {
 	var tab_url = window.g_url;
 	var text = getActiveUsers(tab_url);
 	var parsed = JSON.parse(text);
-	
+
 	var users = parsed["result"]['page'];
 	var active_users = [];
 	$.each(users, function(index,value) {
 		active_users.push(value);
 	});
-	
+
 	var dusers = parsed["result"]['domain'];
 	var active_dusers = [];
 	$.each(dusers, function(index,value) {
 		active_dusers.push(value);
 	});
-	
+
 	if (active_users.length == 0 && active_dusers.length == 0) {
 		$("#chatuserbox").empty().append("No one's been here recently");
 		window.selected_user = null;
@@ -588,7 +584,7 @@ function populateActiveUsers() {
 		} else {
 			page = '';
 		}
-		
+
 	    if (active_dusers.length != 0) {
 		    var user_coll = new ChatUserCollection(active_dusers);
 			var user_view = new ChatCollectionView({ collection: user_coll });
@@ -597,8 +593,8 @@ function populateActiveUsers() {
 		} else {
 			domain = '';
 		}
-		
-	    $("#chatuserbox").empty().append(page).append(domain);  
+
+	    $("#chatuserbox").empty().append(page).append(domain);
 	}
 }
 
@@ -617,7 +613,7 @@ function populateFeed(first) {
 	 }
 	 else {
 		 var feed_coll = new PageFeedCollection(feed_items);
-		 var feed_view = new PageFeedCollectionView({ collection: feed_coll });	    
+		 var feed_view = new PageFeedCollectionView({ collection: feed_coll });
 	     var c = feed_view.render().el;
 	     $("#pagefeed").empty().append(c);
 	 }
@@ -727,27 +723,27 @@ function getStats(url) {
 }
 
 
-/* Post message to server 
+/* Post message to server
 */
 
 function postMessage(message, url) {
 	var active_tab = getActiveTab();
 	var req_url = sprintf("%s/api/v1/history-data", baseUrl);
-	
+
 	active_tab.user = user.getResourceURI();
     active_tab.src = "chrome";
     if (message != null) {
     	active_tab.message = message;
     }
 	data = JSON.stringify(active_tab);
-	
+
 	$.ajax({
         type: "POST",
         url: req_url,
         data: data,
         dataType: "text",
         processData:  false,
-        contentType: "application/json",	
+        contentType: "application/json",
         error: function(jqXHR, textStatus, errorThrown){
         	console.log(jqXHR);
         	console.log(textStatus);
@@ -761,7 +757,7 @@ function postMessage(message, url) {
     });
 }
 
-/* Post chat message to server 
+/* Post chat message to server
 */
 
 function postChatMessage(message, url) {
@@ -781,7 +777,7 @@ function postChatMessage(message, url) {
         data: data,
         dataType: "text",
         processData:  false,
-        contentType: "application/json",	
+        contentType: "application/json",
         error: function(jqXHR, textStatus, errorThrown){
         	console.log(jqXHR);
         	console.log(textStatus);
@@ -853,12 +849,12 @@ $(document).ready(function() {
 
     /////setup funcs///////
     chrome.cookies.get({
-        "name" :"csrftoken", 
+        "name" :"csrftoken",
         "url" : baseUrl
         }, function(cookie){
             ajaxSetup(cookie.value);
     });
-    
+
     if (user.isLoggedIn()){
         homeView = new HomeView();
     }

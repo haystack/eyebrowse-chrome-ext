@@ -27,16 +27,13 @@ body {
 }
 
 .older2 {
-	opacity: .7;
+	opacity: .75;
 }
 
 .older3 {
-	opacity: .4;
+	opacity: .6;
 }
 
-.older4 {
-	opacity: .1;
-}
 
 
 .ago-time {
@@ -155,7 +152,7 @@ a:focus {
 	margin-top: 3px;
     width:27px;
     height:27px;
-    
+
 }
 
 .nav-prof-img {
@@ -290,25 +287,25 @@ a:focus {
 	position: relative;
 	top: 10px;
 	float: right;
-    border: 1px solid #d3d3d3s; 
+    border: 1px solid #d3d3d3s;
     background-color: #ffffff;
     padding: 0px;
-    outline:0; 
+    outline:0;
     font-size: 0.75em;
-    height:20px; 
-    width: 224px; 
+    height:20px;
+    width: 224px;
  }
- 
+
 #messagebox {
-    border: 1px solid #d3d3d3s; 
+    border: 1px solid #d3d3d3s;
     padding: 0px;
     margin-bottom: 10px;
     margin-top: 10px;
-    outline:0; 
+    outline:0;
     font-size: 0.8em;
     line-height: 15px;
-    height:40px; 
-    width: 308px; 
+    height:40px;
+    width: 308px;
     resize: none;
  }
 
@@ -322,7 +319,7 @@ a:focus {
 	width: 60px;
 	height: 23px;
 }
- 
+
 .chatuser_pic {
     min-width:24px;
     min-height:24px;
