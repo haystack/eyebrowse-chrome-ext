@@ -6,4 +6,4 @@ python deploy/deploy.py
 #remove old zip and add new one
 cd ../
 rm eyebrowse-chrome-ext.zip
-zip -r eyebrowse-chrome-ext.zip eyebrowse-chrome-ext/
+zip -r eyebrowse-chrome-ext.zip eyebrowse-chrome-ext/ -x *.git*

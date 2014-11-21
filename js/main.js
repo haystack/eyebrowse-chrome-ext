@@ -1,6 +1,6 @@
 ///////////Global vars/////////////
 // global website base, set to localhost for testing, use deploy script to change
-var baseUrl = "http://localhost:8000";
+var baseUrl = "http://eyebrowse.csail.mit.edu";
 // var baseUrl = "http://eyebrowse.csail.mit.edu";
 var siteName = "Eyebrowse";
 
@@ -12,8 +12,8 @@ var FilterListItem = Backbone.Model.extend({
     parse: function(data) {
         if (data !== null) {
             return {
-                url : data.url, 
-                id : data.id,
+                url: data.url,
+                id: data.id,
             }
         }
     },
@@ -32,17 +32,17 @@ var FilterList = Backbone.Collection.extend({
         this._fetch();
     },
 
-    getType : function() {
+    getType: function() {
         return this.get("type")
     },
 
-    url : function() {
+    url: function() {
         return getApiURL(this.type)
     },
 
-    parse: function(data, res){
+    parse: function(data, res) {
         if (res.status === 200) {
-            return data.objects;    
+            return data.objects;
         }
     },
 
@@ -50,10 +50,10 @@ var FilterList = Backbone.Collection.extend({
     _fetch: function() {
         this.fetch({
             error: _.bind(function(model, xhr, options) {
-            	//DO NOT LOG OUT IF SERVER ERRORS
-               // if (typeof user !== "undefined" && navigator.onLine){
-                    //user.logout();   
-               // }
+                //DO NOT LOG OUT IF SERVER ERRORS
+                // if (typeof user !== "undefined" && navigator.onLine){
+                //user.logout();   
+                // }
             }, this)
         });
     },
@@ -65,131 +65,134 @@ var FilterList = Backbone.Collection.extend({
 */
 var User = Backbone.Model.extend({
     defaults: {
-        "loggedIn" : false,
-        "whitelist" : new FilterList("whitelist"),
-        "blacklist" : new FilterList("blacklist"),
-        "nags" : {"visits":11,"lastNag":(new Date()).getTime()-24*360000},
-        "username" : "",
-        "incognito" : false,
-        "resourceURI" : "/api/v1/user/",
-        "ignoreLoginPrompt" : true,
+        "loggedIn": false,
+        "whitelist": new FilterList("whitelist"),
+        "blacklist": new FilterList("blacklist"),
+        "nags": {
+            "visits": 11,
+            "lastNag": (new Date()).getTime() - 24 * 360000
+        },
+        "username": "",
+        "incognito": false,
+        "resourceURI": "/api/v1/user/",
+        "ignoreLoginPrompt": true,
     },
 
-    initialize : function() {
+    initialize: function() {
         _.bindAll(this); //allow access to 'this' in callbacks with "this" meaning the object not the context of the callback
 
     },
-    
-    getIncognito : function() {
+
+    getIncognito: function() {
         return this.get("incognito")
     },
 
-    setIncognito : function(val) {
-        this.set({ 
+    setIncognito: function(val) {
+        this.set({
             "incognito": val,
         });
     },
 
 
-    getWhitelist : function() {
+    getWhitelist: function() {
         return this.get("whitelist")
     },
 
-    getBlacklist : function() {
+    getBlacklist: function() {
         return this.get("blacklist")
     },
 
-    getNags : function() {
+    getNags: function() {
         return this.get("nags")
     },
 
-    getUsername : function() {
+    getUsername: function() {
         return this.get("username")
     },
 
-    getResourceURI : function() {
+    getResourceURI: function() {
         return this.get("resourceURI")
     },
 
-    isLoggedIn : function() {
+    isLoggedIn: function() {
         if (this.getUsername() === this.defaults.username || this.getResourceURI() === this.defaults.resourceURI) {
             this.logout();
         }
         return this.get("loggedIn")
     },
 
-    ignoreLoginPrompt : function(){
+    ignoreLoginPrompt: function() {
         return this.get("ignoreLoginPrompt");
     },
 
     //when the user is logged in set the boolean to give logged in views.
-    setLogin : function(status) {
-        this.set({ 
+    setLogin: function(status) {
+        this.set({
             "loggedIn": status,
         });
 
         var map = {
-            "true" : "login",
-            "false" : "logout"
+            "true": "login",
+            "false": "logout"
         };
 
         loginBadge(map[status]);
     },
 
-    login : function() {
+    login: function() {
         this.setLogin(true);
         this.setLoginPrompt(false);
     },
 
-    logout : function() {
+    logout: function() {
         this.setLogin(false);
     },
-    
-    setUsername : function(username) {
-        this.set({ 
+
+    setUsername: function(username) {
+        this.set({
             "username": username,
         });
         this.setResourceURI(username);
     },
 
-    setResourceURI : function(username) {
+    setResourceURI: function(username) {
         this.set({
-            "resourceURI" : sprintf("/api/v1/user/%s/", username)
+            "resourceURI": sprintf("/api/v1/user/%s/", username)
         })
     },
 
-    setWhitelist : function(whitelist) {
+    setWhitelist: function(whitelist) {
         this.setFilterSet("whitelist", whitelist);
     },
 
-    setBlacklist : function(blacklist) {
+    setBlacklist: function(blacklist) {
         this.setFilterSet("blacklist", blacklist);
     },
 
-    setFilterSet : function(type, list) {
+    setFilterSet: function(type, list) {
         this.set({
-            type : list
+            type: list
         })
     },
 
-    setLoginPrompt : function(bool){
+    setLoginPrompt: function(bool) {
         this.set({
-            "ignoreLoginPrompt" : bool
+            "ignoreLoginPrompt": bool
         });
     },
 
     //check if a url is in the blacklist
-    inBlackList : function(url) {
+    inBlackList: function(url) {
         return this.inSet("blacklist", url)
     },
 
     //check if a url is in the whitelise
-    inWhitelist : function(url) {
+    inWhitelist: function(url) {
         return this.inSet("whitelist", url)
     },
 
     //sets exponential backoff factor
-    setNagFactor : function(url,rate) {
+    setNagFactor: function(url, rate) {
         if (url != "") {
             var nags = this.getNags()
             var site = nags[url]
@@ -197,17 +200,21 @@ var User = Backbone.Model.extend({
             var lastNag = site["lastNag"]
             var factor = site["factor"]
 
-            var newSite = {"visits":visits,"lastNag":lastNag,"factor":Math.max(Math.min(factor*rate,16),1)}
+            var newSite = {
+                "visits": visits,
+                "lastNag": lastNag,
+                "factor": Math.max(Math.min(factor * rate, 16), 1)
+            }
             nags[url] = newSite
 
-            this.set({ 
+            this.set({
                 "nags": nags,
             });
         }
     },
 
     //check if a url should be nagged
-    shouldNag : function(url) {
+    shouldNag: function(url) {
         var timeThres = 3600000 //1 hour in milliseconds
         var visitThres = 5
 
@@ -228,18 +235,30 @@ var User = Backbone.Model.extend({
                 var lastNag = site["lastNag"]
                 var factor = site["factor"]
 
-                if (visits >= visitThres*factor || now - lastNag > timeThres*factor) {
+                if (visits >= visitThres * factor || now - lastNag > timeThres * factor) {
                     b_Nag = true
-                    newSite = {"visits":0,"lastNag":now,"factor":factor}
+                    newSite = {
+                        "visits": 0,
+                        "lastNag": now,
+                        "factor": factor
+                    }
                     nags["visits"] = 0
                     nags["lastNag"] = now
                 } else {
-                    newSite = {"visits":visits+1,"lastNag":lastNag,"factor":factor}
+                    newSite = {
+                        "visits": visits + 1,
+                        "lastNag": lastNag,
+                        "factor": factor
+                    }
                     nags["visits"]++
                 }
             } else {
                 b_Nag = true
-                newSite = {"visits":1,"lastNag":now,"factor":1}
+                newSite = {
+                    "visits": 1,
+                    "lastNag": now,
+                    "factor": 1
+                }
                 nags["lastNag"] = now
                 nags["visits"] = 0
             }
@@ -253,13 +272,21 @@ var User = Backbone.Model.extend({
                 var lastNag = site["lastNag"]
                 var factor = site["factor"]
 
-                newSite = {"visits":visits+1,"lastNag":lastNag,"factor":factor}
+                newSite = {
+                    "visits": visits + 1,
+                    "lastNag": lastNag,
+                    "factor": factor
+                }
             } else {
-                newSite = {"visits":1,"lastNag":now-24*timeThres,"factor":1}
+                newSite = {
+                    "visits": 1,
+                    "lastNag": now - 24 * timeThres,
+                    "factor": 1
+                }
             }
             nags[url] = newSite
         }
-        this.set({ 
+        this.set({
             "nags": nags,
         });
 
@@ -268,16 +295,22 @@ var User = Backbone.Model.extend({
 
     //check if url is in a set (either whitelist or blacklist)
     // documentation for URL.js : http://medialize.github.com/URI.js/docs.html
-    inSet : function(setType, url) {
+    inSet: function(setType, url) {
         var set = this.get(setType);
         var uri = new URI(url);
         var hostname = uri.hostname();
         var protocol = uri.protocol();
-        return (set.where({"url" : hostname}).length || set.where({"url" : protocol + '://' + hostname}).length || set.where({"url" : url}).length);
+        return (set.where({
+            "url": hostname
+        }).length || set.where({
+            "url": protocol + '://' + hostname
+        }).length || set.where({
+            "url": url
+        }).length);
     },
 
     //save the current state to local storage
-    saveState : function(){
+    saveState: function() {
         localStorage.user = JSON.stringify(this);
     },
 });
@@ -293,87 +326,92 @@ var User = Backbone.Model.extend({
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
 function openItem(tabId, url, favIconUrl, title, event_type) {
-    if (!user.isLoggedIn()){
-        if (!user.ignoreLoginPrompt()){
+    if (!user.isLoggedIn()) {
+        if (!user.ignoreLoginPrompt()) {
             chrome.tabs.sendMessage(tabId, {
-                "action" : "prompt",
-                "type" : "loginPrompt",
-                "baseUrl" : baseUrl,
+                "action": "prompt",
+                "type": "loginPrompt",
+                "baseUrl": baseUrl,
             });
         }
-      return;
-    } 
+        return;
+    }
     var timeCheck = checkTimeDelta();
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
 
-	setTimeout( function() {popupInfo(tabId, url);}, 3000 );
-
-	
-	if (user.getIncognito() == false) {
-	
-		//close previous activeItem
-		if (activeItem !== undefined) {
-			if (activeItem.url !== url && activeItem.tabId !== tabId) {
-				closeItem(activeItem.tabId, activeItem.url, "blur", timeCheck.time);
-				activeItem = undefined;
-				updateBadge("");
-			}
-		} 
+    setTimeout(function() {
+        popupInfo(tabId, url);
+    }, 3000);
 
 
+    if (user.getIncognito() == false) {
 
-    	//check to nag
-	    if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(uri.hostname())) {
-	
-	        timeCheck.allow = false; // we need to wait for prompt callback
-	        chrome.tabs.sendMessage(tabId, {
-	            "action": "prompt",
-	            "type" : "trackPrompt", 
-	            "baseUrl": baseUrl,
-	        });
-	        tmpItem = {
-	            "tabId" : tabId,
-	            "url" : url,
-	            "favIconUrl" : favIconUrl,
-	            "title" : title,
-	            "event_type" : event_type,
-	        };
-	        updateBadge("");
-	
-	    } else if (user.inBlackList(url)) {
-	    	updateBadge("");
-	        return;
-	    }
-	    
-	    //open new activeItem
-	    if (user.inWhitelist(url)) {
-	    	if (timeCheck.allow) {
-	        	finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
-	        }
-	        trackBadge();
-	    } else {
-	    	updateBadge("");
-	    }
-	} else {
-		updateBadge("");
-	}
-	
-	//checkForUsers(url);
-	
+        //close previous activeItem
+        if (activeItem !== undefined) {
+            if (activeItem.url !== url && activeItem.tabId !== tabId) {
+                closeItem(activeItem.tabId, activeItem.url, "blur", timeCheck.time);
+                activeItem = undefined;
+                updateBadge("");
+            }
+        }
+
+
+
+        //check to nag
+        if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(uri.hostname())) {
+
+            timeCheck.allow = false; // we need to wait for prompt callback
+            chrome.tabs.sendMessage(tabId, {
+                "action": "prompt",
+                "type": "trackPrompt",
+                "baseUrl": baseUrl,
+            });
+            tmpItem = {
+                "tabId": tabId,
+                "url": url,
+                "favIconUrl": favIconUrl,
+                "title": title,
+                "event_type": event_type,
+            };
+            updateBadge("");
+
+        } else if (user.inBlackList(url)) {
+            updateBadge("");
+            return;
+        }
+
+        //open new activeItem
+        if (user.inWhitelist(url)) {
+            if (timeCheck.allow) {
+                finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
+            }
+            trackBadge();
+        } else {
+            updateBadge("");
+        }
+    } else {
+        updateBadge("");
+    }
+
+    //checkForUsers(url);
+
 }
 
 function popupInfo(tabId, url) {
-	chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
-		activeTabId = arrayOfTabs[0].id;
-		if (activeTabId === tabId) {
-		    chrome.tabs.sendMessage(tabId, {
-		        "action": "prompt",
-		        "type" : "getInfo", 
-		        "baseUrl": baseUrl,
-		    });
-		}
-	});
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function(arrayOfTabs) {
+        activeTabId = arrayOfTabs[0].id;
+        if (activeTabId === tabId) {
+            chrome.tabs.sendMessage(tabId, {
+                "action": "prompt",
+                "type": "getInfo",
+                "baseUrl": baseUrl,
+            });
+        }
+    });
 }
 
 
@@ -382,15 +420,17 @@ function popupInfo(tabId, url) {
     called after a prompt is allowed or timecheck passes
 */
 function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
-	activeItem = {
-        "tabId" : tabId,
-        "url" : url,
-        "favIconUrl" : favIconUrl,
-        "title" : title,
-        "start_event" : event_type,
-        "start_time" : new Date(),
+    activeItem = {
+        "tabId": tabId,
+        "url": url,
+        "favIconUrl": favIconUrl,
+        "title": title,
+        "start_event": event_type,
+        "start_time": new Date(),
     };
-    setTimeout( function() {sendInitialData(tabId);}, 5000 );
+    setTimeout(function() {
+        sendInitialData(tabId);
+    }, 5000);
 
 }
 
@@ -402,13 +442,13 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
 function closeItem(tabId, url, event_type, time) {
     if (activeItem === undefined) return;
     if (user.getIncognito() === true) return;
-    
+
     var time = time || new Date(); // time is undefined for destroy event
-    
+
     var total_time = time - activeItem.start_time;
-    
+
     if (activeItem.tabId === tabId && !user.inBlackList(url) && total_time > 5000) {
-		//write to local storage
+        //write to local storage
         var item = $.extend({}, activeItem); //copy activeItem
 
         item.end_event = event_type;
@@ -419,14 +459,14 @@ function closeItem(tabId, url, event_type, time) {
 
         // send data for server and sync whitelist/blacklist
         if (local_history.length) {
-    		dumpData();
+            dumpData();
             user.getWhitelist()._fetch();
-            user.getBlacklist()._fetch(); 
+            user.getBlacklist()._fetch();
         }
         activeItem = undefined;
-             
+
     } else {
-    	activeItem = undefined;
+        activeItem = undefined;
     }
 }
 
@@ -437,13 +477,13 @@ function checkTimeDelta(delta) {
     var delta = delta || 900
     var now = new Date();
     var allow = true; // default to true allows active item to be set initially
-    if (activeItem !== undefined) { 
+    if (activeItem !== undefined) {
         allow = (now.getTime() - activeItem.start_time) > delta
     }
 
     return {
-        "allow" : allow,
-        "time" : now,
+        "allow": allow,
+        "time": now,
     }
 }
 
@@ -456,11 +496,11 @@ function handleFilterListMsg(msg) {
     var type = msg.type;
     var url = msg.url;
     var list;
-    user.setNagFactor((new URI(url)).hostname(),.5);
+    user.setNagFactor((new URI(url)).hostname(), .5);
     if (type == "whitelist") {
         list = user.getWhitelist();
         if (tmpItem !== null) {
-        	var now = new Date();
+            var now = new Date();
             finishOpen(tmpItem.tabId, tmpItem.url, tmpItem.favIconUrl, tmpItem.title, tmpItem.event_type, now);
             tmpItem = null;
         }
@@ -470,8 +510,8 @@ function handleFilterListMsg(msg) {
         return
     }
     m = list.create({
-        "url" : url,
-        "user" : user.getResourceURI(),
+        "url": url,
+        "user": user.getResourceURI(),
     });
 
     localStorage.user = JSON.stringify(user);
@@ -480,35 +520,35 @@ function handleFilterListMsg(msg) {
 /*
     close an item if the tab is idle
 */
-function handleIdleMsg(msg, tabId) { 
+function handleIdleMsg(msg, tabId) {
     var type = msg.type;
-    if (type == "openItem")  {
+    if (type == "openItem") {
         openTab(tabId, "focus");
-    } else if (type == "closeItem" && activeItem !== undefined) { 
+    } else if (type == "closeItem" && activeItem !== undefined) {
         closeTab(tabId, "idle", function() {
-                activeItem = undefined;
-            });
+            activeItem = undefined;
+        });
     }
 }
 
 /*
     Open the popup so the user can logback in again
 */
-function handleLoginMsg(){
-   openLink(chrome.extension.getURL('html/popup.html'));
+function handleLoginMsg() {
+    openLink(chrome.extension.getURL('html/popup.html'));
 }
 
 /*
     Set the nag factor for exponential backoff
 */
-function handleNagMsg(url){
-   user.setNagFactor((new URI(url)).hostname(),2);
+function handleNagMsg(url) {
+    user.setNagFactor((new URI(url)).hostname(), 2);
 }
 
 /*
     Store the ignore state so the popup message does not display
 */
-function handleIgnoreMsg(){
+function handleIgnoreMsg() {
     user.setLoginPrompt(true);
 }
 
@@ -519,23 +559,25 @@ function handleIgnoreMsg(){
 	Get active users from server
 */
 function checkForUsers(url) {
-	var encoded_url = encodeURIComponent(url);
-	var req_url = sprintf("%s/ext/getActiveUsers?url=%s", baseUrl, encoded_url);
-	var text = $.ajax({
-		type: "GET",
-		url: req_url,
-		dataType: "json",
-		async: false
+    var encoded_url = encodeURIComponent(url);
+    var req_url = sprintf("%s/ext/getActiveUsers?url=%s", baseUrl, encoded_url);
+    var text = $.ajax({
+        type: "GET",
+        url: req_url,
+        dataType: "json",
+        async: false
     }).responseText;
-    
+
     var parsed = JSON.parse(text);
-	
-	var users = parsed["result"]['page'];
-	var count = users.length;
-	if (count > 0) {
-		updateBadge(count.toString());
-		chrome.browserAction.setBadgeBackgroundColor({"color":"#0000ff"});
-	}
+
+    var users = parsed["result"]['page'];
+    var count = users.length;
+    if (count > 0) {
+        updateBadge(count.toString());
+        chrome.browserAction.setBadgeBackgroundColor({
+            "color": "#0000ff"
+        });
+    }
 }
 
 
@@ -545,44 +587,44 @@ function checkForUsers(url) {
 */
 function sendInitialData(tabId) {
 
-	chrome.tabs.query(
-	  	{currentWindow: true, active : true},
-	  	function(tabArray){
-	  		var active = tabArray[0];
-	  	
-	  		if(tabId === active.id) {
-				
-				var end_time = new Date();
-				var total_time = end_time - activeItem.start_time;
-				
-				if (total_time > 5000) {
-				    var url = getApiURL("history-data");
-				    
-				    var item = $.extend({}, activeItem); //copy activeItem
-				    item.end_event = '';
-				    item.end_time = end_time;
-				    item.total_time = total_time;
-				    item.humanize_time = moment.humanizeDuration(item.total_time);
-				
-				    payload = serializePayload(item);
-				
-				    $.ajax({
-				        type: "POST",
-				        url: url,
-				        data: payload,
-				        dataType: "text",
-				        processData:  false,
-				        contentType: "application/json",
-				        error: function(jqXHR, textStatus, errorThrown){
-				        },
-				        success: function(data, textStatus, jqXHR) {
-				        },
-				    });
-				}
-			}
-	  	
-	  	}
-	);
+    chrome.tabs.query({
+            currentWindow: true,
+            active: true
+        },
+        function(tabArray) {
+            var active = tabArray[0];
+
+            if (tabId === active.id) {
+
+                var end_time = new Date();
+                var total_time = end_time - activeItem.start_time;
+
+                if (total_time > 5000) {
+                    var url = getApiURL("history-data");
+
+                    var item = $.extend({}, activeItem); //copy activeItem
+                    item.end_event = '';
+                    item.end_time = end_time;
+                    item.total_time = total_time;
+                    item.humanize_time = moment.humanizeDuration(item.total_time);
+
+                    payload = serializePayload(item);
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: payload,
+                        dataType: "text",
+                        processData: false,
+                        contentType: "application/json",
+                        error: function(jqXHR, textStatus, errorThrown) {},
+                        success: function(data, textStatus, jqXHR) {},
+                    });
+                }
+            }
+
+        }
+    );
 }
 
 
@@ -593,7 +635,7 @@ function dumpData() {
     var backlog = []
     var url = getApiURL("history-data");
     var stop = false;
-    $.each(local_history, function(index, item){
+    $.each(local_history, function(index, item) {
         if (stop) return; //stop sending on error
         payload = serializePayload(item);
         var that = this;
@@ -602,16 +644,16 @@ function dumpData() {
             url: url,
             data: payload,
             dataType: "text",
-            processData:  false,
+            processData: false,
             contentType: "application/json",
-            error: function(jqXHR, textStatus, errorThrown){
+            error: function(jqXHR, textStatus, errorThrown) {
                 stop = true;
                 // if (navigator.onLine){
                 //     user.logout(); //notify user of server error
                 // }
             },
             success: function(data, textStatus, jqXHR) {
-               local_history.splice(index, 1); //remove item from history on success 
+                local_history.splice(index, 1); //remove item from history on success 
             },
         });
     });
@@ -621,7 +663,7 @@ function dumpData() {
     Empty data
 */
 function emptyData() {
-    $.each(local_history, function(index, item){
+    $.each(local_history, function(index, item) {
         local_history.splice(index, 1); //remove item from history
     });
 }
@@ -644,15 +686,15 @@ function getApiURL(resource, id, params) {
     var apiBase = sprintf("%s/api/v1/%s", baseUrl, resource);
     var getParams = ""
     for (var key in params) {
-      getParams += sprintf("&%s=%s", key, params[key]);
+        getParams += sprintf("&%s=%s", key, params[key]);
     }
-    
+
     if (getParams !== "") {
         apiBase += "?" + getParams.slice(1);
     }
     if (id != null) {
         apiBase += "/" + id;
-    } 
+    }
     return apiBase
 }
 
@@ -660,7 +702,9 @@ function getApiURL(resource, id, params) {
 Helper to open urls from the extension to the main website
 */
 function openLink(url) {
-    chrome.tabs.create({"url": url});
+    chrome.tabs.create({
+        "url": url
+    });
 }
 
 ///////////////////local storage methods//////////////
@@ -682,7 +726,7 @@ function getLocalStorageUser() {
     var storedUser = localStorage.user;
     if (storedUser === undefined || storedUser === "null") {
         user = new User();
-        localStorage.user = JSON.stringify(user)//store user
+        localStorage.user = JSON.stringify(user) //store user
         return user
     }
 
@@ -691,7 +735,7 @@ function getLocalStorageUser() {
 
     u.setUsername(o.username);
     u.setLogin(o.loggedIn);
-    if (o.loggedIn){
+    if (o.loggedIn) {
         //if the user is logged in don't ignore the prompt
         u.setLoginPrompt(false);
     }
@@ -703,7 +747,7 @@ function getLocalStorageUser() {
 
 /*
     Clear the local storage for the given key
-*/ 
+*/
 function clearLocalStorage(key) {
     localStorage[key] = null;
 }
@@ -711,7 +755,7 @@ function clearLocalStorage(key) {
 /*
     remove all local history from storage
 */
-function clearStorage(){
+function clearStorage() {
     localStorage.removeItem("local_history")
     local_history = []
 }
@@ -723,29 +767,32 @@ function clearStorage(){
     wraps the chrome badge update function
 */
 function updateBadge(text) {
-    chrome.browserAction.setBadgeText(
-        {
-            "text" : text
-        });
+    chrome.browserAction.setBadgeText({
+        "text": text
+    });
 }
 
 /*
     helper to generate a badge on tracked sites
 
 */
-function trackBadge(){
+function trackBadge() {
     updateBadge("\u2713");
     //green
-    chrome.browserAction.setBadgeBackgroundColor({"color":"#50ba6a"});
+    chrome.browserAction.setBadgeBackgroundColor({
+        "color": "#50ba6a"
+    });
 }
 /*
     clear login flag
 */
 function loginBadge(e) {
-    chrome.browserAction.setBadgeBackgroundColor({"color":"#cd5c5c"});
+    chrome.browserAction.setBadgeBackgroundColor({
+        "color": "#cd5c5c"
+    });
     if (e == "logout") {
         updateBadge("!");
-    } else if(e == "login") {
+    } else if (e == "login") {
         updateBadge("");
     }
 }

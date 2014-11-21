@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
     var myDiv = $("#myDiv");
-    
+
     //
     // POPULATE "SET" SECTION
     //
@@ -15,13 +15,13 @@ $(document).ready(function() {
     myDiv.append(urlBoxLabel);
     myDiv.append(urlBox);
 
-    urlBox.bind("enterKey",function(e){
-           console.log("enter key in urlbox");//do stuff here
-           localStorage.setItem("baseUrl",urlBox.val()); // is there something more like "self"?
+    urlBox.bind("enterKey", function(e) {
+        console.log("enter key in urlbox"); //do stuff here
+        localStorage.setItem("baseUrl", urlBox.val()); // is there something more like "self"?
     });
-    urlBox.keyup(function(e){
-        if(e.keyCode == 13)    {
-          $(this).trigger("enterKey");
+    urlBox.keyup(function(e) {
+        if (e.keyCode == 13) {
+            $(this).trigger("enterKey");
         }
     });
 
@@ -35,7 +35,7 @@ $(document).ready(function() {
 
     if (userVal) {
         var userInfo = $("#userInfo");
-        
+
         // auxiliary function for listing properties
         var populateDivWithList = function(someDiv, list, property) {
             $.each(list, function(key, value) {
@@ -51,7 +51,7 @@ $(document).ready(function() {
 
         if (userVal.whitelist) {
             var wlDiv = $("#whitelist");
-            populateDivWithList(wlDiv,userVal.whitelist,"url");
+            populateDivWithList(wlDiv, userVal.whitelist, "url");
         }
 
         console.log("Hello world yeah yeah 48 from options.js");
@@ -64,7 +64,7 @@ $(document).ready(function() {
 
         if (userVal.blacklist) {
             var blDiv = $("#blacklist");
-            populateDivWithList(blDiv,userVal.blacklist, "url");
+            populateDivWithList(blDiv, userVal.blacklist, "url");
         }
 
         console.log("Hello world yeah yeah 63 from options.js");
@@ -78,7 +78,7 @@ $(document).ready(function() {
         if (userVal.loggedIn != undefined) {
             liDiv.append($("<div>").text(userVal.loggedIn));
         } else {
-            liDiv.append($("<div>").text("FFalse")); 
+            liDiv.append($("<div>").text("FFalse"));
         }
 
         if (userVal.username) {
@@ -102,10 +102,12 @@ $(document).ready(function() {
         //localStorage.removeItem("baseUrl");
     };
 
-    var myButton = $("<button/>",
-    {
+    var myButton = $("<button/>", {
         text: "Clear localStorage",
-        click: function () { clearLocalStorage();window.location.reload();}
+        click: function() {
+            clearLocalStorage();
+            window.location.reload();
+        }
     });
 
     $("#options").append(myButton);
