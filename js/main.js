@@ -1,6 +1,6 @@
 ///////////Global vars/////////////
 // global website base, set to localhost for testing, use deploy script to change
-var baseUrl = "http://eyebrowse.csail.mit.edu";
+var baseUrl = "http://localhost:8000";
 // var baseUrl = "http://eyebrowse.csail.mit.edu";
 var siteName = "Eyebrowse";
 
@@ -52,7 +52,7 @@ var FilterList = Backbone.Collection.extend({
             error: _.bind(function(model, xhr, options) {
                 //DO NOT LOG OUT IF SERVER ERRORS
                 // if (typeof user !== "undefined" && navigator.onLine){
-                //user.logout();   
+                //user.logout();
                 // }
             }, this)
         });
@@ -340,9 +340,13 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     var uri = new URI(url);
     //if its not in the whitelist lets check that the user has it
 
-    setTimeout(function() {
-        popupInfo(tabId, url);
-    }, 3000);
+    // setTimeout(function() {
+    //     popupInfo(tabId, url);
+    // }, 3000);
+
+    setInterval(function() {
+        tickerInfo(tabId, url);
+    }, 1000);
 
 
     if (user.getIncognito() == false) {
@@ -414,6 +418,22 @@ function popupInfo(tabId, url) {
     });
 }
 
+function tickerInfo(tabId, url) {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function(arrayOfTabs) {
+        activeTabId = arrayOfTabs[0].id;
+        if (activeTabId === tabId) {
+            chrome.tabs.sendMessage(tabId, {
+                "action": "prompt",
+                "type": "getTickerInfo",
+                "baseUrl": baseUrl,
+            });
+        }
+    });
+}
+
 
 /*
     change the active item state of an item.
@@ -434,9 +454,9 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
 
 }
 
-/* 
-    There is only ever one activeItem at a time so only close out the active one. 
-    This event will be fired when a tab is closed or unfocused but we would have 
+/*
+    There is only ever one activeItem at a time so only close out the active one.
+    This event will be fired when a tab is closed or unfocused but we would have
     already "closed" the item so we don"t want to do it again.
 */
 function closeItem(tabId, url, event_type, time) {
@@ -653,7 +673,7 @@ function dumpData() {
                 // }
             },
             success: function(data, textStatus, jqXHR) {
-                local_history.splice(index, 1); //remove item from history on success 
+                local_history.splice(index, 1); //remove item from history on success
             },
         });
     });
@@ -806,7 +826,7 @@ function initBadge() {
     }
 }
 
-// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
+// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log.
 var activeItem;
 var tmpItem;
 
