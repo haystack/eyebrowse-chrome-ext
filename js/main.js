@@ -344,7 +344,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     //     popupInfo(tabId, url);
     // }, 3000);
 
-    setInterval(function() {
+    setTimeout(function() {
         tickerInfo(tabId, url);
     }, 1000);
 

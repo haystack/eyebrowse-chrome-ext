@@ -8,8 +8,8 @@ function setup(baseUrl, promptType, host, url) {
         return;
     }
     if (promptType === "getTickerInfo") {
-        var size = 400;
-        var height = 40;
+        var size = 500;
+        var height = 80;
         var settings = {
             "z-index": 999999999,
             "border-style": "none",
