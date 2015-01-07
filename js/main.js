@@ -76,6 +76,7 @@ var User = Backbone.Model.extend({
         "incognito": false,
         "resourceURI": "/api/v1/user/",
         "ignoreLoginPrompt": true,
+        "tickerDisplay": true,
     },
 
     initialize: function() {
@@ -93,6 +94,15 @@ var User = Backbone.Model.extend({
         });
     },
 
+    getTickerDisplay: function() {
+        return this.get("tickerDisplay");
+    },
+
+    setTickerDisplay: function(val) {
+        this.set({
+            "tickerDisplay": val,
+        });
+    },
 
     getWhitelist: function() {
         return this.get("whitelist")
@@ -343,6 +353,8 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     // setTimeout(function() {
     //     popupInfo(tabId, url);
     // }, 3000);
+
+
 
     setTimeout(function() {
         tickerInfo(tabId, url);

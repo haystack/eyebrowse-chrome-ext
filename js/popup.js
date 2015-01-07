@@ -318,6 +318,8 @@ LoginView = Backbone.View.extend({
         //
         // Update user attributes in localStorage
         //
+        console.log("LOGGING USER COMPLETE LOGIN");
+        console.log(user);
         user.getBlacklist().fetch({
             success: function(data) {
                 user.saveState();
