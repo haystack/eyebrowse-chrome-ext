@@ -7,7 +7,7 @@ body {
     padding-bottom:0px;
     padding-left: 0px;
     padding-right: 0px;
-    width:400px;
+    width:465px;
     font-size: 100%;
     line-height: 1.125em;
 }
@@ -102,7 +102,7 @@ a:focus {
 }
 
 .nav-container {
-	width: 404px;
+	width: 484px;
 	margin-left: -2px;
 }
 
@@ -201,7 +201,7 @@ a:focus {
 	display: block;
 	position: relative;
 	top: 10px;
-	width: 204px;
+	width: 264px;
 	height: 170px;
 	background-color:#f5f5f5;
 	overflow-y: auto;
@@ -230,7 +230,7 @@ a:focus {
 }
 
 #chatwrapper {
-	width: 379px;
+	width: 439px;
 	height: 200px;
 }
 
@@ -242,7 +242,7 @@ a:focus {
 
 #chattingarea {
 	float: right;
-	width: 224px;
+	width: 284px;
 	height: 160px;
 }
 
@@ -252,7 +252,7 @@ a:focus {
 	left: 10px;
 	font-size: .9em;
 	height: 40px;
-	width: 380px;
+	width: 445px;
 	border-bottom: 1px solid #a9a9a9;
 }
 
@@ -272,7 +272,7 @@ a:focus {
 }
 
 #rightnav {
-	width: 345px;
+	width: 410px;
 	position: relative;
 	left: 5px;
 	float: right;
@@ -293,7 +293,7 @@ a:focus {
     outline:0;
     font-size: 0.75em;
     height:20px;
-    width: 224px;
+    width: 284px;
  }
 
 #messagebox {
@@ -305,7 +305,7 @@ a:focus {
     font-size: 0.8em;
     line-height: 15px;
     height:40px;
-    width: 308px;
+    width: 368px;
     resize: none;
  }
 
@@ -402,7 +402,7 @@ a:focus {
 
 
 #pagefeed {
-	width: 368px;
+	width: 434px;
 	display: block;
 	height: 115px;
 	overflow-y: auto;

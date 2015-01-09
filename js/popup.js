@@ -330,6 +330,13 @@ LoginView = Backbone.View.extend({
                 user.saveState();
             }
         });
+        // user.fetch({
+        //     success: function(data) {
+        //         console.log("LOGGING DATA COMPLETE **************");
+        //         console.log(data);
+        //         user.saveState();
+        //     }
+        // });
     },
 
     logout: function() {
@@ -455,7 +462,9 @@ function populateSubNav() {
 
     $("#navSubLinks").append(' <a href="" id="mark_visit">Mark visit to this page</a> | ');
 
-    $("#navSubLinks").append('<a href="" id="whitelist"></a>');
+    $("#navSubLinks").append('<a href="" id="whitelist"></a> | ');
+
+    $("#navSubLinks").append(' <a href="" id="tickerDisplay"></a>');
 
     if (user.getIncognito() == true) {
         $("#incognito").html('<span class="red">Eyebrowse Off</span>');
@@ -463,6 +472,11 @@ function populateSubNav() {
         $("#incognito").html('<span class="green">Eyebrowse On</span>');
     }
 
+    if (user.getTickerDisplay() == true) {
+        $("#tickerDisplay").html('<span>Ticker Mode</span>');
+    } else {
+        $("#tickerDisplay").html('<span>Bubble Mode</span>');
+    }
 
     if (user.inWhitelist(window.g_url)) {
         $("#whitelist").text("Domain is whitelisted");
@@ -498,6 +512,17 @@ function populateSubNav() {
             chrome.browserAction.setIcon({
                 path: '/img/eye.png'
             });
+        }
+    });
+
+    $("#tickerDisplay").click(function(e) {
+        e.preventDefault();
+        if (user.getTickerDisplay() == false) {
+            user.setTickerDisplay(true);
+            $("#tickerDisplay").html('<span>Ticker Mode</span>');
+        } else {
+            user.setTickerDisplay(false);
+            $("#tickerDisplay").html('<span>Bubble Mode</span>');
         }
     });
 
