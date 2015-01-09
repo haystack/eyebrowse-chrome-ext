@@ -360,17 +360,23 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     }
     var timeCheck = checkTimeDelta();
     var uri = new URI(url);
+
     //if its not in the whitelist lets check that the user has it
 
-    // setTimeout(function() {
-    //     popupInfo(tabId, url);
-    // }, 3000);
+    // which display mode
+    if (user.getTickerDisplay()) {
+        setTimeout(function() {
+            tickerInfo(tabId, url);
+        }, 1000);
+    } else {
+        setTimeout(function() {
+            popupInfo(tabId, url);
+        }, 3000);
+    }
 
 
 
-    setTimeout(function() {
-        tickerInfo(tabId, url);
-    }, 1000);
+
 
 
     if (user.getIncognito() == false) {

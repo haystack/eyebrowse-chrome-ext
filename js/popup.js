@@ -309,7 +309,7 @@ LoginView = Backbone.View.extend({
 
     completeLogin: function(username) {
         $("#login_container").remove();
-        $("body").css("width", "400px");
+        $("body").css("width", "465px");
 
         user.login();
         user.setUsername(username);
@@ -318,8 +318,6 @@ LoginView = Backbone.View.extend({
         //
         // Update user attributes in localStorage
         //
-        console.log("LOGGING USER COMPLETE LOGIN");
-        console.log(user);
         user.getBlacklist().fetch({
             success: function(data) {
                 user.saveState();
@@ -330,13 +328,6 @@ LoginView = Backbone.View.extend({
                 user.saveState();
             }
         });
-        // user.fetch({
-        //     success: function(data) {
-        //         console.log("LOGGING DATA COMPLETE **************");
-        //         console.log(data);
-        //         user.saveState();
-        //     }
-        // });
     },
 
     logout: function() {
