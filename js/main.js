@@ -81,7 +81,6 @@ var User = Backbone.Model.extend({
 
     initialize: function() {
         _.bindAll(this); //allow access to 'this' in callbacks with "this" meaning the object not the context of the callback
-        // this._fetch();
     },
 
     getIncognito: function() {
@@ -322,18 +321,6 @@ var User = Backbone.Model.extend({
     //save the current state to local storage
     saveState: function() {
         localStorage.user = JSON.stringify(this);
-    },
-
-    //wrapper for fetch which logs user out if server errs
-    _fetch: function() {
-        this.fetch({
-            error: _.bind(function(model, xhr, options) {
-                //DO NOT LOG OUT IF SERVER ERRORS
-                // if (typeof user !== "undefined" && navigator.onLine){
-                //user.logout();
-                // }
-            }, this)
-        });
     },
 });
 
