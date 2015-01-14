@@ -50,9 +50,9 @@ var FilterList = Backbone.Collection.extend({
     _fetch: function() {
         this.fetch({
             error: _.bind(function(model, xhr, options) {
-                //DO NOT LOG OUT IF SERVER ERRORS
-                // if (typeof user !== "undefined" && navigator.onLine){
-                //user.logout();
+                // DO NOT LOG OUT IF SERVER ERRORS
+                // if (typeof user !== "undefined" && navigator.onLine) {
+                //   user.logout();
                 // }
             }, this)
         });
