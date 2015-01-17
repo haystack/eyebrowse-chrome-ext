@@ -7,8 +7,23 @@ function setup(baseUrl, promptType, host, url) {
         $("#eyebrowse-frame").css("z-index", 999999999);
         return;
     }
+    if (promptType === "getTickerInfo") {
+        var size = 500;
+        var height = 80;
+        var settings = {
+            "z-index": 999999999,
+            "border-style": "none",
+            "width": size,
+            "height": height,
+            "position": "fixed",
+            "padding": "0px",
+            "margin": "0px",
+            "right": "0px",
+            "bottom": "0px",
+        };
 
-    if (promptType === "trackPrompt" || promptType === "loginPrompt") {
+        var eyebrowseFrame = $("<iframe>").css(settings).attr("id", "eyebrowse-frame").attr("src", baseUrl + "/ext/" + promptType + "?url=" + url);
+    } else if (promptType === "trackPrompt" || promptType === "loginPrompt") {
         var size = 350;
         var height = 200;
         var settings = {
@@ -22,7 +37,6 @@ function setup(baseUrl, promptType, host, url) {
         };
         var eyebrowseFrame = $("<iframe>").css(settings).attr("id", "eyebrowse-frame").attr("src", baseUrl + "/ext/" + promptType + "?site=" + host);
     } else {
-
         var size = 400;
         var height = 70;
         var settings = {
