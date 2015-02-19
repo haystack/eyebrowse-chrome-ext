@@ -1,7 +1,6 @@
 ///////////Global vars/////////////
 // global website base, set to localhost for testing, use deploy script to change
-//var baseUrl = "http://127.0.0.1:8000";
- var baseUrl = "http://eyebrowse.csail.mit.edu";
+var baseUrl = "http://localhost:8000";
 var siteName = "Eyebrowse";
 
 ///////////////////models//////////////////////
@@ -75,7 +74,8 @@ var User = Backbone.Model.extend({
         "username": "",
         "incognito": false,
         "resourceURI": "/api/v1/user/",
-        "ignoreLoginPrompt": true,
+        "ignoreLoginPrompt": false,
+        "csrf": "",
     },
 
     initialize: function() {
@@ -95,20 +95,25 @@ var User = Backbone.Model.extend({
 
 
     getWhitelist: function() {
-        return this.get("whitelist")
+        return this.get("whitelist");
     },
 
     getBlacklist: function() {
-        return this.get("blacklist")
+        return this.get("blacklist");
     },
 
     getNags: function() {
-        return this.get("nags")
+        return this.get("nags");
     },
 
     getUsername: function() {
-        return this.get("username")
+        return this.get("username");
     },
+    
+    getCSRF: function() {
+        return this.get("csrf");
+    },
+
 
     getResourceURI: function() {
         return this.get("resourceURI");
@@ -122,13 +127,17 @@ var User = Backbone.Model.extend({
 					       async: false
 			    	}).responseText);
          if (data.res) {
-         	this.set({"username": data.username});
-         	this.set({"resourceURI": "/api/v1/user/" + data.username + "/"});
+         	this.setUsername(data.username);
          	this.login();
          	return true;
          } else {
-         	this.logout();
-         	this.setLoginPrompt(false);
+         	if (this.isLoggedIn()) {
+         		this.logout();
+         		this.setLoginPrompt(false);
+         	}
+         	else {
+         		this.logout();
+         	}
          	return false;
          }
     },
@@ -173,11 +182,17 @@ var User = Backbone.Model.extend({
         });
         this.setResourceURI(username);
     },
+    
+    setCSRF: function(csrf) {
+        this.set({
+            "csrf": csrf,
+        });
+    },
 
     setResourceURI: function(username) {
         this.set({
             "resourceURI": sprintf("/api/v1/user/%s/", username)
-        })
+        });
     },
 
     setWhitelist: function(whitelist) {
@@ -309,7 +324,8 @@ var User = Backbone.Model.extend({
             "nags": nags,
         });
 
-        return b_Nag
+       //return b_Nag
+       return true;
     },
 
     //check if url is in a set (either whitelist or blacklist)
@@ -375,11 +391,8 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
             }
         }
 
-
-
         //check to nag
-        if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(uri.hostname())) {
-
+        if (!user.inWhitelist(uri.hostname()) && !user.inBlackList(uri.hostname()) && user.shouldNag(uri.hostname())) {
             timeCheck.allow = false; // we need to wait for prompt callback
             chrome.tabs.sendMessage(tabId, {
                 "action": "prompt",
@@ -395,7 +408,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
             };
             updateBadge("");
 
-        } else if (user.inBlackList(url)) {
+        } else if (user.inBlackList(uri.hostname())) {
             updateBadge("");
             return;
         }
@@ -428,6 +441,7 @@ function popupInfo(tabId, url) {
                 "action": "prompt",
                 "type": "getInfo",
                 "baseUrl": baseUrl,
+                "user": user,
             });
         }
     });
@@ -439,6 +453,7 @@ function popupInfo(tabId, url) {
     called after a prompt is allowed or timecheck passes
 */
 function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
+	
     activeItem = {
         "tabId": tabId,
         "url": url,
@@ -515,21 +530,26 @@ function handleFilterListMsg(msg) {
     var type = msg.type;
     var url = msg.url;
     var list;
-    user.setNagFactor((new URI(url)).hostname(), .5);
-    if (type == "whitelist") {
+    
+    var uri = new URI(url);
+    user.setNagFactor(uri.hostname(), .5);
+    
+    if (type === "whitelist") {
         list = user.getWhitelist();
         if (tmpItem !== null) {
             var now = new Date();
             finishOpen(tmpItem.tabId, tmpItem.url, tmpItem.favIconUrl, tmpItem.title, tmpItem.event_type, now);
+            trackBadge();
             tmpItem = null;
         }
-    } else if (type == "blacklist") {
+    } else if (type === "blacklist") {
         list = user.getBlacklist();
     } else {
-        return
+        return;
     }
+
     m = list.create({
-        "url": url,
+        "url": uri.hostname(),
         "user": user.getResourceURI(),
     });
 
@@ -745,14 +765,26 @@ function getLocalStorageUser() {
     var storedUser = localStorage.user;
     if (storedUser === undefined || storedUser === "null") {
         user = new User();
-        localStorage.user = JSON.stringify(user) //store user
-        return user
+
+	    $.get(baseUrl + "/accounts/login/", function(data) {
+	         var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
+	         var match = data.match(REGEX);
+	         if (match) {
+	        		match = match[0];
+	        		var csrfmiddlewaretoken = match.slice(match.indexOf("value=") + 7, match.length - 1); // grab the csrf token
+	        		user.setCSRF(csrfmiddlewaretoken);
+	        		localStorage.user = JSON.stringify(user);
+	        }});
+
+        localStorage.user = JSON.stringify(user); //store user
+        return user;
     }
 
     o = JSON.parse(storedUser);
     var u = new User();
 
     u.setUsername(o.username);
+    u.setCSRF(o.csrf);
     u.setLogin(o.loggedIn);
     if (o.loggedIn) {
         //if the user is logged in don't ignore the prompt
@@ -761,7 +793,7 @@ function getLocalStorageUser() {
     u.setBlacklist(o.blacklist);
     u.setWhitelist(o.whitelist);
 
-    return u
+    return u;
 }
 
 /*

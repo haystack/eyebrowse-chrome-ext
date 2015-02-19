@@ -259,23 +259,36 @@ LoginView = Backbone.View.extend({
         var username = $("#id_username").val();
         g_username = username;
         var password = $("#id_password").val();
-        if (username === " || password === ") {
+        if (username === "" || password === "") {
             self.displayErrors("Enter a username and a password");
         } else {
-            $.get(url_login(), function(data) {
-                self.postLogin(data, username, password);
-            });
+        	if (user.getCSRF() !== "") {
+        		self.postLogin(user.getCSRF(), username, password);
+        	} else {
+	            $.get(url_login(), function(data) {
+	            	var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
+			        var match = data.match(REGEX);
+			        var self = this;
+			        if (match) {
+			            match = match[0];
+			            var csrf = match.slice(match.indexOf("value=") + 7, match.length - 1); // grab the csrf token
+	                	user.setCSRF(csrf);
+	                	self.postLogin(csrfmiddlewaretoken, username, password);
+	            	}
+	            	else if (match == null) {
+			            self.displayErrors("Unable to connect, try again later.");
+			        } else {
+			            self.completeLogin(username);
+			        }
+	           });
+          }
         }
     },
 
-    postLogin: function(data, username, password) {
-        var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
-        var match = data.match(REGEX);
-        var self = this;
-        if (match) {
-            match = match[0];
-            var csrfmiddlewaretoken = match.slice(match.indexOf("value=") + 7, match.length - 1); // grab the csrf token
-            //now call the server and login
+    postLogin: function(csrfmiddlewaretoken, username, password) {
+    	var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
+			        
+         //now call the server and login
             $.ajax({
                 url: url_login(),
                 type: "POST",
@@ -291,7 +304,7 @@ LoginView = Backbone.View.extend({
                     if (match) { // we didn"t log in successfully
                         self.displayErrors("Invalid username or password");
                     } else {
-                        self.completeLogin(username);
+                    	completeLogin(username);
                     }
                 },
                 error: function(data) {
@@ -299,34 +312,6 @@ LoginView = Backbone.View.extend({
                     self.displayErrors("Unable to connect, try again later.");
                 }
             });
-        } else if (match == null) {
-            self.displayErrors("Unable to connect, try again later.");
-        } else {
-            self.completeLogin(username);
-        }
-    },
-
-    completeLogin: function(username) {
-        $("#login_container").remove();
-        $("body").css("width", "400px");
-
-        user.login();
-        user.setUsername(username);
-        navView.render("home_tab");
-        homeView = new HomeView();
-        //
-        // Update user attributes in localStorage
-        //
-        user.getBlacklist().fetch({
-            success: function(data) {
-                user.saveState();
-            }
-        });
-        user.getWhitelist().fetch({
-            success: function(data) {
-                user.saveState();
-            }
-        });
     },
 
     logout: function() {
@@ -345,6 +330,7 @@ LoginView = Backbone.View.extend({
     },
 
 });
+
 
 NavView = Backbone.View.extend({
     "el": $(".nav-container"),
@@ -412,6 +398,30 @@ HomeView = Backbone.View.extend({
         $(this.el).html(template);
     },
 });
+
+function completeLogin(username) {
+    $("#login_container").remove();
+    $("body").css("width", "400px");
+
+    user.login();
+    user.setUsername(username);
+    
+    navView.render("home_tab");
+    homeView = new HomeView();
+    //
+    // Update user attributes in localStorage
+    //
+    user.getBlacklist().fetch({
+        success: function(data) {
+            user.saveState();
+        }
+    });
+    user.getWhitelist().fetch({
+        success: function(data) {
+            user.saveState();
+        }
+    });
+}
 
 function setupMessageBox() {
     $("#messagebox")

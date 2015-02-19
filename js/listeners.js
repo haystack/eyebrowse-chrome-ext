@@ -118,7 +118,7 @@ function messageListener() {
     helper to execute messages between content and background script
 */
 function executeMessage(request, sender, sendResponse) {
-    var msg = JSON.parse(request)
+    var msg = JSON.parse(request);
     var action = msg.action;
     var ACTION_MAP = {
         "idle": [handleIdleMsg, msg, sender.tab.id],
@@ -126,7 +126,7 @@ function executeMessage(request, sender, sendResponse) {
         "login": [handleLoginMsg],
         "ignore": [handleIgnoreMsg],
         "nag": [handleNagMsg, msg.url],
-    }
+    };
 
     if (action in ACTION_MAP) {
         var args = ACTION_MAP[action]; //get mapped function and args
