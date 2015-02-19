@@ -1,7 +1,7 @@
 ///////////Global vars/////////////
 // global website base, set to localhost for testing, use deploy script to change
-var baseUrl = "http://eyebrowse.csail.mit.edu";
-// var baseUrl = "http://eyebrowse.csail.mit.edu";
+//var baseUrl = "http://127.0.0.1:8000";
+ var baseUrl = "http://eyebrowse.csail.mit.edu";
 var siteName = "Eyebrowse";
 
 ///////////////////models//////////////////////
@@ -111,14 +111,33 @@ var User = Backbone.Model.extend({
     },
 
     getResourceURI: function() {
-        return this.get("resourceURI")
+        return this.get("resourceURI");
+    },
+    
+    checkLoggedIn: function() {		     
+		var data = $.parseJSON(
+						$.ajax(baseUrl + "/ext/loggedIn", {
+					       type: "GET",
+					       dataType: "json",
+					       async: false
+			    	}).responseText);
+         if (data.res) {
+         	this.set({"username": data.username});
+         	this.set({"resourceURI": "/api/v1/user/" + data.username + "/"});
+         	this.login();
+         	return true;
+         } else {
+         	this.logout();
+         	this.setLoginPrompt(false);
+         	return false;
+         }
     },
 
-    isLoggedIn: function() {
-        if (this.getUsername() === this.defaults.username || this.getResourceURI() === this.defaults.resourceURI) {
+    isLoggedIn: function() {	     
+		if (this.getUsername() === this.defaults.username || this.getResourceURI() === this.defaults.resourceURI) {
             this.logout();
         }
-        return this.get("loggedIn")
+        return this.get("loggedIn");
     },
 
     ignoreLoginPrompt: function() {
@@ -326,7 +345,7 @@ var User = Backbone.Model.extend({
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
 function openItem(tabId, url, favIconUrl, title, event_type) {
-    if (!user.isLoggedIn()) {
+    if (!user.checkLoggedIn()) {
         if (!user.ignoreLoginPrompt()) {
             chrome.tabs.sendMessage(tabId, {
                 "action": "prompt",
@@ -801,7 +820,7 @@ function loginBadge(e) {
     initialize the badge with login flag
 */
 function initBadge() {
-    if (!user.isLoggedIn()) {
+    if (!user.checkLoggedIn()) {
         loginBadge("logout");
     }
 }

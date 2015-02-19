@@ -289,7 +289,6 @@ LoginView = Backbone.View.extend({
                 success: function(data) {
                     var match = data.match(REGEX);
                     if (match) { // we didn"t log in successfully
-
                         self.displayErrors("Invalid username or password");
                     } else {
                         self.completeLogin(username);
@@ -870,6 +869,9 @@ function url_logout() {
 $(document).ready(function() {
     window.backpage = chrome.extension.getBackgroundPage();
     user = backpage.user;
+    
+    logged_in = user.checkLoggedIn();
+    
     baseUrl = backpage.baseUrl;
     navView = new NavView();
     loginView = new LoginView(); // (presumably) calls initialization
@@ -883,7 +885,7 @@ $(document).ready(function() {
         ajaxSetup(cookie.value);
     });
 
-    if (user.isLoggedIn()) {
+    if (logged_in) {
         homeView = new HomeView();
     }
     $("#home_tab").click(function() {
