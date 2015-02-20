@@ -324,8 +324,7 @@ var User = Backbone.Model.extend({
             "nags": nags,
         });
 
-       //return b_Nag
-       return true;
+       return b_Nag;
     },
 
     //check if url is in a set (either whitelist or blacklist)
