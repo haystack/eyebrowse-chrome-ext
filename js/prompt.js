@@ -10,7 +10,7 @@ function createTrackPrompt(url, baseUrl) {
 	
 	div_html = '';
 	div_html += '<div id="eyebrowse-frame" style="';
-	div_html += 'z-index: 999999999 !important; ';
+	div_html += 'z-index: 2147483647 !important; ';
     div_html += 'position: fixed !important; ';
     div_html += 'display: block !important; ';
     div_html += 'background-color: #333333 !important; ';
@@ -26,12 +26,20 @@ function createTrackPrompt(url, baseUrl) {
 	div_html += '">';
 	
 	div_html += '<span style="font-size: 12px !important; font-family: verdana !important; color: #ffffff !important;">';
-	div_html += '<span>Track activity from <p class="site"> ' + new URL(url).hostname + ' </p></span> ';
+	div_html += '<span>Track activity from <br /> ' + new URL(url).hostname + '</span> ';
 	div_html += '<p><button style="';
 	div_html += 'color: #fff !important;';
 	div_html += 'background-color: #5cb85c !important;';
+	div_html += 'background: #5cb85c !important;';
 	div_html += 'border-color: #4cae4c !important;';
 	div_html += 'padding: 6px 12px !important;';
+	
+	div_html += 'margin: 3px 3px 3px 3px !important;';
+	div_html += 'box-shadow: 0px 0px 0px 0px !important;';
+	div_html += 'text-transform: capitalize !important;';
+	div_html += 'font-weight: none !important;';
+	div_html += 'line-height: 14px !important;';
+	
 	div_html += 'font-size: 14px !important;';
 	div_html += 'cursor: pointer !important;';
 	div_html += 'border: 1px solid transparent !important;';
@@ -40,8 +48,17 @@ function createTrackPrompt(url, baseUrl) {
 	div_html += ' <button style="';
 	div_html += 'color: #fff !important;';
 	div_html += 'background-color: #f0ad4e !important;';
+	div_html += 'background: #f0ad4e !important;';
 	div_html += 'border-color: #eea236 !important;';
 	div_html += 'padding: 6px 12px !important;';
+	
+		
+	div_html += 'margin: 3px 3px 3px 3px !important;';
+	div_html += 'box-shadow: 0px 0px 0px 0px !important;';
+	div_html += 'text-transform: capitalize !important;';
+	div_html += 'font-weight: none !important;';
+	div_html += 'line-height: 14px !important;';
+	
 	div_html += 'font-size: 14px !important;';
 	div_html += 'cursor: pointer !important;';
 	div_html += 'border: 1px solid transparent !important;';
@@ -77,6 +94,13 @@ function createLoginPrompt(baseUrl) {
 	div_html += 'background-color: #f0ad4e !important;';
 	div_html += 'border-color: #eea236 !important;';
 	div_html += 'padding: 6px 12px !important;';
+	
+	div_html += 'margin: 3px 3px 3px 3px !important;';
+	div_html += 'box-shadow: 0px 0px 0px 0px !important;';
+	div_html += 'text-transform: capitalize !important;';
+	div_html += 'font-weight: none !important;';
+	div_html += 'line-height: 14px !important;';
+	
 	div_html += 'font-size: 14px !important;';
 	div_html += 'cursor: pointer !important;';
 	div_html += 'border: 1px solid transparent !important;';
@@ -126,7 +150,7 @@ function createPopupPrompt(data, baseUrl) {
 	div_html += '">';
 	
 	if (data.message !== "") {
-		div_html += '<div style="font-size: 10px !important; line-height: 11px !important; display: inline-block !important; max-width: 160px !important; height: 22px !important; position: relative !important; top: -10px !important;">';
+		div_html += '<div style="font-size: 9px !important; font-family: \'Helvetica Neue\',Helvetica,Arial,sans-serif !important; line-height: 11px !important; display: inline-block !important; max-width: 160px !important; height: 22px !important; position: relative !important; top: -10px !important;">';
 		
 		if (data.user_url === "") {
 			div_html += truncate(data.message, 78);
