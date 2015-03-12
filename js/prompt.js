@@ -39,6 +39,8 @@ function createTrackPrompt(url, baseUrl) {
 	div_html += 'text-transform: capitalize !important;';
 	div_html += 'font-weight: none !important;';
 	div_html += 'line-height: 14px !important;';
+	div_html += 'width: auto !important;';
+	div_html += 'height: auto !important;';
 	
 	div_html += 'font-size: 14px !important;';
 	div_html += 'cursor: pointer !important;';
@@ -52,7 +54,9 @@ function createTrackPrompt(url, baseUrl) {
 	div_html += 'border-color: #eea236 !important;';
 	div_html += 'padding: 6px 12px !important;';
 	
-		
+	div_html += 'width: auto !important;';
+	div_html += 'height: auto !important;';
+	
 	div_html += 'margin: 3px 3px 3px 3px !important;';
 	div_html += 'box-shadow: 0px 0px 0px 0px !important;';
 	div_html += 'text-transform: capitalize !important;';
