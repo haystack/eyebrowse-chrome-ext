@@ -2,11 +2,12 @@
 // global website base, set to localhost for testing, use deploy script to change
 var baseUrl = "http://localhost:8000";
 var siteName = "Eyebrowse";
+var GOOGLE_FAVICON_URL = "http://www.google.com/s2/favicons?domain_url=";
 
 ///////////////////models//////////////////////
-
-
-//This object can represent either a whitelist or blacklist for a given user. On an update send results to server to update stored data. On intialization set is synced with server. Should allow offline syncing in the future.
+// This object can represent either a whitelist or blacklist for a given user.
+// On an update send results to server to update stored data. On intialization
+// set is synced with server. Should allow offline syncing in the future.
 var FilterListItem = Backbone.Model.extend({
     parse: function(data) {
         if (data !== null) {
@@ -45,13 +46,13 @@ var FilterList = Backbone.Collection.extend({
         }
     },
 
-    //wrapper for fetch which logs user out if server errs
+    // wrapper for fetch which logs user out if server errs
     _fetch: function() {
         this.fetch({
             error: _.bind(function(model, xhr, options) {
-                //DO NOT LOG OUT IF SERVER ERRORS
-                // if (typeof user !== "undefined" && navigator.onLine){
-                //user.logout();   
+                // DO NOT LOG OUT IF SERVER ERRORS
+                // if (typeof user !== "undefined" && navigator.onLine) {
+                //   user.logout();
                 // }
             }, this)
         });
@@ -60,7 +61,8 @@ var FilterList = Backbone.Collection.extend({
 
 
 /*
-    User object holds the status of the user, the cookie from the server, preferences for eyebrowse, whitelist, blacklist, etc.
+    User object holds the status of the user, the cookie from the server,
+    preferences for eyebrowse, whitelist, blacklist, etc.
 */
 var User = Backbone.Model.extend({
     defaults: {
@@ -79,8 +81,9 @@ var User = Backbone.Model.extend({
     },
 
     initialize: function() {
-        _.bindAll(this); //allow access to 'this' in callbacks with "this" meaning the object not the context of the callback
-
+        // allow access to 'this' in callbacks with "this" meaning the object
+        // not the context of the callback
+        _.bindAll(this);
     },
 
     getIncognito: function() {
@@ -92,7 +95,6 @@ var User = Backbone.Model.extend({
             "incognito": val,
         });
     },
-
 
     getWhitelist: function() {
         return this.get("whitelist");
@@ -109,41 +111,40 @@ var User = Backbone.Model.extend({
     getUsername: function() {
         return this.get("username");
     },
-    
+
     getCSRF: function() {
         return this.get("csrf");
     },
 
-
     getResourceURI: function() {
         return this.get("resourceURI");
     },
-    
-    checkLoggedIn: function() {		     
-		var data = $.parseJSON(
-						$.ajax(baseUrl + "/ext/loggedIn", {
-					       type: "GET",
-					       dataType: "json",
-					       async: false
-			    	}).responseText);
-         if (data.res) {
-         	this.setUsername(data.username);
-         	this.login();
-         	return true;
-         } else {
-         	if (this.isLoggedIn()) {
-         		this.logout();
-         		this.setLoginPrompt(false);
-         	}
-         	else {
-         		this.logout();
-         	}
-         	return false;
-         }
+
+    checkLoggedIn: function() {
+        var data = $.parseJSON(
+            $.ajax(baseUrl + "/ext/loggedIn", {
+                type: "GET",
+                dataType: "json",
+                async: false
+            }).responseText);
+        if (data.res) {
+            this.setUsername(data.username);
+            this.login();
+            return true;
+        } else {
+            if (this.isLoggedIn()) {
+                this.logout();
+                this.setLoginPrompt(false);
+            } else {
+                this.logout();
+            }
+            return false;
+        }
     },
 
-    isLoggedIn: function() {	     
-		if (this.getUsername() === this.defaults.username || this.getResourceURI() === this.defaults.resourceURI) {
+    isLoggedIn: function() {
+        if (this.getUsername() === this.defaults.username ||
+            this.getResourceURI() === this.defaults.resourceURI) {
             this.logout();
         }
         return this.get("loggedIn");
@@ -153,7 +154,7 @@ var User = Backbone.Model.extend({
         return this.get("ignoreLoginPrompt");
     },
 
-    //when the user is logged in set the boolean to give logged in views.
+    // when the user is logged in set the boolean to give logged in views.
     setLogin: function(status) {
         this.set({
             "loggedIn": status,
@@ -182,7 +183,7 @@ var User = Backbone.Model.extend({
         });
         this.setResourceURI(username);
     },
-    
+
     setCSRF: function(csrf) {
         this.set({
             "csrf": csrf,
@@ -215,17 +216,17 @@ var User = Backbone.Model.extend({
         });
     },
 
-    //check if a url is in the blacklist
+    // check if a url is in the blacklist
     inBlackList: function(url) {
         return this.inSet("blacklist", url)
     },
 
-    //check if a url is in the whitelise
+    // check if a url is in the whitelise
     inWhitelist: function(url) {
         return this.inSet("whitelist", url)
     },
 
-    //sets exponential backoff factor
+    // sets exponential backoff factor
     setNagFactor: function(url, rate) {
         if (url != "") {
             var nags = this.getNags()
@@ -247,9 +248,9 @@ var User = Backbone.Model.extend({
         }
     },
 
-    //check if a url should be nagged
+    // check if a url should be nagged
     shouldNag: function(url) {
-        var timeThres = 3600000 //1 hour in milliseconds
+        var timeThres = 3600000 // 1 hour in milliseconds
         var visitThres = 5
 
         var overallThres = 10
@@ -324,10 +325,10 @@ var User = Backbone.Model.extend({
             "nags": nags,
         });
 
-       return b_Nag;
+        return b_Nag;
     },
 
-    //check if url is in a set (either whitelist or blacklist)
+    // check if url is in a set (either whitelist or blacklist)
     // documentation for URL.js : http://medialize.github.com/URI.js/docs.html
     inSet: function(setType, url) {
         var set = this.get(setType);
@@ -343,7 +344,7 @@ var User = Backbone.Model.extend({
         }).length);
     },
 
-    //save the current state to local storage
+    // save the current state to local storage
     saveState: function() {
         localStorage.user = JSON.stringify(this);
     },
@@ -372,16 +373,15 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     }
     var timeCheck = checkTimeDelta();
     var uri = new URI(url);
-    //if its not in the whitelist lets check that the user has it
 
+    // if its not in the whitelist lets check that the user has it
     setTimeout(function() {
         popupInfo(tabId, url);
     }, 3000);
 
-
     if (user.getIncognito() == false) {
 
-        //close previous activeItem
+        // close previous activeItem
         if (activeItem !== undefined) {
             if (activeItem.url !== url && activeItem.tabId !== tabId) {
                 closeItem(activeItem.tabId, activeItem.url, "blur", timeCheck.time);
@@ -389,8 +389,6 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
                 updateBadge("");
             }
         }
-
-        //check to nag
         if (!user.inWhitelist(uri.hostname()) && !user.inBlackList(uri.hostname()) && user.shouldNag(uri.hostname())) {
             timeCheck.allow = false; // we need to wait for prompt callback
             chrome.tabs.sendMessage(tabId, {
@@ -412,7 +410,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
             return;
         }
 
-        //open new activeItem
+        // open new activeItem
         if (user.inWhitelist(url)) {
             if (timeCheck.allow) {
                 finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
@@ -425,7 +423,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         updateBadge("");
     }
 
-    //checkForUsers(url);
+    // checkForUsers(url);
 
 }
 
@@ -446,13 +444,12 @@ function popupInfo(tabId, url) {
     });
 }
 
-
 /*
     change the active item state of an item.
     called after a prompt is allowed or timecheck passes
 */
 function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
-	
+
     activeItem = {
         "tabId": tabId,
         "url": url,
@@ -467,9 +464,9 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
 
 }
 
-/* 
-    There is only ever one activeItem at a time so only close out the active one. 
-    This event will be fired when a tab is closed or unfocused but we would have 
+/*
+    There is only ever one activeItem at a time so only close out the active one.
+    This event will be fired when a tab is closed or unfocused but we would have
     already "closed" the item so we don"t want to do it again.
 */
 function closeItem(tabId, url, event_type, time) {
@@ -481,8 +478,8 @@ function closeItem(tabId, url, event_type, time) {
     var total_time = time - activeItem.start_time;
 
     if (activeItem.tabId === tabId && !user.inBlackList(url) && total_time > 5000) {
-        //write to local storage
-        var item = $.extend({}, activeItem); //copy activeItem
+        // write to local storage
+        var item = $.extend({}, activeItem); // copy activeItem
 
         item.end_event = event_type;
         item.end_time = time;
@@ -490,7 +487,7 @@ function closeItem(tabId, url, event_type, time) {
         item.humanize_time = moment.humanizeDuration(item.total_time);
         local_history.push(item);
 
-        // send data for server and sync whitelist/blacklist
+        //  send data for server and sync whitelist/blacklist
         if (local_history.length) {
             dumpData();
             user.getWhitelist()._fetch();
@@ -529,10 +526,10 @@ function handleFilterListMsg(msg) {
     var type = msg.type;
     var url = msg.url;
     var list;
-    
+
     var uri = new URI(url);
     user.setNagFactor(uri.hostname(), .5);
-    
+
     if (type === "whitelist") {
         list = user.getWhitelist();
         if (tmpItem !== null) {
@@ -594,7 +591,7 @@ function handleIgnoreMsg() {
 
 
 /*
-	Get active users from server
+  Get active users from server
 */
 function checkForUsers(url) {
     var encoded_url = encodeURIComponent(url);
@@ -640,27 +637,29 @@ function sendInitialData(tabId) {
                 if (total_time > 5000) {
                     var url = getApiURL("history-data");
 
-                    var item = $.extend({}, activeItem); //copy activeItem
+                    var item = $.extend({}, activeItem); // copy activeItem
                     item.end_event = '';
                     item.end_time = end_time;
                     item.total_time = total_time;
                     item.humanize_time = moment.humanizeDuration(item.total_time);
+                    item.favIconUrl = getFavIconUrl(item.favIconUrl);
+                    convertImgToBase64URL(item.favIconUrl, function(base64Img) {
+                        item.favIconUrl = base64Img;
+                        payload = serializePayload(item);
 
-                    payload = serializePayload(item);
-
-                    $.ajax({
-                        type: "POST",
-                        url: url,
-                        data: payload,
-                        dataType: "text",
-                        processData: false,
-                        contentType: "application/json",
-                        error: function(jqXHR, textStatus, errorThrown) {},
-                        success: function(data, textStatus, jqXHR) {},
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: payload,
+                            dataType: "text",
+                            processData: false,
+                            contentType: "application/json",
+                            error: function(jqXHR, textStatus, errorThrown) {},
+                            success: function(data, textStatus, jqXHR) {},
+                        });
                     });
                 }
             }
-
         }
     );
 }
@@ -674,25 +673,26 @@ function dumpData() {
     var url = getApiURL("history-data");
     var stop = false;
     $.each(local_history, function(index, item) {
-        if (stop) return; //stop sending on error
-        payload = serializePayload(item);
-        var that = this;
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: payload,
-            dataType: "text",
-            processData: false,
-            contentType: "application/json",
-            error: function(jqXHR, textStatus, errorThrown) {
-                stop = true;
-                // if (navigator.onLine){
-                //     user.logout(); //notify user of server error
-                // }
-            },
-            success: function(data, textStatus, jqXHR) {
-                local_history.splice(index, 1); //remove item from history on success 
-            },
+        if (stop) return; // stop sending on error
+        item.favIconUrl = getFavIconUrl(item.favIconUrl);
+        convertImgToBase64URL(item.favIconUrl, function(base64Img) {
+            item.favIconUrl = base64Img;
+            payload = serializePayload(item);
+            var that = this;
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: payload,
+                dataType: "text",
+                processData: false,
+                contentType: "application/json",
+                error: function(jqXHR, textStatus, errorThrown) {
+                    stop = true;
+                },
+                success: function(data, textStatus, jqXHR) {
+                    local_history.splice(index, 1); // remove item from history on success
+                },
+            });
         });
     });
 }
@@ -702,7 +702,7 @@ function dumpData() {
 */
 function emptyData() {
     $.each(local_history, function(index, item) {
-        local_history.splice(index, 1); //remove item from history
+        local_history.splice(index, 1); // remove item from history
     });
 }
 
@@ -714,6 +714,38 @@ function serializePayload(payload) {
     payload.user = user.getResourceURI();
     payload.src = "chrome";
     return JSON.stringify(payload);
+}
+
+function getFavIconUrl(favIconUrl, url) {
+    if (!favIconUrl || !favIconUrl.length) {
+        favIconUrl = GOOGLE_FAVICON_URL + url;
+    }
+    return favIconUrl;
+}
+
+// http://stackoverflow.com/questions/6150289/how-to-convert-image-into-base64-string-using-javascript
+/**
+ * Convert an image
+ * to a base64 url
+ * @param  {String}   url
+ * @param  {Function} callback
+ * @param  {String}   [outputFormat=image/png]
+ */
+function convertImgToBase64URL(url, callback, outputFormat) {
+    var canvas = document.createElement('CANVAS'),
+        ctx = canvas.getContext('2d'),
+        img = new Image;
+    img.crossOrigin = 'Anonymous';
+    img.onload = function() {
+        var dataURL;
+        canvas.height = img.height;
+        canvas.width = img.width;
+        ctx.drawImage(img, 0, 0);
+        dataURL = canvas.toDataURL(outputFormat);
+        callback(dataURL);
+        canvas = null;
+    };
+    img.src = url;
 }
 
 /*
@@ -765,18 +797,19 @@ function getLocalStorageUser() {
     if (storedUser === undefined || storedUser === "null") {
         user = new User();
 
-	    $.get(baseUrl + "/accounts/login/", function(data) {
-	         var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
-	         var match = data.match(REGEX);
-	         if (match) {
-	        		match = match[0];
-	        		var csrfmiddlewaretoken = match.slice(match.indexOf("value=") + 7, match.length - 1); // grab the csrf token
-	        		user.setCSRF(csrfmiddlewaretoken);
-	        		localStorage.user = JSON.stringify(user);
-	        }});
+        $.get(baseUrl + "/accounts/login/", function(data) {
+            var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
+            var match = data.match(REGEX);
+            if (match) {
+                match = match[0];
+                var csrfmiddlewaretoken = match.slice(match.indexOf("value=") + 7, match.length - 1); // grab the csrf token
+                user.setCSRF(csrfmiddlewaretoken);
+                localStorage.user = JSON.stringify(user);
+            }
+        });
 
-        localStorage.user = JSON.stringify(user); //store user
-        return user;
+        localStorage.user = JSON.stringify(user) // store user
+        return user
     }
 
     o = JSON.parse(storedUser);
@@ -828,7 +861,7 @@ function updateBadge(text) {
 */
 function trackBadge() {
     updateBadge("\u2713");
-    //green
+    // green
     chrome.browserAction.setBadgeBackgroundColor({
         "color": "#50ba6a"
     });
@@ -856,7 +889,7 @@ function initBadge() {
     }
 }
 
-// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
+// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log.
 var activeItem;
 var tmpItem;
 
