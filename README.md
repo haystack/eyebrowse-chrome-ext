@@ -1,5 +1,6 @@
 eyebrowse-chrome-ext
 ===========
+[![Join the chat at https://gitter.im/haystack/eyebrowse-chrome-ext](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/haystack/eyebrowse-chrome-ext?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Eyebrowse allows users to automatically track and selectively publish their use of the Web in real-time. Currently, there is no simple way for the end-user to keep track of the vast time spent browsing the Web. Since there is no clear picture of how users access the Web as a whole, the Eyebrowse Project aims to allow public logging of Web usage through client-side services. Eyebrowse gives control to the user, while providing data for public use.
 
