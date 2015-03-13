@@ -286,7 +286,7 @@ function setup(baseUrl, promptType, user, host, url) {
 
 function setFade() {
 
-    var fadeTime = 8000; //8 seconds
+    var fadeTime = 3000; //8 seconds
     var $popup = $("#eyebrowse-frame");
 
     var fadePopup = setTimeout(function() {
