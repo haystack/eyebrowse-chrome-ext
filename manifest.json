@@ -1,41 +1,39 @@
 {
     "background": {
         "page": "html/background.html"
-    }, 
+    },
     "browser_action": {
-        "default_icon": "img/eye.png", 
-        "default_popup": "html/popup.html", 
+        "default_icon": "img/eye.png",
+        "default_popup": "html/popup.html",
         "default_title": "Eyebrowse"
-    }, 
-    "content_scripts": [
-        {
-            "js": [
-                "libs/jquery-1.8.2.js", 
-                "libs/mustache.js", 
-                "js/prompt.js", 
-                "libs/jquery.idle.js", 
-                "js/idle-detection.js"
-            ], 
-            "matches": [
-                "<all_urls>"
-            ]
-        }
-    ], 
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'", 
-    "description": "Eyebrowse by MIT CSAIL Haystack Group", 
+    },
+    "content_scripts": [{
+        "js": [
+            "libs/jquery-1.8.2.js",
+            "libs/mustache.js",
+            "js/prompt.js",
+            "libs/jquery.idle.js",
+            "js/idle-detection.js"
+        ],
+        "matches": [
+            "<all_urls>"
+        ]
+    }],
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "description": "Eyebrowse by MIT CSAIL Haystack Group",
     "icons": {
-        "128": "img/eye-128.png", 
-        "16": "img/eye-16.png", 
+        "128": "img/eye-128.png",
+        "16": "img/eye-16.png",
         "48": "img/eye-48.png"
-    }, 
-    "manifest_version": 2, 
-    "name": "Eyebrowse", 
+    },
+    "manifest_version": 2,
+    "name": "Eyebrowse",
     "permissions": [
-        "http://eyebrowse-staging.csail.mit.edu/*", 
-        "http://eyebrowse.csail.mit.edu/*", 
-        "http://localhost:8000/*", 
-        "cookies", 
+        "http://eyebrowse-staging.csail.mit.edu/*",
+        "http://eyebrowse.csail.mit.edu/*",
+        "http://localhost:8000/*",
+        "cookies",
         "tabs"
-    ], 
+    ],
     "version": "0.0.54"
 }

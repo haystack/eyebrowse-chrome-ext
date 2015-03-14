@@ -1,3 +1,5 @@
+"use strict";
+
 function sendMessage(action) {
     var message = {
         "action": "idle",
@@ -5,13 +7,14 @@ function sendMessage(action) {
     };
     chrome.extension.sendMessage(JSON.stringify(message));
 }
+
 /*
     https://github.com/jasonmcleod/jquery.idle
     Detect if the current tab is idle or not and close/open the active item respectively.
 */
 $(window).idle(
     function() {
-        sendMessage("closeItem"); //on idle 
+        sendMessage("closeItem"); // on idle
     },
     function() {
 

@@ -1,7 +1,7 @@
-.PHONY: lint, extension
+.PHONY: lint extension
 
 lint:
-	jshint js/*.js
+	-jshint -c .jshintrc --exclude-path .jshintignore .
 
-extension:
+extension: lint
 	./deploy/deploy.sh

@@ -1,3 +1,5 @@
+"use strict";
+
 ///////////Global vars/////////////
 // global website base, set to localhost for testing, use deploy script to change
 var baseUrl = "http://localhost:8000";
@@ -6,14 +8,17 @@ var siteName = "Eyebrowse";
 ///////////////////models//////////////////////
 
 
-//This object can represent either a whitelist or blacklist for a given user. On an update send results to server to update stored data. On intialization set is synced with server. Should allow offline syncing in the future.
+// This object can represent either a whitelist or blacklist for a given user.
+// On an update send results to server to update stored data.
+// On intialization set is synced with server.
+// Should allow offline syncing in the future.
 var FilterListItem = Backbone.Model.extend({
     parse: function(data) {
         if (data !== null) {
             return {
                 url: data.url,
                 id: data.id,
-            }
+            };
         }
     },
 });
@@ -32,11 +37,11 @@ var FilterList = Backbone.Collection.extend({
     },
 
     getType: function() {
-        return this.get("type")
+        return this.get("type");
     },
 
     url: function() {
-        return getApiURL(this.type)
+        return getAPIUrl(this.type);
     },
 
     parse: function(data, res) {
@@ -84,7 +89,7 @@ var User = Backbone.Model.extend({
     },
 
     getIncognito: function() {
-        return this.get("incognito")
+        return this.get("incognito");
     },
 
     setIncognito: function(val) {
@@ -109,7 +114,7 @@ var User = Backbone.Model.extend({
     getUsername: function() {
         return this.get("username");
     },
-    
+
     getCSRF: function() {
         return this.get("csrf");
     },
@@ -118,32 +123,31 @@ var User = Backbone.Model.extend({
     getResourceURI: function() {
         return this.get("resourceURI");
     },
-    
-    checkLoggedIn: function() {		     
-		var data = $.parseJSON(
-						$.ajax(baseUrl + "/ext/loggedIn", {
-					       type: "GET",
-					       dataType: "json",
-					       async: false
-			    	}).responseText);
-         if (data.res) {
-         	this.setUsername(data.username);
-         	this.login();
-         	return true;
-         } else {
-         	if (this.isLoggedIn()) {
-         		this.logout();
-         		this.setLoginPrompt(false);
-         	}
-         	else {
-         		this.logout();
-         	}
-         	return false;
-         }
+
+    checkLoggedIn: function() {
+        var data = $.parseJSON(
+            $.ajax(baseUrl + "/ext/loggedIn", {
+                type: "GET",
+                dataType: "json",
+                async: false
+            }).responseText);
+        if (data.res) {
+            this.setUsername(data.username);
+            this.login();
+            return true;
+        } else {
+            if (this.isLoggedIn()) {
+                this.logout();
+                this.setLoginPrompt(false);
+            } else {
+                this.logout();
+            }
+            return false;
+        }
     },
 
-    isLoggedIn: function() {	     
-		if (this.getUsername() === this.defaults.username || this.getResourceURI() === this.defaults.resourceURI) {
+    isLoggedIn: function() {
+        if (this.getUsername() === this.defaults.username || this.getResourceURI() === this.defaults.resourceURI) {
             this.logout();
         }
         return this.get("loggedIn");
@@ -182,7 +186,7 @@ var User = Backbone.Model.extend({
         });
         this.setResourceURI(username);
     },
-    
+
     setCSRF: function(csrf) {
         this.set({
             "csrf": csrf,
@@ -206,7 +210,7 @@ var User = Backbone.Model.extend({
     setFilterSet: function(type, list) {
         this.set({
             type: list
-        })
+        });
     },
 
     setLoginPrompt: function(bool) {
@@ -217,29 +221,29 @@ var User = Backbone.Model.extend({
 
     //check if a url is in the blacklist
     inBlackList: function(url) {
-        return this.inSet("blacklist", url)
+        return this.inSet("blacklist", url);
     },
 
     //check if a url is in the whitelise
     inWhitelist: function(url) {
-        return this.inSet("whitelist", url)
+        return this.inSet("whitelist", url);
     },
 
     //sets exponential backoff factor
     setNagFactor: function(url, rate) {
-        if (url != "") {
-            var nags = this.getNags()
-            var site = nags[url]
-            var visits = site["visits"]
-            var lastNag = site["lastNag"]
-            var factor = site["factor"]
+        if (url !== "") {
+            var nags = this.getNags();
+            var site = nags[url];
+            var visits = site.visits;
+            var lastNag = site.lastNag;
+            var factor = site.factor;
 
             var newSite = {
                 "visits": visits,
                 "lastNag": lastNag,
                 "factor": Math.max(Math.min(factor * rate, 16), 1)
-            }
-            nags[url] = newSite
+            };
+            nags[url] = newSite;
 
             this.set({
                 "nags": nags,
@@ -247,84 +251,83 @@ var User = Backbone.Model.extend({
         }
     },
 
-    //check if a url should be nagged
+    // check if a url should be nagged
     shouldNag: function(url) {
-        var timeThres = 3600000 //1 hour in milliseconds
-        var visitThres = 5
+        var timeThres = 3600000; // 1 hour in milliseconds
+        var visitThres = 5;
 
-        var overallThres = 10
+        var overallThres = 10;
 
-        var nags = this.getNags()
+        var nags = this.getNags();
 
-        var overallVisits = nags["visits"]
-        var overallLastNag = nags["lastNag"]
+        var overallVisits = nags.visits;
+        var overallLastNag = nags.lastNag;
 
-        var b_Nag = false
-        var now = (new Date()).getTime()
+        var b_Nag = false;
+        var now = (new Date()).getTime();
+        var newSite, site, visits, lastNag, factor;
         if (overallVisits >= overallThres || now - overallLastNag > timeThres) {
-            var newSite = undefined
             if (url in nags) {
-                var site = nags[url]
-                var visits = site["visits"]
-                var lastNag = site["lastNag"]
-                var factor = site["factor"]
+                site = nags[url];
+                visits = site.visits;
+                lastNag = site.lastNag;
+                factor = site.factor;
 
                 if (visits >= visitThres * factor || now - lastNag > timeThres * factor) {
-                    b_Nag = true
+                    b_Nag = true;
                     newSite = {
                         "visits": 0,
                         "lastNag": now,
                         "factor": factor
-                    }
-                    nags["visits"] = 0
-                    nags["lastNag"] = now
+                    };
+                    nags.visits = 0;
+                    nags.lastNag = now;
                 } else {
                     newSite = {
                         "visits": visits + 1,
                         "lastNag": lastNag,
                         "factor": factor
-                    }
-                    nags["visits"]++
+                    };
+                    nags.visits++;
                 }
             } else {
-                b_Nag = true
+                b_Nag = true;
                 newSite = {
                     "visits": 1,
                     "lastNag": now,
                     "factor": 1
-                }
-                nags["lastNag"] = now
-                nags["visits"] = 0
+                };
+                nags.lastNag = now;
+                nags.visits = 0;
             }
-            nags[url] = newSite
+            nags[url] = newSite;
         } else {
-            nags["visits"]++
-            var newSite = undefined
+            nags.visits++;
             if (url in nags) {
-                var site = nags[url]
-                var visits = site["visits"]
-                var lastNag = site["lastNag"]
-                var factor = site["factor"]
+                site = nags[url];
+                visits = site.visits;
+                lastNag = site.lastNag;
+                factor = site.factor;
 
                 newSite = {
                     "visits": visits + 1,
                     "lastNag": lastNag,
                     "factor": factor
-                }
+                };
             } else {
                 newSite = {
                     "visits": 1,
                     "lastNag": now - 24 * timeThres,
                     "factor": 1
-                }
+                };
             }
-            nags[url] = newSite
+            nags[url] = newSite;
         }
         this.set({
             "nags": nags,
         });
 
-       return b_Nag;
+        return b_Nag;
     },
 
     //check if url is in a set (either whitelist or blacklist)
@@ -337,7 +340,7 @@ var User = Backbone.Model.extend({
         return (set.where({
             "url": hostname
         }).length || set.where({
-            "url": protocol + '://' + hostname
+            "url": protocol + "://" + hostname
         }).length || set.where({
             "url": url
         }).length);
@@ -379,7 +382,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     }, 3000);
 
 
-    if (user.getIncognito() == false) {
+    if (user.getIncognito() === false) {
 
         //close previous activeItem
         if (activeItem !== undefined) {
@@ -434,7 +437,7 @@ function popupInfo(tabId, url) {
         active: true,
         currentWindow: true
     }, function(arrayOfTabs) {
-        activeTabId = arrayOfTabs[0].id;
+        var activeTabId = arrayOfTabs[0].id;
         if (activeTabId === tabId) {
             chrome.tabs.sendMessage(tabId, {
                 "action": "prompt",
@@ -452,7 +455,7 @@ function popupInfo(tabId, url) {
     called after a prompt is allowed or timecheck passes
 */
 function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
-	
+
     activeItem = {
         "tabId": tabId,
         "url": url,
@@ -473,10 +476,14 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
     already "closed" the item so we don"t want to do it again.
 */
 function closeItem(tabId, url, event_type, time) {
-    if (activeItem === undefined) return;
-    if (user.getIncognito() === true) return;
+    if (activeItem === undefined) {
+        return;
+    }
+    if (user.getIncognito() === true) {
+        return;
+    }
 
-    var time = time || new Date(); // time is undefined for destroy event
+    time = time || new Date(); // time is undefined for destroy event
 
     var total_time = time - activeItem.start_time;
 
@@ -507,17 +514,17 @@ function closeItem(tabId, url, event_type, time) {
     checks if the time between the current event and the active item is greater than the delta. Default delta is 900ms
 */
 function checkTimeDelta(delta) {
-    var delta = delta || 900
+    delta = delta || 900;
     var now = new Date();
     var allow = true; // default to true allows active item to be set initially
     if (activeItem !== undefined) {
-        allow = (now.getTime() - activeItem.start_time) > delta
+        allow = (now.getTime() - activeItem.start_time) > delta;
     }
 
     return {
         "allow": allow,
         "time": now,
-    }
+    };
 }
 
 
@@ -529,10 +536,10 @@ function handleFilterListMsg(msg) {
     var type = msg.type;
     var url = msg.url;
     var list;
-    
+
     var uri = new URI(url);
-    user.setNagFactor(uri.hostname(), .5);
-    
+    user.setNagFactor(uri.hostname(), 0.5);
+
     if (type === "whitelist") {
         list = user.getWhitelist();
         if (tmpItem !== null) {
@@ -547,7 +554,7 @@ function handleFilterListMsg(msg) {
         return;
     }
 
-    m = list.create({
+    list.create({
         "url": uri.hostname(),
         "user": user.getResourceURI(),
     });
@@ -560,9 +567,9 @@ function handleFilterListMsg(msg) {
 */
 function handleIdleMsg(msg, tabId) {
     var type = msg.type;
-    if (type == "openItem") {
+    if (type === "openItem") {
         openTab(tabId, "focus");
-    } else if (type == "closeItem" && activeItem !== undefined) {
+    } else if (type === "closeItem" && activeItem !== undefined) {
         closeTab(tabId, "idle", function() {
             activeItem = undefined;
         });
@@ -573,7 +580,7 @@ function handleIdleMsg(msg, tabId) {
     Open the popup so the user can logback in again
 */
 function handleLoginMsg() {
-    openLink(chrome.extension.getURL('html/popup.html'));
+    openLink(chrome.extension.getURL("html/popup.html"));
 }
 
 /*
@@ -608,7 +615,7 @@ function checkForUsers(url) {
 
     var parsed = JSON.parse(text);
 
-    var users = parsed["result"]['page'];
+    var users = parsed.result.page;
     var count = users.length;
     if (count > 0) {
         updateBadge(count.toString());
@@ -638,15 +645,15 @@ function sendInitialData(tabId) {
                 var total_time = end_time - activeItem.start_time;
 
                 if (total_time > 5000) {
-                    var url = getApiURL("history-data");
+                    var url = getAPIUrl("history-data");
 
                     var item = $.extend({}, activeItem); //copy activeItem
-                    item.end_event = '';
+                    item.end_event = "";
                     item.end_time = end_time;
                     item.total_time = total_time;
                     item.humanize_time = moment.humanizeDuration(item.total_time);
 
-                    payload = serializePayload(item);
+                    var payload = serializePayload(item);
 
                     $.ajax({
                         type: "POST",
@@ -670,12 +677,15 @@ function sendInitialData(tabId) {
     Posts data to server
 */
 function dumpData() {
-    var backlog = []
-    var url = getApiURL("history-data");
+    var backlog = [];
+    var url = getAPIUrl("history-data");
     var stop = false;
     $.each(local_history, function(index, item) {
-        if (stop) return; //stop sending on error
-        payload = serializePayload(item);
+        //stop sending on error
+        if (stop) {
+            return;
+        }
+        var payload = serializePayload(item);
         var that = this;
         $.ajax({
             type: "POST",
@@ -719,10 +729,10 @@ function serializePayload(payload) {
 /*
     build an API url for the given inputs
 */
-function getApiURL(resource, id, params) {
+function getAPIUrl(resource, id, params) {
     params = params || {};
     var apiBase = sprintf("%s/api/v1/%s", baseUrl, resource);
-    var getParams = ""
+    var getParams = "";
     for (var key in params) {
         getParams += sprintf("&%s=%s", key, params[key]);
     }
@@ -730,10 +740,10 @@ function getApiURL(resource, id, params) {
     if (getParams !== "") {
         apiBase += "?" + getParams.slice(1);
     }
-    if (id != null) {
+    if (id !== undefined) {
         apiBase += "/" + id;
     }
-    return apiBase
+    return apiBase;
 }
 
 /*
@@ -750,7 +760,7 @@ function openLink(url) {
     create or parase and return localhistory object
 */
 function loadLocalHistory() {
-    localString = localStorage.local_history;
+    var localString = localStorage.local_history;
     localString = (localString) ? localString : "[]"; // catch undefined case
     return JSON.parse(localString);
 }
@@ -765,21 +775,22 @@ function getLocalStorageUser() {
     if (storedUser === undefined || storedUser === "null") {
         user = new User();
 
-	    $.get(baseUrl + "/accounts/login/", function(data) {
-	         var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
-	         var match = data.match(REGEX);
-	         if (match) {
-	        		match = match[0];
-	        		var csrfmiddlewaretoken = match.slice(match.indexOf("value=") + 7, match.length - 1); // grab the csrf token
-	        		user.setCSRF(csrfmiddlewaretoken);
-	        		localStorage.user = JSON.stringify(user);
-	        }});
+        $.get(baseUrl + "/accounts/login/", function(data) {
+            var REGEX = /name\="csrfmiddlewaretoken" value\=".*"/; //regex to find the csrf token
+            var match = data.match(REGEX);
+            if (match) {
+                match = match[0];
+                var csrfmiddlewaretoken = match.slice(match.indexOf("value=") + 7, match.length - 1); // grab the csrf token
+                user.setCSRF(csrfmiddlewaretoken);
+                localStorage.user = JSON.stringify(user);
+            }
+        });
 
         localStorage.user = JSON.stringify(user); //store user
         return user;
     }
 
-    o = JSON.parse(storedUser);
+    var o = JSON.parse(storedUser);
     var u = new User();
 
     u.setUsername(o.username);
@@ -806,8 +817,8 @@ function clearLocalStorage(key) {
     remove all local history from storage
 */
 function clearStorage() {
-    localStorage.removeItem("local_history")
-    local_history = []
+    localStorage.removeItem("local_history");
+    local_history = [];
 }
 
 //////////////////badge utils////////////////////
@@ -840,9 +851,9 @@ function loginBadge(e) {
     chrome.browserAction.setBadgeBackgroundColor({
         "color": "#cd5c5c"
     });
-    if (e == "logout") {
+    if (e === "logout") {
         updateBadge("!");
-    } else if (e == "login") {
+    } else if (e === "login") {
         updateBadge("");
     }
 }
@@ -860,9 +871,9 @@ function initBadge() {
 var activeItem;
 var tmpItem;
 
-local_history = loadLocalHistory();
+var local_history = loadLocalHistory();
 
-user = getLocalStorageUser();
-initBadge()
+var user = getLocalStorageUser();
+initBadge();
 
 localStorage.setItem("baseUrl", baseUrl);

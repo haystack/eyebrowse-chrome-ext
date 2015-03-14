@@ -1,3 +1,5 @@
+"use strict";
+
 $(document).ready(function() {
 
     var myDiv = $("#myDiv");
@@ -20,7 +22,7 @@ $(document).ready(function() {
         localStorage.setItem("baseUrl", urlBox.val()); // is there something more like "self"?
     });
     urlBox.keyup(function(e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             $(this).trigger("enterKey");
         }
     });
@@ -44,7 +46,7 @@ $(document).ready(function() {
         };
 
         //
-        // Populate whitelist 
+        // Populate whitelist
         //
 
         console.log("Hello world yeah yeah 43 from options.js");
@@ -75,7 +77,7 @@ $(document).ready(function() {
         //
 
         var liDiv = $("#loggedIn");
-        if (userVal.loggedIn != undefined) {
+        if (userVal.loggedIn !== undefined) {
             liDiv.append($("<div>").text(userVal.loggedIn));
         } else {
             liDiv.append($("<div>").text("FFalse"));
@@ -86,7 +88,7 @@ $(document).ready(function() {
             unDiv.append($("<div>").text(userVal.username));
         }
 
-        // 
+        //
         // Display raw json of user item
         //
         var rjDiv = $("#rawJson");
