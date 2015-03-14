@@ -4,14 +4,12 @@
 // global website base, set to localhost for testing, use deploy script to change
 var baseUrl = "http://localhost:8000";
 var siteName = "Eyebrowse";
+var GOOGLE_FAVICON_URL = "http://www.google.com/s2/favicons?domain_url=";
 
 ///////////////////models//////////////////////
-
-
 // This object can represent either a whitelist or blacklist for a given user.
-// On an update send results to server to update stored data.
-// On intialization set is synced with server.
-// Should allow offline syncing in the future.
+// On an update send results to server to update stored data. On intialization
+// set is synced with server. Should allow offline syncing in the future.
 var FilterListItem = Backbone.Model.extend({
     parse: function(data) {
         if (data !== null) {
@@ -50,13 +48,13 @@ var FilterList = Backbone.Collection.extend({
         }
     },
 
-    //wrapper for fetch which logs user out if server errs
+    // wrapper for fetch which logs user out if server errs
     _fetch: function() {
         this.fetch({
             error: _.bind(function(model, xhr, options) {
-                //DO NOT LOG OUT IF SERVER ERRORS
-                // if (typeof user !== "undefined" && navigator.onLine){
-                //user.logout();   
+                // DO NOT LOG OUT IF SERVER ERRORS
+                // if (typeof user !== "undefined" && navigator.onLine) {
+                //   user.logout();
                 // }
             }, this)
         });
@@ -65,7 +63,8 @@ var FilterList = Backbone.Collection.extend({
 
 
 /*
-    User object holds the status of the user, the cookie from the server, preferences for eyebrowse, whitelist, blacklist, etc.
+    User object holds the status of the user, the cookie from the server,
+    preferences for eyebrowse, whitelist, blacklist, etc.
 */
 var User = Backbone.Model.extend({
     defaults: {
@@ -84,8 +83,9 @@ var User = Backbone.Model.extend({
     },
 
     initialize: function() {
-        _.bindAll(this); //allow access to 'this' in callbacks with "this" meaning the object not the context of the callback
-
+        // allow access to 'this' in callbacks with "this" meaning the object
+        // not the context of the callback
+        _.bindAll(this);
     },
 
     getIncognito: function() {
@@ -97,7 +97,6 @@ var User = Backbone.Model.extend({
             "incognito": val,
         });
     },
-
 
     getWhitelist: function() {
         return this.get("whitelist");
@@ -118,7 +117,6 @@ var User = Backbone.Model.extend({
     getCSRF: function() {
         return this.get("csrf");
     },
-
 
     getResourceURI: function() {
         return this.get("resourceURI");
@@ -147,7 +145,8 @@ var User = Backbone.Model.extend({
     },
 
     isLoggedIn: function() {
-        if (this.getUsername() === this.defaults.username || this.getResourceURI() === this.defaults.resourceURI) {
+        if (this.getUsername() === this.defaults.username ||
+            this.getResourceURI() === this.defaults.resourceURI) {
             this.logout();
         }
         return this.get("loggedIn");
@@ -157,7 +156,7 @@ var User = Backbone.Model.extend({
         return this.get("ignoreLoginPrompt");
     },
 
-    //when the user is logged in set the boolean to give logged in views.
+    // when the user is logged in set the boolean to give logged in views.
     setLogin: function(status) {
         this.set({
             "loggedIn": status,
@@ -219,17 +218,17 @@ var User = Backbone.Model.extend({
         });
     },
 
-    //check if a url is in the blacklist
+    // check if a url is in the blacklist
     inBlackList: function(url) {
         return this.inSet("blacklist", url);
     },
 
-    //check if a url is in the whitelise
+    // check if a url is in the whitelise
     inWhitelist: function(url) {
         return this.inSet("whitelist", url);
     },
 
-    //sets exponential backoff factor
+    // sets exponential backoff factor
     setNagFactor: function(url, rate) {
         if (url !== "") {
             var nags = this.getNags();
@@ -330,7 +329,7 @@ var User = Backbone.Model.extend({
         return b_Nag;
     },
 
-    //check if url is in a set (either whitelist or blacklist)
+    // check if url is in a set (either whitelist or blacklist)
     // documentation for URL.js : http://medialize.github.com/URI.js/docs.html
     inSet: function(setType, url) {
         var set = this.get(setType);
@@ -346,7 +345,7 @@ var User = Backbone.Model.extend({
         }).length);
     },
 
-    //save the current state to local storage
+    // save the current state to local storage
     saveState: function() {
         localStorage.user = JSON.stringify(this);
     },
@@ -375,8 +374,8 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     }
     var timeCheck = checkTimeDelta();
     var uri = new URI(url);
-    //if its not in the whitelist lets check that the user has it
 
+    // if its not in the whitelist lets check that the user has it
     setTimeout(function() {
         popupInfo(tabId, url);
     }, 3000);
@@ -384,7 +383,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 
     if (user.getIncognito() === false) {
 
-        //close previous activeItem
+        // close previous activeItem
         if (activeItem !== undefined) {
             if (activeItem.url !== url && activeItem.tabId !== tabId) {
                 closeItem(activeItem.tabId, activeItem.url, "blur", timeCheck.time);
@@ -392,8 +391,6 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
                 updateBadge("");
             }
         }
-
-        //check to nag
         if (!user.inWhitelist(uri.hostname()) && !user.inBlackList(uri.hostname()) && user.shouldNag(uri.hostname())) {
             timeCheck.allow = false; // we need to wait for prompt callback
             chrome.tabs.sendMessage(tabId, {
@@ -415,7 +412,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
             return;
         }
 
-        //open new activeItem
+        // open new activeItem
         if (user.inWhitelist(url)) {
             if (timeCheck.allow) {
                 finishOpen(tabId, url, favIconUrl, title, event_type, timeCheck.time);
@@ -428,7 +425,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         updateBadge("");
     }
 
-    //checkForUsers(url);
+    // checkForUsers(url);
 
 }
 
@@ -448,7 +445,6 @@ function popupInfo(tabId, url) {
         }
     });
 }
-
 
 /*
     change the active item state of an item.
@@ -470,9 +466,9 @@ function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
 
 }
 
-/* 
-    There is only ever one activeItem at a time so only close out the active one. 
-    This event will be fired when a tab is closed or unfocused but we would have 
+/*
+    There is only ever one activeItem at a time so only close out the active one.
+    This event will be fired when a tab is closed or unfocused but we would have
     already "closed" the item so we don"t want to do it again.
 */
 function closeItem(tabId, url, event_type, time) {
@@ -488,8 +484,8 @@ function closeItem(tabId, url, event_type, time) {
     var total_time = time - activeItem.start_time;
 
     if (activeItem.tabId === tabId && !user.inBlackList(url) && total_time > 5000) {
-        //write to local storage
-        var item = $.extend({}, activeItem); //copy activeItem
+        // write to local storage
+        var item = $.extend({}, activeItem); // copy activeItem
 
         item.end_event = event_type;
         item.end_time = time;
@@ -497,7 +493,7 @@ function closeItem(tabId, url, event_type, time) {
         item.humanize_time = moment.humanizeDuration(item.total_time);
         local_history.push(item);
 
-        // send data for server and sync whitelist/blacklist
+        //  send data for server and sync whitelist/blacklist
         if (local_history.length) {
             dumpData();
             user.getWhitelist()._fetch();
@@ -601,7 +597,7 @@ function handleIgnoreMsg() {
 
 
 /*
-	Get active users from server
+  Get active users from server
 */
 function checkForUsers(url) {
     var encoded_url = encodeURIComponent(url);
@@ -667,7 +663,6 @@ function sendInitialData(tabId) {
                     });
                 }
             }
-
         }
     );
 }
@@ -712,7 +707,7 @@ function dumpData() {
 */
 function emptyData() {
     $.each(local_history, function(index, item) {
-        local_history.splice(index, 1); //remove item from history
+        local_history.splice(index, 1); // remove item from history
     });
 }
 
@@ -724,6 +719,38 @@ function serializePayload(payload) {
     payload.user = user.getResourceURI();
     payload.src = "chrome";
     return JSON.stringify(payload);
+}
+
+function getFavIconUrl(favIconUrl, url) {
+    if (!favIconUrl || !favIconUrl.length) {
+        favIconUrl = GOOGLE_FAVICON_URL + url;
+    }
+    return favIconUrl;
+}
+
+// http://stackoverflow.com/questions/6150289/how-to-convert-image-into-base64-string-using-javascript
+/**
+ * Convert an image
+ * to a base64 url
+ * @param  {String}   url
+ * @param  {Function} callback
+ * @param  {String}   [outputFormat=image/png]
+ */
+function convertImgToBase64URL(url, callback, outputFormat) {
+    var canvas = document.createElement("CANVAS"),
+        ctx = canvas.getContext("2d"),
+        img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = function() {
+        var dataURL;
+        canvas.height = img.height;
+        canvas.width = img.width;
+        ctx.drawImage(img, 0, 0);
+        dataURL = canvas.toDataURL(outputFormat);
+        callback(dataURL);
+        canvas = null;
+    };
+    img.src = url;
 }
 
 /*
@@ -776,7 +803,7 @@ function getLocalStorageUser() {
         user = new User();
 
         $.get(baseUrl + "/accounts/login/", function(data) {
-            var REGEX = /name\="csrfmiddlewaretoken" value\=".*"/; //regex to find the csrf token
+            var REGEX = /name\='csrfmiddlewaretoke'" value\='.*"/; // regex to find the csrf token
             var match = data.match(REGEX);
             if (match) {
                 match = match[0];
@@ -786,7 +813,7 @@ function getLocalStorageUser() {
             }
         });
 
-        localStorage.user = JSON.stringify(user); //store user
+        localStorage.user = JSON.stringify(user); // store user
         return user;
     }
 
@@ -839,7 +866,7 @@ function updateBadge(text) {
 */
 function trackBadge() {
     updateBadge("\u2713");
-    //green
+    // green
     chrome.browserAction.setBadgeBackgroundColor({
         "color": "#50ba6a"
     });
@@ -867,7 +894,7 @@ function initBadge() {
     }
 }
 
-// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log. 
+// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log.
 var activeItem;
 var tmpItem;
 
