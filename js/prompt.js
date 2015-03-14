@@ -182,19 +182,25 @@ function createPopupPrompt(data, baseUrl) {
 			user = data.active_users[i];
 			div_html += '<a href="' + user.url + '" target="_blank" title="' + user.username + ' - ' + user.time_ago + ' ago">';
 			div_html += '<img style="';
-			div_html += 'width: 20px !important; ';
-			div_html += 'height: 20px !important; ';
 			div_html += 'margin: 1px !important; ';
 			div_html += 'border: 0px !important; ';
 			div_html += 'padding: 0px !important; ';
 			if (user.old_level == 0) {
-				div_html += 'border: #ffff00 solid 2px !important; margin: 0px !important;" src="' + user.pic_url + '"></a>';
+				div_html += 'width: 18px !important; ';
+				div_html += 'height: 18px !important; ';
+				div_html += 'border: #ffff00 solid 2px !important; margin: 0px !important;" ';
+				div_html +='src="' + user.pic_url + '"></a>';
 			} else if (user.old_level == 1) {
+				div_html += 'width: 20px !important; ';
+				div_html += 'height: 20px !important; ';
 				div_html += 'opacity: .9 !important;" src="' + user.pic_url + '"></a>';
 			} else if (user.old_level == 2) {
+				div_html += 'width: 20px !important; ';
+				div_html += 'height: 20px !important; ';
 				div_html += 'opacity: .75 !important;" src="' + user.pic_url + '"></a>';
 			} else if (user.old_level == 3) {
-	
+				div_html += 'width: 20px !important; ';
+				div_html += 'height: 20px !important; ';
 				div_html += 'opacity: .6 !important;" src="' + user.pic_url + '"></a>';
 			} 
 		}
