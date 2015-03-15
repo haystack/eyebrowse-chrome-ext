@@ -8,5 +8,6 @@ The concept of Eyebrowse is to gather browsing history from participating users.
 
 ## Contact Info
 
++ [@eyebrowse_proj](https://twitter.com/eyebrowse_proj)
 + [eyebrowse@csail.mit.edu](mailto:eyebrowse@csail.mit.edu)
 + [Haystack Group Homepage](http://haystack.csail.mit.edu/)
