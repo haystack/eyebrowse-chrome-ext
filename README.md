@@ -10,18 +10,3 @@ The concept of Eyebrowse is to gather browsing history from participating users.
 
 + [eyebrowse@csail.mit.edu](mailto:eyebrowse@csail.mit.edu)
 + [Haystack Group Homepage](http://haystack.csail.mit.edu/)
-
-
-## Authors
-
-**Josh Blum**
-+ [joshblum@mit.edu](mailto:joshblum@mit.edu)
-+ [@blumua](https://twitter.com/blumua)
-
-**Scott Greenwald**
-+ [swgreen@mit.edu](mailto:swgreen@mit.edu)
-+ [@swgreen_mit](https://twitter.com/swgreen_mit)
-
-**Jason Hu**
-
-+ [mjhu@mit.edu](mailto:mjhu@mit.edu)
