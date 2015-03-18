@@ -433,9 +433,9 @@ function popupInfo(tabId, url) {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function(arrayOfTabs) {
-        var activeTabId = arrayOfTabs[0].id;
-        if (activeTabId === tabId) {
+    }, function(tabArray) {
+        var activeTab = tabArray[0];
+        if (activeTab !== undefined && activeTab.id === tabId) {
             chrome.tabs.sendMessage(tabId, {
                 "action": "prompt",
                 "type": "getInfo",
@@ -633,9 +633,9 @@ function sendInitialData(tabId) {
             active: true
         },
         function(tabArray) {
-            var active = tabArray[0];
+            var activeTab = tabArray[0];
 
-            if (tabId === active.id) {
+            if (activeTab !== undefined && tabId === activeTab.id) {
 
                 var end_time = new Date();
                 var total_time = end_time - activeItem.start_time;

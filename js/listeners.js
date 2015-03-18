@@ -21,8 +21,8 @@
 */
 function activeTabListener() {
     chrome.tabs.onActivated.addListener(function(activeInfo) {
-        var event_type = "focus";
-        openTab(activeInfo.tabId, event_type);
+        var eventType = "focus";
+        openTab(activeInfo.tabId, eventType);
     });
 }
 
@@ -31,8 +31,8 @@ function activeTabListener() {
 */
 function updatedTabListener() {
     chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-        var event_type = "update";
-        openTab(tabId, event_type);
+        var eventType = "update";
+        openTab(tabId, eventType);
     });
 }
 
@@ -41,8 +41,8 @@ function updatedTabListener() {
 */
 function removedTabListener() {
     chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
-        var event_type = "destroy";
-        closeTab(tabId, event_type);
+        var eventType = "destroy";
+        closeTab(tabId, eventType);
     });
 }
 
@@ -52,18 +52,20 @@ function removedTabListener() {
 function focusedWindowListener() {
     chrome.windows.onFocusChanged.addListener(function(windowId) {
         if (windowId === chrome.windows.WINDOW_ID_NONE) {
-            var event_type = "blur";
+            var eventType = "blur";
             if (activeItem !== undefined) {
-                closeTab(activeItem.tabId, event_type);
+                closeTab(activeItem.tabId, eventType);
             }
         } else {
             chrome.tabs.query({
                 active: true,
                 currentWindow: true
-            }, function(tabarr) {
-                var activeTab = tabarr[0];
-                var event_type = "focus";
-                openTab(activeTab.id, event_type);
+            }, function(tabArray) {
+                var activeTab = tabArray[0];
+                if (activeTab !== undefined) {
+                    var eventType = "focus";
+                    openTab(activeTab.id, eventType);
+                }
             });
         }
 
@@ -74,10 +76,10 @@ function focusedWindowListener() {
 /*
     Helper function to get the tab with tabId and open the item
 */
-function openTab(tabId, event_type) {
+function openTab(tabId, eventType) {
     chrome.tabs.get(tabId, function(tab) {
         if (tab !== undefined && tab.status === "complete") {
-            openItem(tabId, tab.url, tab.favIconUrl, tab.title, event_type);
+            openItem(tabId, tab.url, tab.favIconUrl, tab.title, eventType);
         }
 
     });
@@ -86,10 +88,10 @@ function openTab(tabId, event_type) {
 /*
     Helper function to get the tab with tabId and close the item
 */
-function closeTab(tabId, event_type) {
+function closeTab(tabId, eventType) {
     chrome.tabs.get(tabId, function(tab) {
         if (tab !== undefined) {
-            closeItem(tab.id, tab.url, event_type, false);
+            closeItem(tab.id, tab.url, eventType, false);
         }
     });
 }
