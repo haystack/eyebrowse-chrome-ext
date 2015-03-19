@@ -61,8 +61,8 @@ function focusedWindowListener() {
                 active: true,
                 currentWindow: true
             }, function(tabArray) {
-                var activeTab = tabArray[0];
-                if (activeTab !== undefined) {
+                var activeTab = getActiveTab(tabArray);
+                if (activeTab !== null) {
                     var eventType = "focus";
                     openTab(activeTab.id, eventType);
                 }
@@ -78,7 +78,7 @@ function focusedWindowListener() {
 */
 function openTab(tabId, eventType) {
     chrome.tabs.get(tabId, function(tab) {
-        if (tab !== undefined && tab.status === "complete") {
+        if (isValidTab(tab) && tab.status === "complete") {
             openItem(tabId, tab.url, tab.favIconUrl, tab.title, eventType);
         }
 
@@ -90,7 +90,7 @@ function openTab(tabId, eventType) {
 */
 function closeTab(tabId, eventType) {
     chrome.tabs.get(tabId, function(tab) {
-        if (tab !== undefined) {
+        if (isValidTab(tab)) {
             closeItem(tab.id, tab.url, eventType, false);
         }
     });
@@ -149,6 +149,13 @@ function runListeners() {
     focusedWindowListener();
     closedWindowListener();
     messageListener();
+}
+
+/*
+ * Check for `chrome.runtime.lastError` when querying for tabs
+ */
+function isValidTab(tab) {
+    return !chrome.runtime.lastError && tab !== undefined;
 }
 
 $(document).ready(function() {

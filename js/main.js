@@ -434,8 +434,7 @@ function popupInfo(tabId, url) {
         active: true,
         currentWindow: true
     }, function(tabArray) {
-        var activeTab = tabArray[0];
-        if (activeTab !== undefined && activeTab.id === tabId) {
+        if (isActiveTab(tabArray, tabId)) {
             chrome.tabs.sendMessage(tabId, {
                 "action": "prompt",
                 "type": "getInfo",
@@ -633,9 +632,8 @@ function sendInitialData(tabId) {
             active: true
         },
         function(tabArray) {
-            var activeTab = tabArray[0];
 
-            if (activeTab !== undefined && tabId === activeTab.id) {
+            if (isActiveTab(tabArray, tabId) && activeItem !== undefined) {
 
                 var end_time = new Date();
                 var total_time = end_time - activeItem.start_time;
@@ -862,7 +860,6 @@ function updateBadge(text) {
 
 /*
     helper to generate a badge on tracked sites
-
 */
 function trackBadge() {
     updateBadge("\u2713");
@@ -871,6 +868,7 @@ function trackBadge() {
         "color": "#50ba6a"
     });
 }
+
 /*
     clear login flag
 */
@@ -894,7 +892,26 @@ function initBadge() {
     }
 }
 
-// dictionary mapping all open items. Keyed on tabIds and containing all information to be written to the log.
+/*
+ * Return the active tab if it is valid
+ */
+function getActiveTab(tabArray) {
+    if (tabArray[0] === undefined) {
+        return null;
+    }
+    return tabArray[0];
+}
+
+/*
+ * Check if the active tab matches the given tabId
+ */
+function isActiveTab(tabArray, tabId) {
+    var activeTab = getActiveTab(tabArray);
+    return activeTab !== null && activeTab.id === tabId;
+}
+
+// dictionary mapping all open items. Keyed on tabIds and containing all
+// information to be written to the log.
 var activeItem;
 var tmpItem;
 
