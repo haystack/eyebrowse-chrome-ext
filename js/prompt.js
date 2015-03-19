@@ -1,5 +1,70 @@
 "use strict";
 
+var FRAME_ID = "#eyebrowse-frame";
+var TEMPLATE_HTML = {};
+
+Object.size = function(obj) {
+    var size = 0,
+        key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            size++;
+        }
+    }
+    return size;
+};
+
+// List of HTML entities for escaping.
+var unescapeMap = {
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&#x27;": "'",
+    "&#x60;": "`"
+};
+
+// Functions for escaping and unescaping strings to/from HTML interpolation.
+var createEscaper = function(map) {
+    var escaper = function(match) {
+        return map[match];
+    };
+    // Regexes for identifying a key that needs to be escaped
+    var source = "(?:" + _.keys(map).join("|") + ")";
+    var testRegexp = new RegExp(source);
+    var replaceRegexp = new RegExp(source, "g");
+    return function(string) {
+        string = string === null ? "" : "" + string;
+        return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
+    };
+};
+var _unescape = createEscaper(unescapeMap);
+
+function initTemplates() {
+    var url = chrome.extension.getURL("../html/prompt.html");
+    var templates = $($.ajax({
+        type: "GET",
+        url: url,
+        dataType: "html",
+        async: false
+    }).responseText);
+    for (var i = 0; i < templates.length; i++) {
+        var el = $(templates[i]);
+        var id = el.attr("id");
+        if (id !== undefined) {
+            TEMPLATE_HTML["#" + id] = el;
+        }
+    }
+}
+
+function getTemplate(templateId, templateArgs) {
+    if (!Object.size(TEMPLATE_HTML)) {
+        initTemplates();
+    }
+    var template = _unescape(TEMPLATE_HTML[templateId].html());
+    return $(_.template(template, templateArgs));
+}
+
 function truncate(str, length) {
     if (str.length > length) {
         return str.substring(0, length);
@@ -8,115 +73,17 @@ function truncate(str, length) {
     }
 }
 
-function createTrackPrompt(url, baseUrl) {
-
-    var divHtml = "";
-    divHtml += "<div id='eyebrowse-frame' style='";
-    divHtml += "z-index: 2147483647 !important; ";
-    divHtml += "position: fixed !important; ";
-    divHtml += "display: block !important; ";
-    divHtml += "background-color: #333333 !important; ";
-    divHtml += "right: 26px !important; ";
-    divHtml += "top: 12px !important; ";
-    divHtml += "padding: 2px 11px 8px 11px !important; ";
-    divHtml += "width: 250px !important; ";
-    divHtml += "height: 120px !important; ";
-    divHtml += "text-align: center !important; ";
-    divHtml += "-webkit-border-radius: 13px !important; ";
-    divHtml += "-moz-border-radius: 13px !important; ";
-    divHtml += "border-radius: 13px !important; ";
-    divHtml += "'>";
-
-    divHtml += "<span style='font-size: 12px !important; font-family: verdana !important; color: #ffffff !important;'>";
-    divHtml += "<span>Track activity from <br /> " + new URL(url).hostname + "</span> ";
-    divHtml += "<p><button style='";
-    divHtml += "color: #fff !important;";
-    divHtml += "background-color: #5cb85c !important;";
-    divHtml += "background: #5cb85c !important;";
-    divHtml += "border-color: #4cae4c !important;";
-    divHtml += "padding: 6px 12px !important;";
-
-    divHtml += "margin: 3px 3px 3px 3px !important;";
-    divHtml += "box-shadow: 0px 0px 0px 0px !important;";
-    divHtml += "text-transform: capitalize !important;";
-    divHtml += "font-weight: none !important;";
-    divHtml += "line-height: 14px !important;";
-    divHtml += "width: auto !important;";
-    divHtml += "height: auto !important;";
-
-    divHtml += "font-size: 14px !important;";
-    divHtml += "cursor: pointer !important;";
-    divHtml += "border: 1px solid transparent !important;";
-    divHtml += "border-radius: 4px !important;' ";
-    divHtml += "id='eyebrowse-allow-btn' type='button' value='Yes'>Yes</button>";
-    divHtml += " <button style='";
-    divHtml += "color: #fff !important;";
-    divHtml += "background-color: #f0ad4e !important;";
-    divHtml += "background: #f0ad4e !important;";
-    divHtml += "border-color: #eea236 !important;";
-    divHtml += "padding: 6px 12px !important;";
-
-    divHtml += "width: auto !important;";
-    divHtml += "height: auto !important;";
-
-    divHtml += "margin: 3px 3px 3px 3px !important;";
-    divHtml += "box-shadow: 0px 0px 0px 0px !important;";
-    divHtml += "text-transform: capitalize !important;";
-    divHtml += "font-weight: none !important;";
-    divHtml += "line-height: 14px !important;";
-
-    divHtml += "font-size: 14px !important;";
-    divHtml += "cursor: pointer !important;";
-    divHtml += "border: 1px solid transparent !important;";
-    divHtml += "border-radius: 4px !important;' ";
-    divHtml += "id='eyebrowse-deny-btn' type='button' value='No'>No</button>";
-    divHtml += "</p></div>";
-    return divHtml;
+function createTrackPrompt(url) {
+    return getTemplate("#track-prompt", {
+        "url": new URL(url).hostname,
+    });
 }
 
-function createLoginPrompt(baseUrl) {
-
-    console.log("login");
-    var divHtml = "";
-    divHtml += "<div id='eyebrowse-frame' style='";
-    divHtml += "z-index: 999999999 !important; ";
-    divHtml += "position: fixed !important; ";
-    divHtml += "display: block !important; ";
-    divHtml += "background-color: #333333 !important; ";
-    divHtml += "right: 26px !important; ";
-    divHtml += "top: 12px !important; ";
-    divHtml += "padding: 2px 11px 8px 11px !important; ";
-    divHtml += "width: 250px !important; ";
-    divHtml += "height: 120px !important; ";
-    divHtml += "text-align: center !important; ";
-    divHtml += "-webkit-border-radius: 13px !important; ";
-    divHtml += "-moz-border-radius: 13px !important; ";
-    divHtml += "border-radius: 13px !important; ";
-    divHtml += "'>";
-
-    divHtml += "<span style='font-size: 12px !important; font-family: verdana !important; color: #ffffff !important;'>You\'ve been logged out of Eyebrowse. Log back in by clicking the icon above.</span>";
-    divHtml += "<br /><p><button style='";
-    divHtml += "color: #fff !important;";
-    divHtml += "background-color: #f0ad4e !important;";
-    divHtml += "border-color: #eea236 !important;";
-    divHtml += "padding: 6px 12px !important;";
-
-    divHtml += "margin: 3px 3px 3px 3px !important;";
-    divHtml += "box-shadow: 0px 0px 0px 0px !important;";
-    divHtml += "text-transform: capitalize !important;";
-    divHtml += "font-weight: none !important;";
-    divHtml += "line-height: 14px !important;";
-
-    divHtml += "font-size: 14px !important;";
-    divHtml += "cursor: pointer !important;";
-    divHtml += "border: 1px solid transparent !important;";
-    divHtml += "border-radius: 4px !important;' ";
-    divHtml += "id='eyebrowse-ignore-btn' type='button' value='Ignore'>Ignore</button>";
-    divHtml += "</p></div>";
-
-    return divHtml;
+function createLoginPrompt() {
+  return getTemplate("#login-prompt");
 }
 
+// TODO(xxx): clean up
 function createPopupPrompt(data, baseUrl) {
 
     if (data.active_users.length === 0 && data.message === "") {
@@ -228,19 +195,16 @@ function createPopupPrompt(data, baseUrl) {
     Can either be a login or track type prompt.
 */
 function setup(baseUrl, promptType, user, host, url) {
-    if ($("#eyebrowse-frame").length) {
-        $("#eyebrowse-frame").css("z-index", 999999999);
+    if ($(FRAME_ID).length) {
+        $(FRAME_ID).css("z-index", 999999999);
         return;
     }
 
-    var frame;
+    var frameHtml;
 
     if (promptType === "trackPrompt") {
-        frame = createTrackPrompt(url, baseUrl);
-        $("body").append(frame);
-
-        $("#eyebrowse-frame").css("visibility", "visible");
-        setFade();
+        frameHtml = createTrackPrompt(url);
+        addFrame(frameHtml);
 
         chrome.extension.sendMessage(JSON.stringify({
             "action": "nag",
@@ -248,7 +212,7 @@ function setup(baseUrl, promptType, user, host, url) {
         }));
 
         $("#eyebrowse-allow-btn").click(function() {
-            $("#eyebrowse-frame").remove();
+            $(FRAME_ID).remove();
             var msg = {
                 "action": "filterlist",
                 "type": "whitelist",
@@ -258,7 +222,7 @@ function setup(baseUrl, promptType, user, host, url) {
         });
 
         $("#eyebrowse-deny-btn").click(function() {
-            $("#eyebrowse-frame").remove();
+            $(FRAME_ID).remove();
             var msg = {
                 "action": "filterlist",
                 "type": "blacklist",
@@ -268,14 +232,11 @@ function setup(baseUrl, promptType, user, host, url) {
         });
 
     } else if (promptType === "loginPrompt") {
-        frame = createLoginPrompt(baseUrl);
-        $("body").append(frame);
-
-        $("#eyebrowse-frame").css("visibility", "visible");
-        setFade();
+        frameHtml = createLoginPrompt();
+        addFrame(frameHtml);
 
         $("#eyebrowse-ignore-btn").click(function() {
-            $("#eyebrowse-frame").remove();
+            $(FRAME_ID).remove();
             msg = {
                 "action": "ignore"
             };
@@ -291,23 +252,17 @@ function setup(baseUrl, promptType, user, host, url) {
                 "csrfmiddlewaretoken": user.csrf,
             },
             success: function(data) {
-                frame = createPopupPrompt(data, baseUrl);
-                $("body").append(frame);
-
-                $("#eyebrowse-frame").css("visibility", "visible");
-                setFade();
+                frameHtml = createPopupPrompt(data, baseUrl);
+                addFrame(frameHtml);
             }
         });
-
     }
-
 }
-
 
 function setFade() {
 
     var fadeTime = 3000; //8 seconds
-    var $popup = $("#eyebrowse-frame");
+    var $popup = $(FRAME_ID);
 
     var fadePopup = setTimeout(function() {
         fade($popup);
@@ -327,15 +282,35 @@ function setFade() {
 }
 
 function fade(el) {
-    var $popup = $("#eyebrowse-frame");
+    var $popup = $(FRAME_ID);
     el.fadeOut(1000, function() {
         $popup.animate({
-            "top": $("#eyebrowse-frame").css("top") - 120
+            "top": $(FRAME_ID).css("top") - 120
         }, 500);
-        $("#eyebrowse-frame").remove();
+        $(FRAME_ID).remove();
     });
 }
 
+/*
+ * Add the prompt css to the main page
+ */
+function addStyle() {
+    if (!$("#eyebrowse-frame-css").length) {
+        var url = chrome.extension.getURL("../css/prompt.css");
+        $("head").append("<link id='eyebrowse-frame-css' href='" + url + "' type='text/css' rel='stylesheet' />");
+    }
+}
+
+
+/*
+ * Helper function which adds a popup frame to the page
+ */
+function addFrame(frameHtml) {
+    $("body").append(frameHtml);
+    addStyle();
+    $(FRAME_ID).css("visibility", "visible");
+    setFade();
+}
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     var host = window.location.host;

@@ -1,0 +1,55 @@
+#eyebrowse-frame {
+    z-index: 999999999 !important;
+    position: fixed !important;
+    display: block !important;
+    background-color: #333333 !important;
+    right: 26px !important;
+    top: 12px !important;
+    padding: 2px 11px 8px 11px !important;
+    width: 250px !important;
+    height: 120px !important;
+    text-align: center !important;
+    -webkit-border-radius: 13px !important;
+    -moz-border-radius: 13px !important;
+    border-radius: 13px !important;
+}
+
+.eyebrowse-prompt-msg {
+    font-size: 15px !important;
+    font-weight: bold;
+    font-family: verdana !important;
+    color: #ffffff !important;
+}
+
+.eyebrowse-btn-container {
+    width: auto !important;
+    height: auto !important;
+}
+
+.eyebrowse-btn  {
+    color: #fff !important;
+    padding: 6px 12px !important;
+    margin: 3px 3px 3px 3px !important;
+    box-shadow: 0px 0px 0px 0px !important;
+    text-transform: capitalize !important;
+    font-weight: none !important;
+    line-height: 14px !important;
+    width: auto !important;
+    height: auto !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    border: 1px solid transparent !important;
+    border-radius: 4px !important;
+}
+
+.eyebrowse-allow-btn {
+    background-color: #5cb85c !important;
+    background: #5cb85c !important;
+    border-color: #4cae4c !important;
+}
+
+.eyebrowse-deny-btn {
+    background-color: #f0ad4e !important;
+    background: #f0ad4e !important;
+    border-color: #eea236 !important;
+}
