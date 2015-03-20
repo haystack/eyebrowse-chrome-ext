@@ -515,7 +515,7 @@ function populateSubNav() {
         if ($("#whitelist").text() === "Whitelist this domain") {
             var whitelist = user.getWhitelist();
             var uri = new URI(window.g_url);
-            var hostname = uri.hostname();
+            var hostname = uri.hostname;
 
             if (!user.inWhitelist(hostname)) {
                 whitelist.create({

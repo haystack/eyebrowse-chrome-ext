@@ -334,12 +334,16 @@ var User = Backbone.Model.extend({
     inSet: function(setType, url) {
         var set = this.get(setType);
         var uri = new URI(url);
-        var hostname = uri.hostname();
-        var protocol = uri.protocol();
+        var hostname = uri.hostname;
+        var protocol = uri.protocol;
+        var port = uri.port;
+        if (port) {
+            port = ":" + port;
+        }
         return (set.where({
             "url": hostname
         }).length || set.where({
-            "url": protocol + "://" + hostname
+            "url": protocol + "://" + hostname + port
         }).length || set.where({
             "url": url
         }).length);
@@ -373,7 +377,6 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         return;
     }
     var timeCheck = checkTimeDelta();
-    var uri = new URI(url);
 
     // if its not in the whitelist lets check that the user has it
     setTimeout(function() {
@@ -391,7 +394,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
                 updateBadge("");
             }
         }
-        if (!user.inWhitelist(uri.hostname()) && !user.inBlackList(uri.hostname()) && user.shouldNag(uri.hostname())) {
+        if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(url)) {
             timeCheck.allow = false; // we need to wait for prompt callback
             chrome.tabs.sendMessage(tabId, {
                 "action": "prompt",
@@ -407,7 +410,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
             };
             updateBadge("");
 
-        } else if (user.inBlackList(uri.hostname())) {
+        } else if (user.inBlackList(url)) {
             updateBadge("");
             return;
         }
@@ -533,7 +536,7 @@ function handleFilterListMsg(msg) {
     var list;
 
     var uri = new URI(url);
-    user.setNagFactor(uri.hostname(), 0.5);
+    user.setNagFactor(uri.hostname, 0.5);
 
     if (type === "whitelist") {
         list = user.getWhitelist();
@@ -550,7 +553,8 @@ function handleFilterListMsg(msg) {
     }
 
     list.create({
-        "url": uri.hostname(),
+        "url": uri.hostname,
+        "port": uri.port,
         "user": user.getResourceURI(),
     });
 
@@ -582,7 +586,7 @@ function handleLoginMsg() {
     Set the nag factor for exponential backoff
 */
 function handleNagMsg(url) {
-    user.setNagFactor((new URI(url)).hostname(), 2);
+    user.setNagFactor((new URI(url)).hostname, 2);
 }
 
 /*
@@ -908,6 +912,29 @@ function getActiveTab(tabArray) {
 function isActiveTab(tabArray, tabId) {
     var activeTab = getActiveTab(tabArray);
     return activeTab !== null && activeTab.id === tabId;
+}
+
+/*
+ * Parse urls
+ * https://gist.github.com/jlong/2428561
+ */
+function getUrlParser(url) {
+    var parser = document.createElement('a');
+    parser.href = url;
+    return parser;
+}
+
+function URI(url) {
+    var parser = document.createElement('a');
+    parser.href = url;
+    this.protocol = parser.protocol; // => "http:"
+    this.hostname = parser.hostname; // => "example.com"
+    this.port = parser.port; // => "3000"
+    this.pathname = parser.pathname; // => "/pathname/"
+    this.search = parser.search; // => "?search=test"
+    this.hash = parser.hash; // => "#hash"
+    this.host = parser.host; // => "example.com:3000"
+    parser.remove();
 }
 
 // dictionary mapping all open items. Keyed on tabIds and containing all
