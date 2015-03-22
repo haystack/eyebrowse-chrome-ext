@@ -80,7 +80,7 @@ function createTrackPrompt(url) {
 }
 
 function createLoginPrompt() {
-  return getTemplate("#login-prompt");
+    return getTemplate("#login-prompt");
 }
 
 // TODO(xxx): clean up
@@ -229,6 +229,10 @@ function setup(baseUrl, promptType, user, host, url) {
                 "url": url
             };
             chrome.extension.sendMessage(JSON.stringify(msg));
+        });
+
+        $("#eyebrowse-close-btn").click(function() {
+            $(FRAME_ID).remove();
         });
 
     } else if (promptType === "loginPrompt") {

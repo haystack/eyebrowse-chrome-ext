@@ -5,13 +5,31 @@
     background-color: #333333 !important;
     right: 26px !important;
     top: 12px !important;
-    padding: 2px 11px 8px 11px !important;
+    padding: 10px 11px 8px 11px !important;
     width: 250px !important;
-    height: 120px !important;
+    height: 100px !important;
     text-align: center !important;
     -webkit-border-radius: 13px !important;
     -moz-border-radius: 13px !important;
     border-radius: 13px !important;
+}
+
+.eyebrowse-close {
+  float: right !important;
+  font-size: 21px !important;
+  font-weight: lighter !important;
+  line-height: 1 !important;
+  color: #fff !important;
+  filter: alpha(opacity=20) !important;
+  opacity: .95;
+}
+
+button.eyebrowse-close {
+  -webkit-appearance: none !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  background: 0 0 !important;
+  border: 0 !important;
 }
 
 .eyebrowse-prompt-msg {

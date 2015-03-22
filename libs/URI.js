@@ -1,3 +1,5 @@
+"use strict";
+
 /*
  * Parse urls
  * https://gist.github.com/jlong/2428561
