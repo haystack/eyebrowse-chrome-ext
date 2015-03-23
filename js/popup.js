@@ -229,6 +229,11 @@ var LoginView = Backbone.View.extend({
 
     render: function() {
         if (!user.isLoggedIn()) {
+            user.attemptLogin(function(username) {
+                if (username !== null) {
+                    completeLogin(username);
+                }
+            });
             $(".content-container").empty();
             $("body").css("width", "300px");
             $("body").css("height", "190px");
@@ -269,16 +274,10 @@ var LoginView = Backbone.View.extend({
                 self.postLogin(user.getCSRF(), username, password);
             } else {
                 $.get(url_login(), function(data) {
-                    var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
-                    var match = data.match(REGEX);
-                    var self = this;
-                    if (match) {
-                        match = match[0];
-                        var csrf = match.slice(match.indexOf("value=") + 7, match.length - 1); // grab the csrf token
+                    var csrf = parseCSRFToken(data);
+                    if (csrf) {
                         user.setCSRF(csrf);
                         self.postLogin(csrf, username, password);
-                    } else if (match === null) {
-                        self.displayErrors("Unable to connect, try again later.");
                     } else {
                         self.completeLogin(username);
                     }
@@ -288,9 +287,8 @@ var LoginView = Backbone.View.extend({
     },
 
     postLogin: function(csrfmiddlewaretoken, username, password) {
-        var REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
         var self = this;
-        //now call the server and login
+        // now call the server and login
         $.ajax({
             url: url_login(),
             type: "POST",
@@ -302,7 +300,7 @@ var LoginView = Backbone.View.extend({
             },
             dataType: "html",
             success: function(data) {
-                var match = data.match(REGEX);
+                var match = data.match(CSRF_REGEX);
                 if (match) { // we didn"t log in successfully
                     self.displayErrors("Invalid username or password");
                 } else {
@@ -483,8 +481,9 @@ function populateSubNav() {
 
     $("#mark_visit").click(function(e) {
         e.preventDefault();
-        postMessage(null, window.g_url);
-        $("#mark_visit").replaceWith("Page Marked");
+        postMessage(null, window.g_url, function(data) {
+            $("#mark_visit").replaceWith("Page Marked");
+        });
     });
 
     $("#incognito").click(function(e) {
@@ -524,17 +523,18 @@ function populateSubNav() {
                 });
             }
 
-            postMessage(null, window.g_url);
-            $("#whitelist").text("Domain is whitelisted");
-            $("#whitelist").css("cursor", "default");
-            $("#whitelist").css("color", "#000000");
+            postMessage(null, window.g_url, function() {
+                $("#whitelist").text("Domain is whitelisted");
+                $("#whitelist").css("cursor", "default");
+                $("#whitelist").css("color", "#000000");
+            });
         }
     });
 
 }
 
 
-//populate chat message box
+// populate chat message box
 function populateChatMessageBox(first) {
     var message_text = getMessages(window.g_url);
     var parsed = JSON.parse(message_text).objects;
@@ -571,7 +571,7 @@ function populateChatMessageBox(first) {
 }
 
 
-//get all the stats for a page and domain and populate the view
+// get all the stats for a page and domain and populate the view
 function populateStats() {
     var tab_url = window.g_url;
     var title = window.g_title;
@@ -587,7 +587,7 @@ function populateStats() {
 }
 
 
-//get all the active users on a page and populate the view
+// get all the active users on a page and populate the view
 function populateActiveUsers() {
     var tab_url = window.g_url;
     var text = getActiveUsers(tab_url);
@@ -682,8 +682,8 @@ function clickHandle(e) {
 ////////////// AJAX CSRF PROTECTION///////////
 
 /*
-Ajax CSRF protection
-*/
+ * Ajax CSRF protection
+ */
 function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -719,8 +719,8 @@ function ajaxSetup(csrftoken) {
 ///////////////////CHAT AND MESSAGE API CALLS///////////////////
 
 /*
-	Get Activity Feed from server
-*/
+ * Get Activity Feed from server
+ */
 
 function getFeed(url) {
     var encoded_url = encodeURIComponent(url);
@@ -734,8 +734,8 @@ function getFeed(url) {
 }
 
 /*
-	Get active users from server
-*/
+ * Get active users from server
+ */
 function getActiveUsers(url) {
     var encoded_url = encodeURIComponent(url);
     var req_url = sprintf("%s/ext/getActiveUsers?url=%s", baseUrl, encoded_url);
@@ -748,8 +748,8 @@ function getActiveUsers(url) {
 }
 
 /*
-	Get stats from server
-*/
+ * Get stats from server
+ */
 function getStats(url) {
     var encoded_url = encodeURIComponent(url);
     var req_url = sprintf("%s/ext/getStats?url=%s", baseUrl, encoded_url);
@@ -765,7 +765,7 @@ function getStats(url) {
 /* Post message to server
  */
 
-function postMessage(message, url) {
+function postMessage(message, url, successCallback) {
     var active_tab = getActiveTab();
     var req_url = sprintf("%s/api/v1/history-data", baseUrl);
 
@@ -784,14 +784,14 @@ function postMessage(message, url) {
         processData: false,
         contentType: "application/json",
         error: function(jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR);
-            console.log(textStatus);
-            console.log(errorThrown);
+            logErrors(jqXHR, textStatus, errorThrown);
+            loginView.logout();
         },
         success: function(data) {
             populateFeed(0);
             $("#messagebox").val("Post a Bulletin to this page and to your Eyebrowse feed simultaneously");
             $("#messagebox").blur();
+            successCallback(data);
         }
     });
 }
@@ -818,9 +818,8 @@ function postChatMessage(message, url) {
         processData: false,
         contentType: "application/json",
         error: function(jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR);
-            console.log(textStatus);
-            console.log(errorThrown);
+            logErrors(jqXHR, textStatus, errorThrown);
+            loginView.logout();
         },
         success: function(data) {
             populateChatMessageBox(1);
@@ -836,7 +835,7 @@ function postChatMessage(message, url) {
  */
 
 function getActiveTab() {
-    var date_diff = 2; //minutes
+    var date_diff = 2; // minutes
     var curr_date = new Date();
     var end_date = new Date(curr_date.getTime() + date_diff * 60000);
     var total_time = date_diff * 60000;
@@ -868,20 +867,11 @@ function getMessages(url) {
 }
 
 
-///////////////////URL BUILDERS///////////////////
-function url_login() {
-    return baseUrl + "/accounts/login/";
-}
-
-function url_logout() {
-    return baseUrl + "/accounts/logout/";
-}
-
 $(document).ready(function() {
     window.backpage = chrome.extension.getBackgroundPage();
     user = backpage.user;
 
-    logged_in = user.checkLoggedIn();
+    logged_in = user.isLoggedIn();
 
     baseUrl = backpage.baseUrl;
     navView = new NavView();

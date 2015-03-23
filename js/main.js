@@ -43,7 +43,7 @@ var FilterList = Backbone.Collection.extend({
     },
 
     parse: function(data, res) {
-        if (res.status === 200) {
+        if (res.status === HTTP_OK) {
             return data.objects;
         }
     },
@@ -52,10 +52,7 @@ var FilterList = Backbone.Collection.extend({
     _fetch: function() {
         this.fetch({
             error: _.bind(function(model, xhr, options) {
-                // DO NOT LOG OUT IF SERVER ERRORS
-                // if (typeof user !== "undefined" && navigator.onLine) {
-                //   user.logout();
-                // }
+                user.attemptLogout(xhr);
             }, this)
         });
     },
@@ -122,25 +119,25 @@ var User = Backbone.Model.extend({
         return this.get("resourceURI");
     },
 
-    checkLoggedIn: function() {
-        var data = $.parseJSON(
-            $.ajax(baseUrl + "/ext/loggedIn", {
-                type: "GET",
-                dataType: "json",
-                async: false
-            }).responseText);
-        if (data.res) {
-            this.setUsername(data.username);
-            this.login();
-            return true;
+    attemptLogin: function(callback) {
+        if (callback !== undefined) {
+            $.get(url_login(), function(data) {
+                callback(parseUsername(data));
+            });
+
         } else {
-            if (this.isLoggedIn()) {
-                this.logout();
-                this.setLoginPrompt(false);
-            } else {
-                this.logout();
-            }
-            return false;
+            var data = $.ajax({
+                type: "GET",
+                url: url_login(),
+                async: false
+            }).responseText;
+            return parseUsername(data) !== null ? true : false;
+        }
+    },
+
+    attemptLogout: function(jqXHR) {
+        if (jqXHR.status === HTTP_UNAUTHORIZED) {
+            user.logout();
         }
     },
 
@@ -366,15 +363,19 @@ var User = Backbone.Model.extend({
     event_type - whether a tab is opening or closing/navigating to a new page etc
 */
 function openItem(tabId, url, favIconUrl, title, event_type) {
-    if (!user.checkLoggedIn()) {
-        if (!user.ignoreLoginPrompt()) {
-            chrome.tabs.sendMessage(tabId, {
-                "action": "prompt",
-                "type": "loginPrompt",
-                "baseUrl": baseUrl,
-            });
+    if (!user.isLoggedIn()) {
+        if (user.attemptLogin()) {
+            user.login();
+        } else {
+            if (!user.ignoreLoginPrompt()) {
+                chrome.tabs.sendMessage(tabId, {
+                    "action": "prompt",
+                    "type": "loginPrompt",
+                    "baseUrl": baseUrl,
+                });
+            }
+            return;
         }
-        return;
     }
     var timeCheck = checkTimeDelta();
 
@@ -660,7 +661,10 @@ function sendInitialData(tabId) {
                         dataType: "text",
                         processData: false,
                         contentType: "application/json",
-                        error: function(jqXHR, textStatus, errorThrown) {},
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            logErrors(jqXHR, textStatus, errorThrown);
+                            user.attemptLogout(jqXHR);
+                        },
                         success: function(data, textStatus, jqXHR) {},
                     });
                 }
@@ -693,12 +697,10 @@ function dumpData() {
             contentType: "application/json",
             error: function(jqXHR, textStatus, errorThrown) {
                 stop = true;
-                // if (navigator.onLine){
-                //     user.logout(); //notify user of server error
-                // }
+                logErrors(jqXHR, textStatus, errorThrown);
             },
             success: function(data, textStatus, jqXHR) {
-                local_history.splice(index, 1); //remove item from history on success 
+                local_history.splice(index, 1); //remove item from history on success
             },
         });
     });
@@ -804,13 +806,10 @@ function getLocalStorageUser() {
     if (storedUser === undefined || storedUser === "null") {
         user = new User();
 
-        $.get(baseUrl + "/accounts/login/", function(data) {
-            var REGEX = /name\='csrfmiddlewaretoke'" value\='.*"/; // regex to find the csrf token
-            var match = data.match(REGEX);
-            if (match) {
-                match = match[0];
-                var csrfmiddlewaretoken = match.slice(match.indexOf("value=") + 7, match.length - 1); // grab the csrf token
-                user.setCSRF(csrfmiddlewaretoken);
+        $.get(url_login(), function(data) {
+            var csrf = getCSRFToken(data);
+            if (csrf) {
+                user.setCSRF(csrf);
                 localStorage.user = JSON.stringify(user);
             }
         });
@@ -891,7 +890,7 @@ function loginBadge(e) {
     initialize the badge with login flag
 */
 function initBadge() {
-    if (!user.checkLoggedIn()) {
+    if (!user.isLoggedIn()) {
         loginBadge("logout");
     }
 }
