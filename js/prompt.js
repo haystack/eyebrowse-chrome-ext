@@ -248,7 +248,7 @@ function setup(baseUrl, promptType, user, url, protocol) {
             chrome.extension.sendMessage(JSON.stringify(msg));
         });
 
-    } else if (promptType === "getInfo" && protocol === "http:") {
+    } else if (promptType === "getInfo" && protocol === "http:") { // TODO fix with ssl certs for eyebrowse
         $.ajax({
             url: baseUrl + "/ext/popupInfo/",
             type: "POST",
