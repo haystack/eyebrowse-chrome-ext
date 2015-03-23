@@ -69,7 +69,7 @@ var User = Backbone.Model.extend({
         "whitelist": new FilterList("whitelist"),
         "blacklist": new FilterList("blacklist"),
         "nags": {
-            "visits": 11,
+            "visits": 0,
             "lastNag": (new Date()).getTime() - 24 * 360000
         },
         "username": "",
@@ -215,6 +215,12 @@ var User = Backbone.Model.extend({
         });
     },
 
+    setNags: function(nags) {
+      this.set({
+        "nags": nags
+      });
+    },
+
     // check if a url is in the blacklist
     inBlackList: function(url) {
         return this.inSet("blacklist", url);
@@ -225,33 +231,33 @@ var User = Backbone.Model.extend({
         return this.inSet("whitelist", url);
     },
 
+    // defaults for a nag object
+    createNagSite: function() {
+        return {
+            "visits": 1,
+            "lastNag": (new Date()).getTime(),
+            "factor": 1
+        };
+    },
+
     // sets exponential backoff factor
     setNagFactor: function(url, rate) {
         if (url !== "") {
             var nags = this.getNags();
-            var site = nags[url];
-            var visits = site.visits;
-            var lastNag = site.lastNag;
-            var factor = site.factor;
+            if (url in nags) {
+                nags[url] = Math.max(Math.min(nags[url].factor * rate, 16), 1);
+            } else {
+                nags[url] = this.createNagSite();
+            }
 
-            var newSite = {
-                "visits": visits,
-                "lastNag": lastNag,
-                "factor": Math.max(Math.min(factor * rate, 16), 1)
-            };
-            nags[url] = newSite;
-
-            this.set({
-                "nags": nags,
-            });
+            this.setNags(nags);
         }
     },
 
     // check if a url should be nagged
     shouldNag: function(url) {
-        var timeThres = 3600000; // 1 hour in milliseconds
+        var timeThres = 60 * 60 * 1000; // 15 min in milliseconds
         var visitThres = 5;
-
         var overallThres = 10;
 
         var nags = this.getNags();
@@ -259,9 +265,10 @@ var User = Backbone.Model.extend({
         var overallVisits = nags.visits;
         var overallLastNag = nags.lastNag;
 
-        var b_Nag = false;
+        var _shouldNag = false;
         var now = (new Date()).getTime();
-        var newSite, site, visits, lastNag, factor;
+        var site, visits, lastNag, factor;
+
         if (overallVisits >= overallThres || now - overallLastNag > timeThres) {
             if (url in nags) {
                 site = nags[url];
@@ -270,60 +277,37 @@ var User = Backbone.Model.extend({
                 factor = site.factor;
 
                 if (visits >= visitThres * factor || now - lastNag > timeThres * factor) {
-                    b_Nag = true;
-                    newSite = {
-                        "visits": 0,
-                        "lastNag": now,
-                        "factor": factor
-                    };
+                    _shouldNag = true;
+                    site.visits = 0;
+                    site.lastNag = now;
+
                     nags.visits = 0;
                     nags.lastNag = now;
                 } else {
-                    newSite = {
-                        "visits": visits + 1,
-                        "lastNag": lastNag,
-                        "factor": factor
-                    };
+                    site.vists++;
                     nags.visits++;
                 }
             } else {
-                b_Nag = true;
-                newSite = {
-                    "visits": 1,
-                    "lastNag": now,
-                    "factor": 1
-                };
+                _shouldNag = true;
                 nags.lastNag = now;
                 nags.visits = 0;
+                nags[url] = this.createNagSite();
             }
-            nags[url] = newSite;
         } else {
             nags.visits++;
             if (url in nags) {
-                site = nags[url];
-                visits = site.visits;
-                lastNag = site.lastNag;
-                factor = site.factor;
-
-                newSite = {
-                    "visits": visits + 1,
-                    "lastNag": lastNag,
-                    "factor": factor
-                };
+                nags[url].visits++;
             } else {
-                newSite = {
+                nags[url] = {
                     "visits": 1,
                     "lastNag": now - 24 * timeThres,
                     "factor": 1
                 };
             }
-            nags[url] = newSite;
         }
-        this.set({
-            "nags": nags,
-        });
+        this.setNags(nags);
 
-        return b_Nag;
+        return _shouldNag;
     },
 
     // check if url is in a set (either whitelist or blacklist)
