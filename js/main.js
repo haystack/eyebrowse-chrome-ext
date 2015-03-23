@@ -216,9 +216,9 @@ var User = Backbone.Model.extend({
     },
 
     setNags: function(nags) {
-      this.set({
-        "nags": nags
-      });
+        this.set({
+            "nags": nags
+        });
     },
 
     // check if a url is in the blacklist
@@ -351,7 +351,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         if (user.attemptLogin()) {
             user.login();
         } else {
-            if (!user.ignoreLoginPrompt()) {
+            if (!user.ignoreLoginPrompt() && user.shouldNag("loginPrompt")) {
                 chrome.tabs.sendMessage(tabId, {
                     "action": "prompt",
                     "type": "loginPrompt",

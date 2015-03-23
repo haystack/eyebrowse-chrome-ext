@@ -195,7 +195,7 @@ function createPopupPrompt(data, baseUrl) {
     Call the eyebrowse server to get an iframe with a prompt
     Can either be a login or track type prompt.
 */
-function setup(baseUrl, promptType, user, url) {
+function setup(baseUrl, promptType, user, url, protocol) {
     if ($(FRAME_ID).length) {
         $(FRAME_ID).css("z-index", 999999999);
         return;
@@ -242,13 +242,13 @@ function setup(baseUrl, promptType, user, url) {
 
         $("#eyebrowse-ignore-btn").click(function() {
             $(FRAME_ID).remove();
-            msg = {
+            var msg = {
                 "action": "ignore"
             };
             chrome.extension.sendMessage(JSON.stringify(msg));
         });
 
-    } else {
+    } else if (promptType === "getInfo" && protocol === "http:") {
         $.ajax({
             url: baseUrl + "/ext/popupInfo/",
             type: "POST",
@@ -319,10 +319,10 @@ function addFrame(frameHtml) {
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     var protocol = window.location.protocol;
-    var action = request.action;
     var url = document.URL;
+    var action = request.action;
 
-    if (action === "prompt" && protocol === "http:") {
-        setup(request.baseUrl, request.type, request.user, url);
+    if (action === "prompt") {
+        setup(request.baseUrl, request.type, request.user, url, protocol);
     }
 });
