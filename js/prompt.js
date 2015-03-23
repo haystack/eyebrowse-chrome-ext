@@ -58,6 +58,7 @@ function initTemplates() {
 }
 
 function getTemplate(templateId, templateArgs) {
+    templateArgs = templateArgs || {};
     if (!Object.size(TEMPLATE_HTML)) {
         initTemplates();
     }
@@ -194,7 +195,7 @@ function createPopupPrompt(data, baseUrl) {
     Call the eyebrowse server to get an iframe with a prompt
     Can either be a login or track type prompt.
 */
-function setup(baseUrl, promptType, user, host, url) {
+function setup(baseUrl, promptType, user, url) {
     if ($(FRAME_ID).length) {
         $(FRAME_ID).css("z-index", 999999999);
         return;
@@ -317,12 +318,11 @@ function addFrame(frameHtml) {
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-    var host = window.location.host;
     var protocol = window.location.protocol;
     var action = request.action;
     var url = document.URL;
 
     if (action === "prompt" && protocol === "http:") {
-        setup(request.baseUrl, request.type, request.user, host, url);
+        setup(request.baseUrl, request.type, request.user, url);
     }
 });
