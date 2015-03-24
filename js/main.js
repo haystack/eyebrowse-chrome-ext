@@ -303,7 +303,8 @@ var User = Backbone.Model.extend({
         } else {
             nags.visits++;
             if (url in nags) {
-                nags[url].visits++;
+                site = nags[url];
+                site.visits++;
             } else {
                 nags[url] = {
                     "visits": 1,
