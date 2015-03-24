@@ -263,7 +263,7 @@ var User = Backbone.Model.extend({
     // check if a url should be nagged
     shouldNag: function(url) {
         url = this.normalizeNagUrl(url);
-        var timeThres = 60 * 60 * 1000; // 15 min in milliseconds
+        var timeThres = 60 * 60 * 1000; // 1 hr in milliseconds
         var visitThres = 5;
         var overallThres = 10;
 
