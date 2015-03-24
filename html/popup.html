@@ -11,7 +11,7 @@
         <!--  styles -->
         <link type="text/css" rel="stylesheet" href="../css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="../css/bootstrap-responsive.min.css" />
-
+		<link type="text/css" rel="stylesheet" href="../css/jquery.mentionsInput.css" />
         <link type="text/css" rel="stylesheet" href="../css/popup.css" />
 
     </head>
@@ -85,11 +85,11 @@
         <div id="navSubLinks"></div>
       </div>
     </div>
-    <div class="row well3 offset1 span4">
+    <div class="row well3 offset1 span4" id="upperarea">
       <div id="stats"></div>
       <div id="btitle">Bulletin Board</div>
             <div id="pagefeed"></div>
-          <textarea id="messagebox" maxlength=300>Post a Bulletin to this page and to your Eyebrowse feed simultaneously</textarea>
+          <textarea id="messagebox" maxlength=300 class="mention" placeholder="Post a Note to this page and to your Eyebrowse feed simultaneously"></textarea>
           <button id="submitmessage">Submit</button>
         </div>
           <div class="row well3 offset1 span4" id="lowerarea">
@@ -98,7 +98,7 @@
                 <div id="chattingarea">
                 <div id="btitle2">Chat Room</div>
                 <div id="chatmessage"></div>
-                <input type="text" maxlength=2000 id="textbox" placeholder="Send a Chat Message to this page">
+                <textarea class="mention" type="text" maxlength=2000 id="textbox" placeholder="Post a Chat Message to this page"></textarea>
                 </div>
             </div>
 
@@ -118,6 +118,7 @@
          <script type="text/javascript" src="../libs/bootstrap-button.min.js"></script>
         <script type="text/javascript" src="../libs/sprintf-0.7-beta1.min.js"></script>
         <script type="text/javascript" src="../libs/moment.min.js"></script>
+        <script type="text/javascript" src="../libs/jquery.mentionsInput.js"></script>
 
         <!-- scripts -->
         <script type="text/javascript" src="../js/common.js"></script>

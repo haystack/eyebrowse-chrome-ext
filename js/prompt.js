@@ -128,12 +128,17 @@ function createPopupPrompt(data, baseUrl) {
     div_html += "'>";
 
     if (data.message !== "") {
+
         div_html += "<div style='font-size: 9px !important; font-family: \"Helvetica Neue\",Helvetica,Arial,sans-serif !important; line-height: 11px !important; display: inline-block !important; max-width: 160px !important; height: 22px !important; position: relative !important; top: -10px !important;'>";
 
         if (data.user_url === "") {
-            div_html += truncate(data.message, 78);
+            data.message = truncate(data.message, 78);
+            data.message = data.message.replace(/(^|\W+)\@([\w\-]+)/gm,'$1<a href="http://eyebrowse.csail.mit.edu/users/$2" target="_blank">@$2</a>');
+			div_html += data.message;
         } else {
-            div_html += truncate(data.message, 51);
+            data.message = truncate(data.message, 51);
+         	data.message = data.message.replace(/(^|\W+)\@([\w\-]+)/gm,'$1<a href="http://eyebrowse.csail.mit/edu/users/$2" target="_blank">@$2</a>');
+			div_html += data.message;
             div_html += " - <a href='" + data.user_url + "' title='" + data.username + "' target='_blank'>" + data.username + "</a> ";
         }
         div_html += data.about_message;

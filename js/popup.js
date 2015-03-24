@@ -388,6 +388,9 @@ var HomeView = Backbone.View.extend({
 
             setupMessageBox();
             populateChatMessageBox(0);
+            
+            setupMentionAutocomplete();
+            
             window.setInterval(function() {
                 populateChatMessageBox(1);
             }, 12000);
@@ -398,6 +401,17 @@ var HomeView = Backbone.View.extend({
         $(this.el).html(template);
     },
 });
+
+function setupMentionAutocomplete() {
+	$('textarea.mention').mentionsInput({
+	  onDataRequest:function (mode, query, callback) {	  	
+	  	var req_url = sprintf("%s/ext/getFriends?query=%s", baseUrl, query);
+	  	$.getJSON(req_url, function(responseData) {
+	    	callback.call(this, responseData.res);
+	    });
+	  }
+	});
+}
 
 function completeLogin(username) {
     $("#login_container").remove();
@@ -438,14 +452,14 @@ function setupMessageBox() {
 
     $("#messagebox").keypress(function(e) {
         if (e.which === 13) {
-            var text = $("#messagebox").val();
+            var text = $("#upperarea .mentions").text();
             postMessage(text, window.g_url);
         }
     });
 
     $("#submitmessage").click(function(e) {
-        var text = $("#messagebox").val();
-        if (text === "Post a Bulletin to this page and to your Eyebrowse feed simultaneously") {
+        var text = $("#upperarea .mentions").text();
+        if (text === "") {
             text = null;
         }
         postMessage(text, window.g_url);
@@ -540,6 +554,7 @@ function populateChatMessageBox(first) {
     var parsed = JSON.parse(message_text).objects;
     var messages = [];
     $.each(parsed, function(index, value) {
+    	value.message = value.message.replace(/(^|\W+)\@([\w\-]+)/gm,'$1<a href="http://eyebrowse.csail.mit.edu/users/$2" target="_blank">@$2</a>');
         messages.push(value);
     });
     if (messages.length !== 0) {
@@ -559,7 +574,7 @@ function populateChatMessageBox(first) {
         $("#chatmessage").scrollTop($("#chatmessage")[0].scrollHeight);
 
         $("#textbox").bind("enterKey", function(e) {
-            var text = $("#textbox").val();
+            var text = $("#lowerarea .mentions").text();
             postChatMessage(text, window.g_url);
         });
         $("#textbox").keyup(function(e) {
@@ -789,7 +804,8 @@ function postMessage(message, url, successCallback) {
         },
         success: function(data) {
             populateFeed(0);
-            $("#messagebox").val("Post a Bulletin to this page and to your Eyebrowse feed simultaneously");
+            $("#messagebox").val("");
+            $("#upperarea .mentions").html("<div></div>");
             $("#messagebox").blur();
             if (successCallback) {
                 successCallback(data);
@@ -827,6 +843,7 @@ function postChatMessage(message, url) {
             populateChatMessageBox(1);
             $("#chatmessage").scrollTop($("#chatmessage")[0].scrollHeight);
             $("#textbox").val("");
+            $("#lowerarea .mentions").html("<div></div>");
         }
     });
 
