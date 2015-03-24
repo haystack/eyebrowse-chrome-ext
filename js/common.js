@@ -35,15 +35,15 @@ function parseCSRFToken(data) {
 function parseUsername(data) {
     var match = data.match(LOGGED_IN_REGEX);
     if (match) {
-      match = match[0];
-      var username = match.slice("var username = ".length + 1, match.length - 1);
-      if (username === "") {
-        return null;
-      } else {
-        return username;
-      }
+        match = match[0];
+        var username = match.slice("var username = ".length + 1, match.length - 1);
+        if (username === "") {
+            return null;
+        } else {
+            return username;
+        }
     } else {
-      return null;
+        return null;
     }
 }
 

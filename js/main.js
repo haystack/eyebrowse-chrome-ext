@@ -6,6 +6,14 @@ var baseUrl = "http://localhost:8000";
 var siteName = "Eyebrowse";
 var GOOGLE_FAVICON_URL = "http://www.google.com/s2/favicons?domain_url=";
 
+// nag settings
+// total time between nags
+var NAG_TIME_THRESHOLD = 60 * 60 * 1000; // 1 hr in milliseconds
+// number of visits per domain
+var NAG_VISIT_THRESHOLD = 5;
+// number of total visits before nagging
+var NAG_TOTAL_VISIT_THRESHOLD = 15;
+
 ///////////////////models//////////////////////
 // This object can represent either a whitelist or blacklist for a given user.
 // On an update send results to server to update stored data. On intialization
@@ -263,10 +271,6 @@ var User = Backbone.Model.extend({
     // check if a url should be nagged
     shouldNag: function(url) {
         url = this.normalizeNagUrl(url);
-        var timeThres = 60 * 60 * 1000; // 1 hr in milliseconds
-        var visitThres = 5;
-        var overallThres = 10;
-
         var nags = this.getNags();
 
         var overallVisits = nags.visits;
@@ -276,14 +280,14 @@ var User = Backbone.Model.extend({
         var now = (new Date()).getTime();
         var site, visits, lastNag, factor;
 
-        if (overallVisits >= overallThres || now - overallLastNag > timeThres) {
+        if (overallVisits >= NAG_TOTAL_VISIT_THRESHOLD || now - overallLastNag > NAG_TIME_THRESHOLD) {
             if (url in nags) {
                 site = nags[url];
                 visits = site.visits;
                 lastNag = site.lastNag;
                 factor = site.factor;
 
-                if (visits >= visitThres * factor || now - lastNag > timeThres * factor) {
+                if (visits >= NAG_VISIT_THRESHOLD * factor || now - lastNag > NAG_TIME_THRESHOLD * factor) {
                     _shouldNag = true;
                     site.visits = 0;
                     site.lastNag = now;
@@ -308,7 +312,7 @@ var User = Backbone.Model.extend({
             } else {
                 nags[url] = {
                     "visits": 1,
-                    "lastNag": now - 24 * timeThres,
+                    "lastNag": now - 24 * NAG_TIME_THRESHOLD,
                     "factor": 1
                 };
             }
