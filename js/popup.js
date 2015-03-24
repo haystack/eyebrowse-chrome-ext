@@ -791,7 +791,9 @@ function postMessage(message, url, successCallback) {
             populateFeed(0);
             $("#messagebox").val("Post a Bulletin to this page and to your Eyebrowse feed simultaneously");
             $("#messagebox").blur();
-            successCallback(data);
+            if (successCallback) {
+                successCallback(data);
+            }
         }
     });
 }
