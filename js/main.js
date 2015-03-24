@@ -240,8 +240,14 @@ var User = Backbone.Model.extend({
         };
     },
 
+    // we store hash keys as just the hostname..
+    normalizeNagUrl: function(url) {
+        return new URI(url).hostname;
+    },
+
     // sets exponential backoff factor
     setNagFactor: function(url, rate) {
+        url = this.normalizeNagUrl(url);
         if (url !== "") {
             var nags = this.getNags();
             if (url in nags) {
@@ -256,6 +262,7 @@ var User = Backbone.Model.extend({
 
     // check if a url should be nagged
     shouldNag: function(url) {
+        url = this.normalizeNagUrl(url);
         var timeThres = 60 * 60 * 1000; // 15 min in milliseconds
         var visitThres = 5;
         var overallThres = 10;
@@ -367,7 +374,6 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     setTimeout(function() {
         popupInfo(tabId, url);
     }, 3000);
-
 
     if (user.getIncognito() === false) {
 
@@ -521,7 +527,7 @@ function handleFilterListMsg(msg) {
     var list;
 
     var uri = new URI(url);
-    user.setNagFactor(uri.hostname, 0.5);
+    user.setNagFactor(url, 0.5);
 
     if (type === "whitelist") {
         list = user.getWhitelist();
@@ -571,7 +577,7 @@ function handleLoginMsg() {
     Set the nag factor for exponential backoff
 */
 function handleNagMsg(url) {
-    user.setNagFactor((new URI(url)).hostname, 2);
+    user.setNagFactor(url, 2);
 }
 
 /*
