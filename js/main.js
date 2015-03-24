@@ -250,6 +250,11 @@ var User = Backbone.Model.extend({
 
     // we store hash keys as just the hostname..
     normalizeNagUrl: function(url) {
+        url = url || "";
+        if (url.indexOf("http") === -1) {
+            // e.g. using login prompt as a key
+            return url;
+        }
         return new URI(url).hostname;
     },
 
