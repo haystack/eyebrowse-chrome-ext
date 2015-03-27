@@ -99,6 +99,7 @@ var ChatUserView = Backbone.View.extend({
         var template = _.template($("#chat-user-template").html(), {
             "username": username,
             "user_url": getUserUrl(username),
+            "pic_url": this.model.get("pic_url"),
             "old_level": this.model.get("old_level"),
             "time_ago": this.model.get("time_ago"),
         });
@@ -150,7 +151,7 @@ var ChatMessageView = Backbone.View.extend({
         } else {
             template = _.template($("#their-chat-msg-template").html(), {
                 "author": author,
-                "user_url": getUserUrl(author),
+                "author_url": getUserUrl(author),
                 "message": message,
                 "hum_time": hum_time,
             });
