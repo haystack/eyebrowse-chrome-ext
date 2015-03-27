@@ -1,4 +1,4 @@
-#eyebrowse-frame {
+.eyebrowse-frame {
     z-index: 999999999 !important;
     position: fixed !important;
     display: block !important;
@@ -69,11 +69,10 @@
 .eyebrowse-bubble-user-wrapper {
     position: relative !important;
     top: -5px !important;
+    right: 5px !important;
     height: 30px !important;
     display: inline-block !important;
-    width: 2px !important;
-    background-color: #000000 !important;
-    margin: 0px 5px 0px 5px !important;
+    margin: 0px 26px 0px 5px !important;
 }
 
 .eyebrowse-bubble-user-container {
@@ -118,6 +117,11 @@
   color: #fff !important;
   filter: alpha(opacity=20) !important;
   opacity: .95;
+}
+
+.eyebrowse-bubble-close {
+  font-size: 15px !important;
+  color: #000 !important;
 }
 
 button.eyebrowse-close {

@@ -1,7 +1,7 @@
 <!-- BEGIN: Underscore Template Definition. -->
 <!-- track prompt template -->
 <div id="track-prompt" class="eyebrowse-reset">
-  <div id="eyebrowse-frame">
+  <div id="eyebrowse-frame" class="eyebrowse-frame">
     <span class="eyebrowse-prompt-msg">
       <button type="button" id="eyebrowse-close-btn"
         class="eyebrowse-close" aria-label="Close">
@@ -22,7 +22,7 @@
 
 <!-- login prompt template -->
 <div id="login-prompt" class="eyebrowse-reset">
-  <div id="eyebrowse-frame">
+  <div id="eyebrowse-frame" class="eyebrowse-frame">
     <span class="eyebrowse-prompt-msg">
       <button type="button" id="eyebrowse-close-btn"
         class="eyebrowse-close" aria-label="Close">
@@ -40,12 +40,12 @@
 
 <!-- bubble prompt template -->
 <div id="bubble-prompt" class="eyebrowse-reset">
-  <div id="eyebrowse-frame" class="eyebrowse-bubble-frame">
+  <div id="eyebrowse-frame" class="eyebrowse-frame eyebrowse-bubble-frame" style="width: <%= msgContainerWidth %>">
     <button type="button" id="eyebrowse-close-btn"
-      class="eyebrowse-close" aria-label="Close">
+      class="eyebrowse-close eyebrowse-bubble-close" aria-label="Close">
       <span aria-hidden="true">×</span>
     </button>
-    <div class="eyebrowse-bubble-msg-container" style="width: <%= msgContainerWidth %>">
+    <div class="eyebrowse-bubble-msg-container">
       <% if ( msg ) { %>
           <%= msg %>
         <% if ( user_url ) { %>
@@ -59,8 +59,7 @@
           <a href="<%= user.url %>" target="_blank"
             title="<%= user.username %> - <%= user.time_ago %> ago">
             <img class="eyebrowse-bubble-user-icon
-            eyebrowse-bubble-old-level-<%= user.old_level %>"
-            <%= img_src %>>
+            eyebrowse-bubble-old-level-<%= user.old_level %>">
           </a>
         </div>
         <% }); %>

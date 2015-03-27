@@ -32,7 +32,7 @@ function createBubblePrompt(data, baseUrl) {
     var userContainerTop;
     if (data.message === "") {
         if (msgContainerWidth === 34) {
-            msgContainerWidth = 45;
+            msgContainerWidth = 50;
         }
         userContainerTop = 0;
     } else {
@@ -50,12 +50,8 @@ function createBubblePrompt(data, baseUrl) {
     msg = createMentionTag(msg);
 
 
-    // fix problem of trying to grab images in template while loading
-    for (var i = 0; i < data.active_users.length; i++) {
-      data.active_users[i].pic_url = "src='" + data.active_users[i].pic_url + "'";
-    }
 
-    return getPromptTemplate("#bubble-prompt", {
+    var template = getPromptTemplate("#bubble-prompt", {
         "msg": msg,
         "user_url": data.user_url,
         "username": data.username,
@@ -64,6 +60,12 @@ function createBubblePrompt(data, baseUrl) {
         "msgContainerWidth": msgContainerWidth,
         "userContainerTop": userContainerTop,
     });
+
+    var images = template.find(".eyebrowse-bubble-user-icon");
+    for (var i = 0; i < images.length; i++) {
+        $(images[i]).attr("src", data.active_users[i].pic_url);
+    }
+    return template;
 }
 /*
     Call the eyebrowse server to get an iframe with a prompt
@@ -135,7 +137,6 @@ function setup(baseUrl, promptType, user, url, protocol) {
 }
 
 function setFade() {
-
     var fadeTime = 3000; //8 seconds
     var $popup = $(FRAME_ID);
 

@@ -384,7 +384,7 @@ var HomeView = Backbone.View.extend({
 });
 
 function setupMentionAutocomplete() {
-    $('textarea.mention').mentionsInput({
+    $("textarea.mention").mentionsInput({
         onDataRequest: function(mode, query, callback) {
             var req_url = sprintf("%s/ext/getFriends?query=%s", baseUrl, query);
             $.getJSON(req_url, function(responseData) {
