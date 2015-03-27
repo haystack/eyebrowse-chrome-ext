@@ -20,7 +20,7 @@ function getLogoutUrl() {
 }
 
 function getUserUrl(username) {
-  return baseUrl + "/users/" + username;
+    return baseUrl + "/users/" + username;
 }
 
 /*
