@@ -100,10 +100,6 @@ function setup(baseUrl, promptType, user, url, protocol) {
             chrome.extension.sendMessage(JSON.stringify(msg));
         });
 
-        $("#eyebrowse-close-btn").click(function() {
-            $(FRAME_ID).remove();
-        });
-
     } else if (promptType === "loginPrompt") {
         frameHtml = createLoginPrompt();
         addFrame(frameHtml);
@@ -186,6 +182,9 @@ function addFrame(frameHtml) {
     addStyle();
     $(FRAME_ID).css("visibility", "visible");
     setFade();
+    $("#eyebrowse-close-btn").click(function() {
+        $(FRAME_ID).remove();
+    });
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {

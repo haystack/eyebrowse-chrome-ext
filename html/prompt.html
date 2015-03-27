@@ -24,6 +24,10 @@
 <div id="login-prompt" class="eyebrowse-reset">
   <div id="eyebrowse-frame">
     <span class="eyebrowse-prompt-msg">
+      <button type="button" id="eyebrowse-close-btn"
+        class="eyebrowse-close" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
       You've been logged out of Eyebrowse. Log back in by click the icon above.
     </span>
     <br/>
@@ -37,6 +41,10 @@
 <!-- bubble prompt template -->
 <div id="bubble-prompt" class="eyebrowse-reset">
   <div id="eyebrowse-frame" class="eyebrowse-bubble-frame">
+    <button type="button" id="eyebrowse-close-btn"
+      class="eyebrowse-close" aria-label="Close">
+      <span aria-hidden="true">×</span>
+    </button>
     <div class="eyebrowse-bubble-msg-container" style="width: <%= msgContainerWidth %>">
       <% if ( msg ) { %>
           <%= msg %>
