@@ -49,6 +49,12 @@ function createBubblePrompt(data, baseUrl) {
     }
     msg = createMentionTag(msg);
 
+
+    // fix problem of trying to grab images in template while loading
+    for (var i = 0; i < active_users.length; i++) {
+      data.active_users[i].pic_url = "src='" + data.active_users[i].pic_url + "'";
+    }
+
     return getPromptTemplate("#bubble-prompt", {
         "msg": msg,
         "user_url": data.user_url,
