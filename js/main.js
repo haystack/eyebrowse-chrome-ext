@@ -136,7 +136,7 @@ var User = Backbone.Model.extend({
     attemptLogin: function(callback) {
         if (callback !== undefined) {
             $.get(getLoginUrl(), function(data) {
-                attemptSetCSRF(data);
+                this.attemptSetCSRF(data);
                 callback(parseUsername(data));
             });
         } else {
@@ -146,7 +146,7 @@ var User = Backbone.Model.extend({
                 async: false
             }).responseText;
             var isLoggedIn = parseUsername(data) !== null ? true : false;
-            attemptSetCSRF(data);
+            this.attemptSetCSRF(data);
             return isLoggedIn;
         }
     },

@@ -95,7 +95,7 @@ var ChatUserView = Backbone.View.extend({
     tagName: "div",
     className: "chatuser_pic",
     render: function() {
-        var username = this.model.get(username);
+        var username = this.model.get("username");
         var template = _.template($("#chat-user-template").html(), {
             "username": username,
             "user_url": getUserUrl(username),
