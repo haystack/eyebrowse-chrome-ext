@@ -27,19 +27,19 @@ function createBubblePrompt(data, baseUrl) {
         return null;
     }
 
-    var msgContainerWidth = (data.active_users.length *31) + 10;
+    var bubbleFrameWidth = (data.active_users.length *32) + 10;
     var userContainerTop;
     if (data.message === "") {
         if (data.active_users.length === 1) {
-            msgContainerWidth = 50;
+            bubbleFrameWidth = 50;
         }
         userContainerTop = 0;
     } else {
-        msgContainerWidth += 195;
+        bubbleFrameWidth += 195;
         userContainerTop = -15;
     }
 
-    msgContainerWidth = msgContainerWidth.toString() + "px !important";
+    bubbleFrameWidth = bubbleFrameWidth.toString() + "px !important";
     userContainerTop = userContainerTop.toString() + "px !important";
 
     var msg = truncate(data.message, 51);
@@ -56,7 +56,7 @@ function createBubblePrompt(data, baseUrl) {
         "username": data.username,
         "about_message": data.about_message,
         "users": data.active_users,
-        "msgContainerWidth": msgContainerWidth,
+        "bubbleFrameWidth": bubbleFrameWidth,
         "userContainerTop": userContainerTop,
     });
 
