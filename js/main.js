@@ -126,19 +126,28 @@ var User = Backbone.Model.extend({
         return this.get("resourceURI");
     },
 
+    attemptSetCSRF: function(data) {
+        var csrf = parseCSRFToken(data);
+        if (csrf !== null) {
+            this.setCSRF(csrf);
+        }
+    },
+
     attemptLogin: function(callback) {
         if (callback !== undefined) {
             $.get(getLoginUrl(), function(data) {
+                attemptSetCSRF(data);
                 callback(parseUsername(data));
             });
-
         } else {
             var data = $.ajax({
                 type: "GET",
                 url: getLoginUrl(),
                 async: false
             }).responseText;
-            return parseUsername(data) !== null ? true : false;
+            var isLoggedIn = parseUsername(data) !== null ? true : false;
+            attemptSetCSRF(data);
+            return isLoggedIn;
         }
     },
 
