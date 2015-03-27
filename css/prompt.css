@@ -58,9 +58,8 @@
     font-size: 9px !important;
     font-family: Helvetica Neue,Helvetica,Arial,sans-serif !important;
     line-height: 11px !important;
-    display: inline-block !important;
+    display: inline !important;
     max-width: 160px !important;
-    height: 22px !important;
     /* width set in js */
     position: relative !important;
     top: -10px !important;
