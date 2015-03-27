@@ -11,7 +11,7 @@
         <!--  styles -->
         <link type="text/css" rel="stylesheet" href="../css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="../css/bootstrap-responsive.min.css" />
-		<link type="text/css" rel="stylesheet" href="../css/jquery.mentionsInput.css" />
+        <link type="text/css" rel="stylesheet" href="../css/jquery.mentionsInput.css" />
         <link type="text/css" rel="stylesheet" href="../css/popup.css" />
 
     </head>
@@ -106,7 +106,89 @@
 
         </script>
 
+        <!-- page feed template -->
+        <script type="text/template" id="page-feed-template">
+          <div class="pagefeed_item">
+            <span class="pagefeed_text">
+              <a target="_blank" href="<% user_url %>">
+                <img align="left" src="<%= pic_url %>" title="<%= username %>"
+                class="nav-prof-img2 img-rounded">
+              </a>
+                  <%= message %>
+              <div class="right">
+                <span class="message-name">
+                  <a target="_blank" href="<%= user_url %>"> <%= username %> </a>
+                </span>
+              <span class="date"> <%= hum_time %> </span>
+              </div>
+            </span>
+          </div>
 
+        </script>
+
+        <!-- chat user template -->
+        <script type="text/template" id="chat-user-template">
+          <div id="<%= username %>">
+            <a target="_blank" href="<%= userUrl %>">
+              <img src="<%= pic_url %>" title="<%= username %>"
+                class="nav-prof-img img-rounded older<%=old_level%>">
+              <span class="name"> <%= username %> </span>
+            </a><br>
+            <span class="ago-time"> <%= time_ago %> ago </span>
+          </div>
+        </script>
+
+        <!-- own chat message template -->
+        <script type="text/template" id="own-chat-msg-template">
+            <div class="my_message">
+              <div class="message-text"> <%= message %> </div>
+              <div class="date"> <%= hum_time %> </div>
+            </div>
+        </script>
+
+        <!-- their chat message template -->
+        <script type="text/template" id="their-chat-msg-template">
+            <div class="their_message">
+              <div class="message-text"> <%= message %> </div>
+              <div class="date">
+                <a target="_blank" href="<%= user_url %>">
+                  <%= author %>
+                </a>
+                <%= hum_time %>
+              </div>
+            </div>
+        </script>
+
+        <!-- stats template -->
+        <script type="text/template" id="stats-template">
+          <table class="stat_table">
+            <tr>
+              <td>
+                <div class="stat_title">
+                  <a target="_blank" href="<%= window.g_url %>">
+                    This Page
+                  </a>
+                </div>
+                <div class="my_stats">
+                  Me: <%= my_count %> in <%= my_time %>
+                  <br>
+                  Everyone: <%= total_count %> in <%= total_time %>
+                </div>
+              </td>
+              <td>
+              <div class="stat_title">
+                <a target="_blank" href="http://<%= host %>">
+                 <%= host %>
+                </a>
+              </div>
+              <div class="my_stats">
+                Me: <%= my_dcount %> in <%= my_dtime %>
+                <br>
+                Everyone: <%= total_dcount %> in <%= total_dtime %>
+              </div>
+            </tr>
+          </table>
+        </script>
         <!-- END: Underscore Template Definition. -->
 
         <!--  javascript -->

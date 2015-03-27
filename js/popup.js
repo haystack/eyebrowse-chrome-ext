@@ -63,27 +63,16 @@ var PageFeedItemView = Backbone.View.extend({
     tagName: "div",
     className: "pagefeedline",
     render: function() {
-        var user_url = this.model.get("user_url");
         var username = this.model.get("username");
-        var pic_url = this.model.get("pic_url");
-        var hum_time = this.model.get("hum_time");
-        var post_time = this.model.get("post_time");
-        var message = this.model.get("message");
+        var template = _.template($("#page-feed-template").html(), {
+            "username": username,
+            "user_url": getUserUrl(username),
+            "pic_url": this.model.get("pic_url"),
+            "message": this.model.get("message"),
+            "hum_time": this.model.get("hum_time"),
+        });
 
-        var code_str = "";
-        var time_str = post_time.substring(0, 10) + " " + post_time.substring(11, 19) + " UTC";
-        var time = new Date(time_str);
-        code_str += "<div class='pagefeed_item'><span class='pagefeed_text'> " +
-            "<a target='_blank' href='" + baseUrl + "/users/" + username + "'>" +
-            "<img align='left' src='" + pic_url +
-            "' title='" + username +
-            "' class='nav-prof-img2 img-rounded'></a>" +
-            message + "<div class='right'>" +
-            "<span class='message-name'><a target='_blank' href='" + baseUrl + "/users/" + username + "'>" + username + "</a></span> " +
-            "<span class='date'>" + hum_time + "</span> </div></span></div>";
-
-        this.$el.html(code_str);
-
+        this.$el.html(template);
         return this;
     },
 });
@@ -106,38 +95,22 @@ var ChatUserView = Backbone.View.extend({
     tagName: "div",
     className: "chatuser_pic",
     render: function() {
-        var code = "<div id='" + this.model.get("username") + "'>";
-        var username = this.model.get("username");
-        code = code + "<a target='_blank' href='" + baseUrl + "/users/" + username + "'>";
+        var username = this.model.get(username);
+        var template = _.template($("#chat-user-template").html(), {
+            "username": username,
+            "user_url": getUserUrl(username),
+            "old_level": this.model.get("old_level"),
+            "time_ago": this.model.get("time_ago"),
+        });
 
-        if (this.model.get("old_level") === 0) {
-            code = code + "<img src='" + this.model.get("pic_url") +
-                "' title='" + username +
-                "' class='nav-prof-img img-rounded older0'>";
-        } else if (this.model.get("old_level") === 1) {
-            code = code + "<img src='" + this.model.get("pic_url") +
-                "' title='" + username +
-                "' class='nav-prof-img img-rounded older1'>";
-        } else if (this.model.get("old_level") === 2) {
-            code = code + "<img src='" + this.model.get("pic_url") +
-                "' title='" + username +
-                "' class='nav-prof-img img-rounded older2'>";
-        } else {
-            code = code + "<img src='" + this.model.get("pic_url") +
-                "' title='" + username +
-                "' class='nav-prof-img img-rounded older3'>";
-        }
-
-        code = code + "<span class='name'>" +
-            username + "</span></a><BR/><span class='ago-time'>" + this.model.get("time_ago") + " ago</span></div>";
-
-        this.$el.html(code);
-
+        this.$el.html(template);
         return this;
     },
+
     events: {
         "hover": "hoverUser"
     },
+
     hoverUser: function(event) {
         $(".chatuser_pic").css("cursor", "pointer");
     },
@@ -166,17 +139,23 @@ var ChatMessageView = Backbone.View.extend({
         var time_str = date.substring(0, 10) + " " + date.substring(11, 19) + " UTC";
         var time = new Date(time_str);
         var hum_time = moment(time).fromNow();
-        if (this.model.get("author") === user.get("username")) {
-            this.$el.html("<div class='my_message'><div class='message-text'>" + this.model.get("message") + "</div>" +
-                "<div class='date'>" + hum_time + "</div></div>");
+        var author = this.model.get("author");
+        var message = this.model.get("message");
+        var template;
+        if (author === user.get("username")) {
+            template = _.template($("#own-chat-msg-template").html(), {
+                "message": message,
+                "hum_time": hum_time,
+            });
         } else {
-            this.$el.html("<div class='their_message'><div class='message-text'>" +
-                this.model.get("message") + "</div>" +
-                "<div class='date'>" +
-                "<a target='_blank' href='" + baseUrl + "/users/" + this.model.get("author") + "'>" + this.model.get("author") + "</a> " +
-                hum_time + "</div></div>");
+            template = _.template($("#their-chat-msg-template").html(), {
+                "author": author,
+                "user_url": getUserUrl(author),
+                "message": message,
+                "hum_time": hum_time,
+            });
         }
-
+        this.$el.html(template);
         return this;
     },
 });
@@ -200,20 +179,21 @@ var StatsView = Backbone.View.extend({
     tagName: "div",
     className: "stat_info",
     render: function() {
-        var title = window.g_title;
-        if (title.length > 50) {
-            title = window.g_title.substring(0, 50) + "...";
-        }
 
-        var domain = window.g_url.match(/^[\w-]+:\/*\[?([\w\.:-]+)\]?(?::\d+)?/)[1];
-
-        this.$el.html("<table class='stat_table'><tr><td><div class='stat_title'><a target='_blank' href='" + window.g_url + "'>This Page</a></div>" +
-            "<div class='my_stats'>Me: " + this.model.get("my_count") + " in " + this.model.get("my_time") +
-            "<BR />Everyone: " + this.model.get("total_count") + " in " + this.model.get("total_time") + "</div>" +
-            "</td><td><div class='stat_title'><a target='_blank' href='http://" + domain + "'>" + domain + "</a></div>" +
-            "<div class='my_stats'>Me: " + this.model.get("my_dcount") + " in " + this.model.get("my_dtime") +
-            "<BR />Everyone: " + this.model.get("total_dcount") + " in " + this.model.get("total_dtime") + "</div>" +
-            "</tr></table>");
+        var host = getUrlParser(window.g_url).host;
+        var template = _.template($("#stats-template").html(), {
+            "g_url": window.g_url,
+            "my_count": this.model.get("my_count"),
+            "my_time": this.model.get("my_time"),
+            "total_count": this.model.get("total_count"),
+            "total_time": this.model.get("total_time"),
+            "host": host,
+            "my_dcount": this.model.get("my_dcount"),
+            "my_dtime": this.model.get("my_dtime"),
+            "total_dcount": this.model.get("total_dcount"),
+            "total_dtime": this.model.get("total_dtime"),
+        });
+        this.$el.html(template);
         return this;
     },
 });
@@ -273,7 +253,7 @@ var LoginView = Backbone.View.extend({
             if (user.getCSRF() !== "") {
                 self.postLogin(user.getCSRF(), username, password);
             } else {
-                $.get(url_login(), function(data) {
+                $.get(getLoginUrl(), function(data) {
                     var csrf = parseCSRFToken(data);
                     if (csrf) {
                         user.setCSRF(csrf);
@@ -290,7 +270,7 @@ var LoginView = Backbone.View.extend({
         var self = this;
         // now call the server and login
         $.ajax({
-            url: url_login(),
+            url: getLoginUrl(),
             type: "POST",
             data: {
                 "username": username,
@@ -315,7 +295,7 @@ var LoginView = Backbone.View.extend({
     },
 
     logout: function() {
-        $.get(url_logout());
+        $.get(getLogoutUrl());
         user.logout();
         backpage.clearLocalStorage("user");
         this.render();
@@ -468,7 +448,7 @@ function setupMessageBox() {
 }
 
 function populateSubNav() {
-    $("#userpic").empty().append("<a target='_blank' href='" + baseUrl + "/users/" + user.get("username") + "'><img class='img-rounded' src='" + baseUrl + "/ext/profilepic'></a>");
+    $("#userpic").empty().append("<a target='_blank' href='" + getUserUrl(user.get("username")) + "'><img class='img-rounded' src='" + baseUrl + "/ext/profilepic'></a>");
 
     $("#username").append(user.get("username"));
 

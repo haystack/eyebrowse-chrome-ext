@@ -3,69 +3,6 @@
 var FRAME_ID = "#eyebrowse-frame";
 var TEMPLATE_HTML = {};
 
-Object.size = function(obj) {
-    var size = 0,
-        key;
-    for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            size++;
-        }
-    }
-    return size;
-};
-
-// List of HTML entities for escaping.
-var unescapeMap = {
-    "&amp;": "&",
-    "&lt;": "<",
-    "&gt;": ">",
-    "&quot;": '"',
-    "&#x27;": "'",
-    "&#x60;": "`"
-};
-
-// Functions for escaping and unescaping strings to/from HTML interpolation.
-var createEscaper = function(map) {
-    var escaper = function(match) {
-        return map[match];
-    };
-    // Regexes for identifying a key that needs to be escaped
-    var source = "(?:" + _.keys(map).join("|") + ")";
-    var testRegexp = new RegExp(source);
-    var replaceRegexp = new RegExp(source, "g");
-    return function(string) {
-        string = string === null ? "" : "" + string;
-        return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
-    };
-};
-var _unescape = createEscaper(unescapeMap);
-
-function initTemplates() {
-    var url = chrome.extension.getURL("../html/prompt.html");
-    var templates = $($.ajax({
-        type: "GET",
-        url: url,
-        dataType: "html",
-        async: false
-    }).responseText);
-    for (var i = 0; i < templates.length; i++) {
-        var el = $(templates[i]);
-        var id = el.attr("id");
-        if (id !== undefined) {
-            TEMPLATE_HTML["#" + id] = el;
-        }
-    }
-}
-
-function getTemplate(templateId, templateArgs) {
-    templateArgs = templateArgs || {};
-    if (!Object.size(TEMPLATE_HTML)) {
-        initTemplates();
-    }
-    var template = _unescape(TEMPLATE_HTML[templateId].html());
-    return $(_.template(template, templateArgs));
-}
-
 function truncate(str, length) {
     if (str.length > length) {
         return str.substring(0, length);
@@ -75,13 +12,13 @@ function truncate(str, length) {
 }
 
 function createTrackPrompt(url) {
-    return getTemplate("#track-prompt", {
+    return getPromptTemplate("#track-prompt", {
         "url": new URL(url).hostname,
     });
 }
 
 function createLoginPrompt() {
-    return getTemplate("#login-prompt");
+    return getPromptTemplate("#login-prompt");
 }
 
 function createBubblePrompt(data, baseUrl) {
@@ -112,7 +49,7 @@ function createBubblePrompt(data, baseUrl) {
     }
     msg = createMentionTag(msg);
 
-    var template = getTemplate("#bubble-prompt", {
+    return getPromptTemplate("#bubble-prompt", {
         "msg": msg,
         "user_url": data.user_url,
         "username": data.username,
@@ -121,8 +58,6 @@ function createBubblePrompt(data, baseUrl) {
         "msgContainerWidth": msgContainerWidth,
         "userContainerTop": userContainerTop,
     });
-
-    return template;
 }
 /*
     Call the eyebrowse server to get an iframe with a prompt

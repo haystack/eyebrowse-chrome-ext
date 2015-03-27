@@ -128,14 +128,14 @@ var User = Backbone.Model.extend({
 
     attemptLogin: function(callback) {
         if (callback !== undefined) {
-            $.get(url_login(), function(data) {
+            $.get(getLoginUrl(), function(data) {
                 callback(parseUsername(data));
             });
 
         } else {
             var data = $.ajax({
                 type: "GET",
-                url: url_login(),
+                url: getLoginUrl(),
                 async: false
             }).responseText;
             return parseUsername(data) !== null ? true : false;
@@ -805,7 +805,7 @@ function getLocalStorageUser() {
     if (storedUser === undefined || storedUser === "null") {
         user = new User();
 
-        $.get(url_login(), function(data) {
+        $.get(getLoginUrl(), function(data) {
             var csrf = getCSRFToken(data);
             if (csrf) {
                 user.setCSRF(csrf);

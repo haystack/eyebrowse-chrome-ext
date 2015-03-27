@@ -8,13 +8,19 @@ var CSRF_REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the 
 var LOGGED_IN_REGEX = /var username \= ".*"/;
 var baseUrl = "http://localhost:8000";
 
+var PROMPT_TEMPLATE_CACHE = {};
+
 ///////////////////URL BUILDERS///////////////////
-function url_login() {
+function getLoginUrl() {
     return baseUrl + "/accounts/login/";
 }
 
-function url_logout() {
+function getLogoutUrl() {
     return baseUrl + "/accounts/logout/";
+}
+
+function getUserUrl(username) {
+  return baseUrl + "/users/" + username;
 }
 
 /*
@@ -78,6 +84,75 @@ function URI(url) {
     parser.remove();
 }
 
+/////// TEMPLATING /////////////
 function createMentionTag(data) {
- return data.replace(/(^|\W+)\@([\w\-]+)/gm, "$1<a href='" + baseUrl + "users/$2' target='_blank'>@$2</a>");
+    return data.replace(/(^|\W+)\@([\w\-]+)/gm, "$1<a href='" + baseUrl + "users/$2' target='_blank'>@$2</a>");
+}
+
+Object.size = function(obj) {
+    var size = 0,
+        key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            size++;
+        }
+    }
+    return size;
+};
+
+// List of HTML entities for escaping.
+var unescapeMap = {
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&#x27;": "'",
+    "&#x60;": "`"
+};
+
+// Functions for escaping and unescaping strings to/from HTML interpolation.
+var createEscaper = function(map) {
+    var escaper = function(match) {
+        return map[match];
+    };
+    // Regexes for identifying a key that needs to be escaped
+    var source = "(?:" + _.keys(map).join("|") + ")";
+    var testRegexp = new RegExp(source);
+    var replaceRegexp = new RegExp(source, "g");
+    return function(string) {
+        string = string === null ? "" : "" + string;
+        return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
+    };
+};
+
+var _unescape = createEscaper(unescapeMap);
+
+function initTemplates(templatePage, templateCache) {
+    var url = chrome.extension.getURL("../html/" + templatePage);
+    var templates = $($.ajax({
+        type: "GET",
+        url: url,
+        dataType: "html",
+        async: false
+    }).responseText);
+    for (var i = 0; i < templates.length; i++) {
+        var el = $(templates[i]);
+        var id = el.attr("id");
+        if (id !== undefined) {
+            templateCache["#" + id] = el;
+        }
+    }
+}
+
+function getPromptTemplate(templateId, templateArgs) {
+    return getTemplate(templateId, templateArgs, "prompt.html", PROMPT_TEMPLATE_CACHE);
+}
+
+function getTemplate(templateId, templateArgs, templatePage, templateCache) {
+    templateArgs = templateArgs || {};
+    if (!Object.size(templateCache)) {
+        initTemplates(templatePage, templateCache);
+    }
+    var template = _unescape(templateCache[templateId].html());
+    return $(_.template(template, templateArgs));
 }
