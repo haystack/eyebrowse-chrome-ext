@@ -10,6 +10,7 @@
     "content_scripts": [
         {
             "js": [
+                "js/common.js",
                 "libs/jquery-1.8.2.min.js", 
                 "libs/mustache.min.js", 
                 "libs/underscore.min.js", 

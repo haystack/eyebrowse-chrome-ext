@@ -2,7 +2,6 @@
 
 ///////////Global vars/////////////
 // global website base, set to localhost for testing, use deploy script to change
-var baseUrl = "http://localhost:8000";
 var siteName = "Eyebrowse";
 var GOOGLE_FAVICON_URL = "http://www.google.com/s2/favicons?domain_url=";
 
@@ -382,7 +381,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 
     // if its not in the whitelist lets check that the user has it
     setTimeout(function() {
-        popupInfo(tabId, url);
+        bubbleInfo(tabId, url);
     }, 3000);
 
     if (user.getIncognito() === false) {
@@ -433,7 +432,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 
 }
 
-function popupInfo(tabId, url) {
+function bubbleInfo(tabId, url) {
     chrome.tabs.query({
         active: true,
         currentWindow: true

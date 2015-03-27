@@ -1,9 +1,12 @@
 "use strict";
 
+/* note, always put `common.js` first when including scripts */
+
 var HTTP_UNAUTHORIZED = 401;
 var HTTP_OK = 200;
 var CSRF_REGEX = /name\='csrfmiddlewaretoken' value\='.*'/; //regex to find the csrf token
 var LOGGED_IN_REGEX = /var username \= ".*"/;
+var baseUrl = "http://localhost:8000";
 
 ///////////////////URL BUILDERS///////////////////
 function url_login() {
@@ -73,4 +76,8 @@ function URI(url) {
     this.hash = parser.hash; // => "#hash"
     this.host = parser.host; // => "example.com:3000"
     parser.remove();
+}
+
+function createMentionTag(data) {
+ return data.replace(/(^|\W+)\@([\w\-]+)/gm, "$1<a href='" + baseUrl + "users/$2' target='_blank'>@$2</a>");
 }

@@ -14,6 +14,102 @@
     border-radius: 13px !important;
 }
 
+.eyebrowse-bubble-frame:after {
+    content: '';
+    position: absolute !important;
+    border-style: solid !important;
+    border-width: 0 10px 10px !important;
+    border-color: #FFFFFF transparent !important;
+    display: block !important;
+    width: 0 !important;
+    z-index: 1 !important;
+    top: -7px !important;
+    right: 7px !important;
+}
+
+.eyebrowse-bubble-frame:before {
+    content: '';
+    position: absolute !important;
+    border-style: solid !important;
+    border-width: 0 11px 11px !important;
+    border-color: #333333 transparent !important;
+    display: block !important;
+    width: 0 !important;
+    z-index: 0 !important;
+    top: -12px !important;
+    right: 6px !important;
+}
+
+.eyebrowse-bubble-frame {
+    padding: 3px 2px 4px 4px !important;
+    max-width: 390px !important;
+    min-width: 40px !important;
+    /* width is set by js */
+    height: 32px !important;
+    background: #FFFFFF !important;
+    border: #333333 solid 3px !important;
+
+    webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+}
+
+.eyebrowse-bubble-msg-container {
+    font-size: 9px !important;
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif !important;
+    line-height: 11px !important;
+    display: inline-block !important;
+    max-width: 160px !important;
+    height: 22px !important;
+    /* width set in js */
+    position: relative !important;
+    top: -10px !important;
+}
+
+.eyebrowse-bubble-user-wrapper {
+    position: relative !important;
+    top: -5px !important;
+    height: 30px !important;
+    display: inline-block !important;
+    width: 2px !important;
+    background-color: #000000 !important;
+    margin: 0px 5px 0px 5px !important;
+}
+
+.eyebrowse-bubble-user-container {
+  /* top set in js */
+  display: inline-block !important;
+  position: relative !important;
+  height: 22px !important;
+}
+
+.eyebrowse-bubble-user-icon {
+  margin: 1px !important;
+  border: 0px !important;
+  padding: 0px !important;
+  height: 20px !important;
+  width: 20px !important;
+}
+
+.eyebrowse-bubble-old-level-0 {
+  height: 18px !important;
+  width: 18px !important;
+  border: #ffff00 solid 2px !important;
+  margin: 0px !important;
+}
+
+.eyebrowse-bubble-old-level-1 {
+  opacity: .9 !important;
+}
+
+.eyebrowse-bubble-old-level-2 {
+  opacity: .75 !important;
+}
+
+.eyebrowse-bubble-old-level-3 {
+  opacity: .6 !important;
+}
+
 .eyebrowse-close {
   float: right !important;
   font-size: 21px !important;

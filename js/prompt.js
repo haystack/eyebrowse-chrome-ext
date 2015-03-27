@@ -84,118 +84,46 @@ function createLoginPrompt() {
     return getTemplate("#login-prompt");
 }
 
-// TODO(xxx): clean up
-function createPopupPrompt(data, baseUrl) {
+function createBubblePrompt(data, baseUrl) {
 
     if (data.active_users.length === 0 && data.message === "") {
-        return "";
+        return null;
     }
 
-    var div_html = "";
-    div_html += "<style> #eyebrowse-frame:after {content: '';position: absolute !important;border-style: solid !important;border-width: 0 10px 10px !important;border-color: #FFFFFF transparent !important;display: block !important;width: 0 !important;z-index: 1 !important;top: -7px !important;right: 7px !important;}";
-    div_html += "#eyebrowse-frame:before {content: ''; position: absolute !important; border-style: solid !important; border-width: 0 11px 11px !important; border-color: #333333 transparent !important;display: block !important;width: 0 !important;z-index: 0 !important;top: -12px !important;right: 6px !important;}</style>";
-
-    var num = (data.active_users.length * 24) + 10;
+    // no idea where this comes from...
+    var msgContainerWidth = (data.active_users.length * 24) + 10;
+    var userContainerTop;
     if (data.message === "") {
-        if (num === 34) {
-            num = 45;
+        if (msgContainerWidth === 34) {
+            msgContainerWidth = 45;
         }
+        userContainerTop = 0;
     } else {
-        num += 195;
+        msgContainerWidth += 195;
+        userContainerTop = -15;
     }
 
-    div_html += "<div id='eyebrowse-frame' style='";
-    div_html += "z-index: 999999999 !important; ";
-    div_html += "position: fixed !important; ";
-    div_html += "right: 26px !important; ";
-    div_html += "top: 12px !important; ";
-    div_html += "padding: 3px 2px 4px 4px !important; ";
-    div_html += "max-width: 390px !important; ";
-    div_html += "min-width: 40px !important; ";
-    div_html += "width: " + num.toString() + "px !important; ";
-    div_html += "height: 32px !important; ";
-    div_html += "text-align: center !important; ";
-    div_html += "background: #FFFFFF !important; ";
-    div_html += "-webkit-border-radius: 13px !important; ";
-    div_html += "-moz-border-radius: 13px !important; ";
-    div_html += "border-radius: 13px !important; ";
-    div_html += "border: #333333 solid 3px !important; ";
+    msgContainerWidth = msgContainerWidth.toString() + "px !important";
+    userContainerTop = userContainerTop.toString() + "px !important";
 
-    div_html += "webkit-box-sizing: border-box !important; ";
-    div_html += "-moz-box-sizing: border-box !important; ";
-    div_html += "box-sizing: border-box !important; ";
-
-    div_html += "'>";
-
-    if (data.message !== "") {
-
-        div_html += "<div style='font-size: 9px !important; font-family: \"Helvetica Neue\",Helvetica,Arial,sans-serif !important; line-height: 11px !important; display: inline-block !important; max-width: 160px !important; height: 22px !important; position: relative !important; top: -10px !important;'>";
-
-        if (data.user_url === "") {
-            data.message = truncate(data.message, 78);
-            data.message = data.message.replace(/(^|\W+)\@([\w\-]+)/gm,'$1<a href="http://eyebrowse.csail.mit.edu/users/$2" target="_blank">@$2</a>');
-			div_html += data.message;
-        } else {
-            data.message = truncate(data.message, 51);
-         	data.message = data.message.replace(/(^|\W+)\@([\w\-]+)/gm,'$1<a href="http://eyebrowse.csail.mit/edu/users/$2" target="_blank">@$2</a>');
-			div_html += data.message;
-            div_html += " - <a href='" + data.user_url + "' title='" + data.username + "' target='_blank'>" + data.username + "</a> ";
-        }
-        div_html += data.about_message;
-        div_html += "</div>";
+    var msg = truncate(data.message, 51);
+    if (data.user_url === "") {
+        msg = truncate(data.message, 78);
     }
+    msg = createMentionTag(msg);
 
+    var template = getTemplate("#bubble-prompt", {
+        "msg": msg,
+        "user_url": data.user_url,
+        "username": data.username,
+        "about_message": data.about_message,
+        "users": data.active_users,
+        "msgContainerWidth": msgContainerWidth,
+        "userContainerTop": userContainerTop,
+    });
 
-    if (data.message !== "" && data.active_users.length > 0) {
-        div_html += "<div style='position: relative !important; top: -5px !important; height: 30px !important; display: inline-block !important; width: 2px !important; background-color: #000000 !important; margin: 0px 5px 0px 5px !important;'></div>";
-    }
-
-    if (data.active_users.length > 0) {
-        div_html += "<div style='display: inline-block !important; position: relative !important;";
-
-        if (data.message !== "") {
-            div_html += "top: -15px !important; ";
-        } else {
-            div_html += "top: 0px !important; ";
-        }
-
-        div_html += "height: 22px !important;'>";
-        for (var i = 0; i < data.active_users.length; i++) {
-            var user = data.active_users[i];
-            div_html += "<a href='" + user.url + "' target='_blank' title='" + user.username + " - " + user.time_ago + " ago'>";
-            div_html += "<img style='";
-            div_html += "margin: 1px !important; ";
-            div_html += "border: 0px !important; ";
-            div_html += "padding: 0px !important; ";
-            if (user.old_level === 0) {
-                div_html += "width: 18px !important; ";
-                div_html += "height: 18px !important; ";
-                div_html += "border: #ffff00 solid 2px !important; margin: 0px !important;'";
-                div_html += "src='" + user.pic_url + "'></a>";
-            } else if (user.old_level === 1) {
-                div_html += "width: 20px !important; ";
-                div_html += "height: 20px !important; ";
-                div_html += "opacity: .9 !important;'src = '" + user.pic_url + "' > < /a>";
-            } else if (user.old_level === 2) {
-                div_html += "width: 20px !important; ";
-                div_html += "height: 20px !important; ";
-                div_html += "opacity: .75 !important;'src='" + user.pic_url + "'></a > ";
-            } else if (user.old_level === 3) {
-                div_html += "width: 20px!important;";
-                div_html += "height: 20px!important;";
-                div_html += "opacity: .6!important;'src='" + user.pic_url + "'></a>";
-            }
-        }
-    }
-    div_html += "</div>";
-
-    div_html += "</div>";
-
-
-    return div_html;
+    return template;
 }
-
-
 /*
     Call the eyebrowse server to get an iframe with a prompt
     Can either be a login or track type prompt.
@@ -255,14 +183,14 @@ function setup(baseUrl, promptType, user, url, protocol) {
 
     } else if (promptType === "getInfo" && protocol === "http:") { // TODO fix with ssl certs for eyebrowse
         $.ajax({
-            url: baseUrl + "/ext/popupInfo/",
+            url: baseUrl + "/ext/bubbleInfo/",
             type: "POST",
             data: {
                 "url": url,
                 "csrfmiddlewaretoken": user.csrf,
             },
             success: function(data) {
-                frameHtml = createPopupPrompt(data, baseUrl);
+                frameHtml = createBubblePrompt(data, baseUrl);
                 addFrame(frameHtml);
             }
         });
@@ -316,6 +244,9 @@ function addStyle() {
  * Helper function which adds a popup frame to the page
  */
 function addFrame(frameHtml) {
+    if (frameHtml === null) {
+        return;
+    }
     $("body").append(frameHtml);
     addStyle();
     $(FRAME_ID).css("visibility", "visible");

@@ -33,4 +33,30 @@
     </p>
   </div>
 </div>
+
+<!-- bubble prompt template -->
+<div id="bubble-prompt" class="eyebrowse-reset">
+  <div id="eyebrowse-frame" class="eyebrowse-bubble-frame">
+    <div class="eyebrowse-bubble-msg-container" style="width: <%= msgContainerWidth %>">
+      <% if ( msg ) { %>
+          <%= msg %>
+        <% if ( user_url ) { %>
+          - <a href = "<%= user_url %>" title="<%= username %>" target="_blank"><%= username %></a>
+        <% } %>
+        <%= about_message %>
+      <% } %>
+      <div class="eyebrowse-bubble-user-wrapper">
+        <div class="eyebrowse-bubble-user-container" style="top: <%= userContainerTop %>">
+          <% _.each(users, function(user){ %>
+          <a href="<%= user.url %>" target="_blank"
+            title="<%= user.username %> - <%= user.time_ago %> ago">
+            <img class="eyebrowse-bubble-user-icon
+            eyebrowse-bubble-old-level-<%= user.old_level %>"
+            src="<%= user.pic_url %>">
+          </a>
+        </div>
+        <% }); %>
+      </div>
+  </div>
+</div>
 <!-- END: Underscore Template Definition. -->
