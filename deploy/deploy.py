@@ -26,6 +26,7 @@ def rewriteManifest():
     f.seek(0)
     json.dump(data, f, indent=4, sort_keys=True)
     f.truncate()
+    print version
 
 
 def main():
@@ -34,7 +35,6 @@ def main():
   '''
 
   rewriteBaseUrl()
-
   rewriteManifest()
 
 if __name__ == '__main__':
