@@ -51,7 +51,7 @@ function createBubblePrompt(data, baseUrl) {
 
 
     // fix problem of trying to grab images in template while loading
-    for (var i = 0; i < active_users.length; i++) {
+    for (var i = 0; i < data.active_users.length; i++) {
       data.active_users[i].pic_url = "src='" + data.active_users[i].pic_url + "'";
     }
 
