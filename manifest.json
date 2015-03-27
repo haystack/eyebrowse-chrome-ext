@@ -10,11 +10,11 @@
     "content_scripts": [
         {
             "js": [
-                "js/common.js",
                 "libs/jquery-1.8.2.min.js", 
                 "libs/mustache.min.js", 
                 "libs/underscore.min.js", 
                 "libs/jquery.idle.js", 
+                "js/common.js",
                 "js/prompt.js", 
                 "js/idle-detection.js"
             ], 
