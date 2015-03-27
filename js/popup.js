@@ -388,9 +388,9 @@ var HomeView = Backbone.View.extend({
 
             setupMessageBox();
             populateChatMessageBox(0);
-            
+
             setupMentionAutocomplete();
-            
+
             window.setInterval(function() {
                 populateChatMessageBox(1);
             }, 12000);
@@ -403,14 +403,14 @@ var HomeView = Backbone.View.extend({
 });
 
 function setupMentionAutocomplete() {
-	$('textarea.mention').mentionsInput({
-	  onDataRequest:function (mode, query, callback) {	  	
-	  	var req_url = sprintf("%s/ext/getFriends?query=%s", baseUrl, query);
-	  	$.getJSON(req_url, function(responseData) {
-	    	callback.call(this, responseData.res);
-	    });
-	  }
-	});
+    $('textarea.mention').mentionsInput({
+        onDataRequest: function(mode, query, callback) {
+            var req_url = sprintf("%s/ext/getFriends?query=%s", baseUrl, query);
+            $.getJSON(req_url, function(responseData) {
+                callback.call(this, responseData.res);
+            });
+        }
+    });
 }
 
 function completeLogin(username) {
@@ -554,7 +554,7 @@ function populateChatMessageBox(first) {
     var parsed = JSON.parse(message_text).objects;
     var messages = [];
     $.each(parsed, function(index, value) {
-    	value.message = value.message.replace(/(^|\W+)\@([\w\-]+)/gm,'$1<a href="http://eyebrowse.csail.mit.edu/users/$2" target="_blank">@$2</a>');
+        value.message = createMentionTag(value.message);
         messages.push(value);
     });
     if (messages.length !== 0) {
