@@ -14,7 +14,7 @@
                 "libs/mustache.min.js", 
                 "libs/underscore.min.js", 
                 "libs/jquery.idle.js", 
-                "js/common.js",
+                "js/common.js", 
                 "js/prompt.js", 
                 "js/idle-detection.js"
             ], 
@@ -39,7 +39,7 @@
         "cookies", 
         "tabs"
     ], 
-    "version": "0.0.62", 
+    "version": "0.0.63", 
     "web_accessible_resources": [
         "css/prompt.css", 
         "html/prompt.html"
