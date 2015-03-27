@@ -27,11 +27,10 @@ function createBubblePrompt(data, baseUrl) {
         return null;
     }
 
-    // no idea where this comes from...
-    var msgContainerWidth = (data.active_users.length * 24) + 10;
+    var msgContainerWidth = (data.active_users.length *31) + 10;
     var userContainerTop;
     if (data.message === "") {
-        if (msgContainerWidth === 34) {
+        if (data.active_users.length === 1) {
             msgContainerWidth = 50;
         }
         userContainerTop = 0;
