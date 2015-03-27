@@ -62,23 +62,15 @@
     max-width: 160px !important;
     /* width set in js */
     position: relative !important;
-    top: 4px !important;
-}
-
-.eyebrowse-bubble-user-wrapper {
-    position: relative !important;
-    top: -5px !important;
-    right: 5px !important;
-    height: 30px !important;
-    display: inline-block !important;
-    margin: 0px 0px 0px 5px !important;
 }
 
 .eyebrowse-bubble-user-container {
   /* top set in js */
-  display: inline-block !important;
-  position: relative !important;
-  height: 22px !important;
+    top: -5px !important;
+    right: 5px !important;
+    height: 30px !important;
+    margin: 0px 0px 0px 5px !important;
+    display: inline-block !important;
 }
 
 .eyebrowse-bubble-user-icon {

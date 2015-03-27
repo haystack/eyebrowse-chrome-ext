@@ -53,17 +53,15 @@
         <% } %>
         <%= about_message %>
       <% } %>
-      <div class="eyebrowse-bubble-user-wrapper">
-        <div class="eyebrowse-bubble-user-container" style="top: <%= userContainerTop %>">
-          <% _.each(users, function(user) { %>
-          <a href="<%= user.url %>" target="_blank"
-            title="<%= user.username %> - <%= user.time_ago %> ago">
-            <img class="eyebrowse-bubble-user-icon
-            eyebrowse-bubble-old-level-<%= user.old_level %>">
-          </a>
-          <% }); %>
-        </div>
-      </div>
+    </div>
+    <div class="eyebrowse-bubble-user-container" style="top: <%= userContainerTop %>">
+      <% _.each(users, function(user) { %>
+      <a href="<%= user.url %>" target="_blank"
+        title="<%= user.username %> - <%= user.time_ago %> ago">
+        <img class="eyebrowse-bubble-user-icon
+        eyebrowse-bubble-old-level-<%= user.old_level %>">
+      </a>
+      <% }); %>
   </div>
 </div>
 <!-- END: Underscore Template Definition. -->
