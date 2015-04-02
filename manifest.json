@@ -39,7 +39,7 @@
         "cookies", 
         "tabs"
     ], 
-    "version": "0.0.69", 
+    "version": "0.0.70", 
     "web_accessible_resources": [
         "css/prompt.css", 
         "html/prompt.html"
