@@ -1,316 +1,213 @@
+/* CSS reset */
+.eyebrowse-frame,
+.eyebrowse-frame *,
+.eyebrowse-frame *::before,
+.eyebrowse-frame *::after,
+.eyebrowse-reset,
+.eyebrowse-reset *,
+.eyebrowse-reset *::before,
+.eyebrowse-reset *::after {
+	/* all: unset; is currently buggy in Chrome (boo!) so we’ll manually inherit inherited properties
+	   TODO update this to just all: unset; once Chrome bug #472259 is fixed */
+	all: initial;
+	
+	font: inherit;
+	color: inherit;
+	cursor: inherit;
+	letter-spacing: inherit;
+	text-align: inherit;
+	white-space: inherit;
+	visibility: inherit;
+	text-shadow: inherit;
+	text-decoration: inherit;
+	/* …there are many more inherited properties, but we don’t need them for now */
+}
+
+.eyebrowse-frame em,
+.eyebrowse-reset em {
+	font-style: italic;
+}
+
+@-webkit-keyframes fade { to { opacity: 0; } }
+@keyframes fade { to { opacity: 0; } }
+
 .eyebrowse-frame {
-    z-index: 999999999 !important;
-    position: fixed !important;
-    display: block !important;
-    background-color: #333333 !important;
-    right: 26px !important;
-    top: 12px !important;
-    padding: 10px 11px 8px 11px !important;
-    width: 250px !important;
-    height: 100px !important;
-    text-align: center !important;
-    -webkit-border-radius: 13px !important;
-    -moz-border-radius: 13px !important;
-    border-radius: 13px !important;
+	z-index: 2147483646 !important;
+	position: fixed;
+	right: 20px;
+	top: 15px;
+	border: 1px solid black;
+	border-radius: 8px;
+	text-align: center;	
+	-webkit-animation: 1s 8s fade forwards;
+	animation: 1s 8s fade forwards;
 }
 
-.eyebrowse-bubble-frame:after {
-    content: '';
-    position: absolute !important;
-    border-style: solid !important;
-    border-width: 0 10px 10px !important;
-    border-color: #FFFFFF transparent !important;
-    display: block !important;
-    width: 0 !important;
-    z-index: 1 !important;
-    top: -7px !important;
-    right: 7px !important;
+.eyebrowse-frame:hover {
+	-webkit-animation: none;
+	animation: none;
 }
 
-.eyebrowse-bubble-frame:before {
-    content: '';
-    position: absolute !important;
-    border-style: solid !important;
-    border-width: 0 11px 11px !important;
-    border-color: #333333 transparent !important;
-    display: block !important;
-    width: 0 !important;
-    z-index: 0 !important;
-    top: -12px !important;
-    right: 6px !important;
+.eyebrowse-frame:not(.eyebrowse-bubble-frame) {
+	padding: 10px 15px 15px;
+	background: hsla(0,0%,25%,.8) linear-gradient(transparent, rgba(0,0,0,.6));
+	box-shadow: 1px 1px 8px rgba(0,0,0,.5),
+	            0 1px 0px hsla(0,0%,100%,.4) inset,
+	            0 -4px 10px -3px black inset;
+	font: 500 15px/1.4 Helvetica Neue, sans-serif;
+	color: white;
+	text-shadow: 0 -1px 1px rgba(0,0,0,.5);
 }
 
 .eyebrowse-bubble-frame {
-    padding: 3px 2px 4px 4px !important;
-    max-width: 390px !important;
-    min-width: 40px !important;
-    /* width is set by js */
-    height: 32px !important;
-    background: #FFFFFF !important;
-    border: #333333 solid 3px !important;
-
-    webkit-box-sizing: border-box !important;
-    -moz-box-sizing: border-box !important;
-    box-sizing: border-box !important;
+	padding: 5px 5px 6px;
+	max-width: 390px;
+	background: linear-gradient(white, hsla(0,0%,100%,.9));
+	border: 1px solid rgba(0,0,0,.2);
+	box-sizing: border-box;
+	box-shadow: 1px 1px 2px rgba(0,0,0,.1);
 }
+	
+	/* “Speech bubble”-style pointer */
+	.eyebrowse-bubble-frame::before {
+		content: '';
+		position: absolute;
+		z-index: 1;
+		top: -4px;
+		right: 12px; /* Must be larger than bubble’s border-radius + 1 */
+		width: 0; height: 0;
+		padding: 3px;
+		border: inherit;
+		border-right: 0;
+		border-bottom: 0;
+		background: inherit;
+		transform: rotate(45deg);
+	}
 
 .eyebrowse-bubble-msg-container {
-    font-size: 9px !important;
-    font-family: Helvetica Neue,Helvetica,Arial,sans-serif !important;
-    line-height: 11px !important;
-    display: inline !important;
-    max-width: 160px !important;
-    /* width set in js */
-    position: relative !important;
+	font-size: 9px;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+	line-height: 1.2;
+	display: inline;
+	max-width: 160px;
+	/* width set in js */
+	position: relative;
 }
 
 .eyebrowse-bubble-user-container {
-  /* top set in js */
-    top: -5px !important;
-    right: 5px !important;
-    height: 30px !important;
-    margin: 0px 0px 0px 5px !important;
-    display: inline-block !important;
+	display: block;
+	line-height: 0; /* <-- horrible hack */
 }
 
+	.eyebrowse-bubble-user-container > a {
+		display: inline-block;
+	}
+	
+		.eyebrowse-bubble-user-container > a > img {
+			display: block;
+			border-radius: 3px;
+		}
+
 .eyebrowse-bubble-user-icon {
-  margin: 1px !important;
-  border: 0px !important;
-  padding: 0px !important;
-  height: 20px !important;
-  width: 20px !important;
+	margin: 1px;
+	border: 0;
+	padding: 0;
+	max-height: 22px;
+	max-width: 22px;
 }
 
 .eyebrowse-bubble-old-level-0 {
-  height: 18px !important;
-  width: 18px !important;
-  border: #ffff00 solid 2px !important;
-  margin: 0px !important;
+  height: 18px;
+  width: 18px;
+  border: #ffff00 solid 2px;
+  margin: 0px;
 }
 
 .eyebrowse-bubble-old-level-1 {
-  opacity: .9 !important;
+	opacity: .9;
 }
 
 .eyebrowse-bubble-old-level-2 {
-  opacity: .75 !important;
+	opacity: .75;
 }
 
 .eyebrowse-bubble-old-level-3 {
-  opacity: .6 !important;
+	opacity: .6;
 }
 
 .eyebrowse-close {
-  float: right !important;
-  font-size: 21px !important;
-  font-weight: lighter !important;
-  line-height: 1 !important;
-  color: #fff !important;
-  filter: alpha(opacity=20) !important;
-  opacity: .95;
+	position: absolute;
+	top: -.3em;
+	right: -.3em;
+	z-index: 2;
+	padding: .12em .2em .15em;
+	border: 0;
+	border-radius: 50%;
+	background: black;
+	background-clip: padding-box;
+	border: 2px solid white;
+	color: white;
+	cursor: pointer;
+	font: bold 100%/1 Verdana;
+	transition: .4s cubic-bezier(.3,.2,.5,1.5);
+	box-shadow: 0 1px 5px rgba(0,0,0,.5);
 }
-
-.eyebrowse-bubble-close {
-  font-size: 15px !important;
-  color: #000 !important;
-}
-
-button.eyebrowse-close {
-  -webkit-appearance: none !important;
-  padding: 0 !important;
-  cursor: pointer !important;
-  background: 0 0 !important;
-  border: 0 !important;
-}
-
-.eyebrowse-prompt-msg {
-    font-size: 15px !important;
-    font-weight: bold;
-    font-family: verdana !important;
-    color: #ffffff !important;
-}
+	
+	.eyebrowse-close > span {
+		display: block;
+	}
+	
+	.eyebrowse-bubble-frame .eyebrowse-close {
+		right: -.5em;
+		padding: .1em .22em .15em;
+		background: #bbb;
+		border: none;
+		box-shadow: none;
+		font-size: 10px;
+	}
+	
+	.eyebrowse-frame:not(.eyebrowse-bubble-frame) .eyebrowse-close {
+		right: -.5em;
+	}
+	
+	.eyebrowse-close:hover:not(enough-specificity) {
+		background: #d00;
+		transform: scale(1.2);
+	}
 
 .eyebrowse-btn-container {
-    width: auto !important;
-    height: auto !important;
+	display: block;
+	margin-top: .6em;
 }
 
 .eyebrowse-btn  {
-    color: #fff !important;
-    padding: 6px 12px !important;
-    margin: 3px 3px 3px 3px !important;
-    box-shadow: 0px 0px 0px 0px !important;
-    text-transform: capitalize !important;
-    font-weight: none !important;
-    line-height: 14px !important;
-    width: auto !important;
-    height: auto !important;
-    font-size: 14px !important;
-    cursor: pointer !important;
-    border: 1px solid transparent !important;
-    border-radius: 4px !important;
+	padding: .5em .8em;
+	margin: 0 2px;
+	cursor: pointer;
+	border: 1px solid rgba(0,0,0,.3);
+	border-radius: 4px;
+	box-shadow: 0 1px hsla(0,0%,100%,.6) inset, 0 .2em .3em -.1em black;
+	background: linear-gradient(hsla(0,0%,100%,.4), hsla(0,0%,100%,0));
+	color: white;
+	font-size: 90%;
+	line-height: 1;
+	font-weight: 900;
+	transition: .4s;
 }
 
-.eyebrowse-allow-btn {
-    background-color: #5cb85c !important;
-    background: #5cb85c !important;
-    border-color: #4cae4c !important;
-}
-
-.eyebrowse-deny-btn {
-    background-color: #f0ad4e !important;
-    background: #f0ad4e !important;
-    border-color: #eea236 !important;
-}
-
-/* http://stackoverflow.com/questions/15901030/reset-remove-css-styles-for-element-only */
-.eyebrowse-reset {
-    animation : none !important;
-    animation-delay : 0 !important;
-    animation-direction : normal !important;
-    animation-duration : 0 !important;
-    animation-fill-mode : none !important;
-    animation-iteration-count : 1 !important;
-    animation-name : none !important;
-    animation-play-state : running !important;
-    animation-timing-function : ease !important;
-    backface-visibility : visible !important;
-    background : 0 !important;
-    background-attachment : scroll !important;
-    background-clip : border-box !important;
-    background-color : transparent !important;
-    background-image : none !important;
-    background-origin : padding-box !important;
-    background-position : 0 0 !important;
-    background-position-x : 0 !important;
-    background-position-y : 0 !important;
-    background-repeat : repeat !important;
-    background-size : auto auto !important;
-    border : 0 !important;
-    border-style : none !important;
-    border-width : medium !important;
-    border-color : inherit !important;
-    border-bottom : 0 !important;
-    border-bottom-color : inherit !important;
-    border-bottom-left-radius : 0 !important;
-    border-bottom-right-radius : 0 !important;
-    border-bottom-style : none !important;
-    border-bottom-width : medium !important;
-    border-collapse : separate !important;
-    border-image : none !important;
-    border-left : 0 !important;
-    border-left-color : inherit !important;
-    border-left-style : none !important;
-    border-left-width : medium !important;
-    border-radius : 0 !important;
-    border-right : 0 !important;
-    border-right-color : inherit !important;
-    border-right-style : none !important;
-    border-right-width : medium !important;
-    border-spacing : 0 !important;
-    border-top : 0 !important;
-    border-top-color : inherit !important;
-    border-top-left-radius : 0 !important;
-    border-top-right-radius : 0 !important;
-    border-top-style : none !important;
-    border-top-width : medium !important;
-    bottom : auto !important;
-    box-shadow : none !important;
-    box-sizing : content-box !important;
-    caption-side : top !important;
-    clear : none !important;
-    clip : auto !important;
-    color : inherit !important;
-    columns : auto !important;
-    column-count : auto !important;
-    column-fill : balance !important;
-    column-gap : normal !important;
-    column-rule : medium none currentColor !important;
-    column-rule-color : currentColor !important;
-    column-rule-style : none !important;
-    column-rule-width : none !important;
-    column-span : 1 !important;
-    column-width : auto !important;
-    content : normal !important;
-    counter-increment : none !important;
-    counter-reset : none !important;
-    cursor : auto !important;
-    direction : ltr !important;
-    display : inline !important;
-    empty-cells : show !important;
-    float : none !important;
-    font : normal !important;
-    font-family : inherit !important;
-    font-size : medium !important;
-    font-style : normal !important;
-    font-variant : normal !important;
-    font-weight : normal !important;
-    height : auto !important;
-    hyphens : none !important;
-    left : auto !important;
-    letter-spacing : normal !important;
-    line-height : normal !important;
-    list-style : none !important;
-    list-style-image : none !important;
-    list-style-position : outside !important;
-    list-style-type : disc !important;
-    margin : 0 !important;
-    margin-bottom : 0 !important;
-    margin-left : 0 !important;
-    margin-right : 0 !important;
-    margin-top : 0 !important;
-    max-height : none !important;
-    max-width : none !important;
-    min-height : 0 !important;
-    min-width : 0 !important;
-    opacity : 1 !important;
-    orphans : 0 !important;
-    outline : 0 !important;
-    outline-color : invert !important;
-    outline-style : none !important;
-    outline-width : medium !important;
-    overflow : visible !important;
-    overflow-x : visible !important;
-    overflow-y : visible !important;
-    padding : 0 !important;
-    padding-bottom : 0 !important;
-    padding-left : 0 !important;
-    padding-right : 0 !important;
-    padding-top : 0 !important;
-    page-break-after : auto !important;
-    page-break-before : auto !important;
-    page-break-inside : auto !important;
-    perspective : none !important;
-    perspective-origin : 50% 50% !important;
-    position : static !important;
-    /* May need to alter quotes for different locales (e.g fr) */
-    quotes : '\201C' '\201D' '\2018' '\2019' !important;
-    right : auto !important;
-    tab-size : 8 !important;
-    table-layout : auto !important;
-    text-align : inherit !important;
-    text-align-last : auto !important;
-    text-decoration : none !important;
-    text-decoration-color : inherit !important;
-    text-decoration-line : none !important;
-    text-decoration-style : solid !important;
-    text-indent : 0 !important;
-    text-shadow : none !important;
-    text-transform : none !important;
-    top : auto !important;
-    transform : none !important;
-    transform-style : flat !important;
-    transition : none !important;
-    transition-delay : 0s !important;
-    transition-duration : 0s !important;
-    transition-property : none !important;
-    transition-timing-function : ease !important;
-    unicode-bidi : normal !important;
-    vertical-align : baseline !important;
-    visibility : visible !important;
-    white-space : normal !important;
-    widows : 0 !important;
-    width : auto !important;
-    word-spacing : normal !important;
-    z-index : auto !important;
-}
+	.eyebrowse-allow-btn {
+		background-color: hsl(100, 70%, 40%);
+	}
+	
+	.eyebrowse-deny-btn {
+		background-color: hsl(25, 100%, 45%);
+	}
+	
+	.eyebrowse-btn:hover {
+		background-image: linear-gradient(hsla(0,0%,100%,.5), hsla(0,0%,100%,.2));
+	}
+	
+	.eyebrowse-btn:active {
+		background-image: linear-gradient(rgba(0,0,0,.1), transparent);
+		box-shadow: 0 -1px .2em rgba(0,0,0,.1) inset;
+	}

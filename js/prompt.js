@@ -27,37 +27,20 @@ function createBubblePrompt(data, baseUrl) {
         return null;
     }
 
-    var bubbleFrameWidth = (data.active_users.length *32) + 10;
-    var userContainerTop;
-    if (data.message === "") {
-        if (data.active_users.length === 1) {
-            bubbleFrameWidth = 50;
-        }
-        userContainerTop = 0;
-    } else {
-        bubbleFrameWidth += 195;
-        userContainerTop = -15;
-    }
-
-    bubbleFrameWidth = bubbleFrameWidth.toString() + "px !important";
-    userContainerTop = userContainerTop.toString() + "px !important";
-
     var msg = truncate(data.message, 51);
+    
     if (data.user_url === "") {
         msg = truncate(data.message, 78);
     }
+    
     msg = createMentionTag(msg);
-
-
 
     var template = getPromptTemplate("#bubble-prompt", {
         "msg": msg,
         "user_url": data.user_url,
         "username": data.username,
         "about_message": data.about_message,
-        "users": data.active_users,
-        "bubbleFrameWidth": bubbleFrameWidth,
-        "userContainerTop": userContainerTop,
+        "users": data.active_users
     });
 
     var images = template.find(".eyebrowse-bubble-user-icon");
@@ -135,37 +118,6 @@ function setup(baseUrl, promptType, user, url, protocol) {
     }
 }
 
-function setFade() {
-    var fadeTime = 3000; //8 seconds
-    var $popup = $(FRAME_ID);
-
-    var fadePopup = setTimeout(function() {
-        fade($popup);
-    }, fadeTime);
-
-    $popup.hover(function() {
-        clearInterval(fadePopup);
-        $popup.stop();
-        $popup.css("opacity", 1.0);
-    });
-
-    $popup.mouseleave(function() {
-        fadePopup = setTimeout(function() {
-            fade($popup);
-        }, fadeTime);
-    });
-}
-
-function fade(el) {
-    var $popup = $(FRAME_ID);
-    el.fadeOut(1000, function() {
-        $popup.animate({
-            "top": $(FRAME_ID).css("top") - 120
-        }, 500);
-        $(FRAME_ID).remove();
-    });
-}
-
 /*
  * Add the prompt css to the main page
  */
@@ -184,10 +136,17 @@ function addFrame(frameHtml) {
     if (frameHtml === null) {
         return;
     }
-    $("body").append(frameHtml);
+    
     addStyle();
-    $(FRAME_ID).css("visibility", "visible");
-    setFade();
+    $("body").append(frameHtml);
+    
+    // Remove the element after it fades out. The fading & delay is taken care by CSS
+    $(FRAME_ID).bind("animationend webkitAnimationEnd", function (evt) {
+    	if (evt.animationName == "fade") {
+    		this.parentNode.removeChild(this);
+    	}
+    });
+    
     $("#eyebrowse-close-btn").click(function() {
         $(FRAME_ID).remove();
     });
