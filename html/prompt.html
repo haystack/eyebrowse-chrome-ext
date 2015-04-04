@@ -1,58 +1,59 @@
 <!-- BEGIN: Underscore Template Definition. -->
 <!-- track prompt template -->
 <div id="track-prompt" class="eyebrowse-reset">
-  <div id="eyebrowse-frame" class="eyebrowse-frame">
-      <button type="button" id="eyebrowse-close-btn" class="eyebrowse-close" aria-label="Close">
-        <span aria-hidden="true">×</span>
-      </button>
-      
-      <p>Track activity from <br/> <em><%= url %></em>?</p>
+    <div id="eyebrowse-frame" class="eyebrowse-frame">
+        <button type="button" id="eyebrowse-close-btn" class="eyebrowse-close" aria-label="Close">
+            <span aria-hidden="true">×</span>
+        </button>
 
-      <p class="eyebrowse-btn-container">
-        <button id="eyebrowse-allow-btn" type="button" class="eyebrowse-btn eyebrowse-allow-btn">Yes</button>
-        <button id="eyebrowse-deny-btn" type="button" class="eyebrowse-btn eyebrowse-deny-btn">No</button>
-      </p>
-  </div>
+        <p>Track activity from
+            <br/> <em><%= url %></em>?</p>
+
+        <p class="eyebrowse-btn-container">
+            <button id="eyebrowse-allow-btn" type="button" class="eyebrowse-btn eyebrowse-allow-btn">Yes</button>
+            <button id="eyebrowse-deny-btn" type="button" class="eyebrowse-btn eyebrowse-deny-btn">No</button>
+        </p>
+    </div>
 </div>
 
 <!-- login prompt template -->
 <div id="login-prompt" class="eyebrowse-reset">
-  <div id="eyebrowse-frame" class="eyebrowse-frame">
-  	<button type="button" id="eyebrowse-close-btn" class="eyebrowse-close" aria-label="Close">
-  	  <span aria-hidden="true">×</span>
-  	</button>
-  	<p>You have been logged out of Eyebrowse. Log back in by clicking the icon above.</p>
-    <p class="eyebrowse-btn-container">
-      <button id="eyebrowse-ignore-btn" type="button" value="Ignore"
-        class="eyebrowse-btn"> Ignore </button>
-    </p>
-  </div>
+    <div id="eyebrowse-frame" class="eyebrowse-frame">
+        <button type="button" id="eyebrowse-close-btn" class="eyebrowse-close" aria-label="Close">
+            <span aria-hidden="true">×</span>
+        </button>
+        <p>You have been logged out of Eyebrowse. Log back in by clicking the icon above.</p>
+        <p class="eyebrowse-btn-container">
+            <button id="eyebrowse-ignore-btn" type="button" value="Ignore" class="eyebrowse-btn">Ignore</button>
+        </p>
+    </div>
 </div>
 
 <!-- bubble prompt template -->
 <div id="bubble-prompt" class="eyebrowse-reset">
-  <div id="eyebrowse-frame" class="eyebrowse-frame eyebrowse-bubble-frame">
-    <button type="button" id="eyebrowse-close-btn"
-      class="eyebrowse-close eyebrowse-bubble-close" aria-label="Close">
-      <span aria-hidden="true">×</span>
-    </button>
-    <div class="eyebrowse-bubble-msg-container">
-      <% if ( msg ) { %>
-          <%= msg %>
-        <% if ( user_url ) { %>
-          - <a href = "<%= user_url %>" title="<%= username %>" target="_blank"><%= username %></a>
-        <% } %>
-        <%= about_message %>
-      <% } %>
-    </div>
-    <div class="eyebrowse-bubble-user-container">
-      <% _.each(users, function(user) { %>
-      <a href="<%= user.url %>" target="_blank"
-        title="<%= user.username %> - <%= user.time_ago %> ago">
+    <div id="eyebrowse-frame" class="eyebrowse-frame eyebrowse-bubble-frame">
+        <button type="button" id="eyebrowse-close-btn" class="eyebrowse-close eyebrowse-bubble-close" aria-label="Close">
+            <span aria-hidden="true">×</span>
+        </button>
+        <div class="eyebrowse-bubble-msg-container">
+            <% if ( msg ) { %>
+                <%=m sg %>
+                    <% if ( user_url ) { %>
+                        -
+                        <a href="<%= user_url %>" title="<%= username %>" target="_blank">
+                            <%=u sername %>
+                        </a>
+                        <% } %>
+                            <%=a bout_message %>
+                                <% } %>
+        </div>
+        <div class="eyebrowse-bubble-user-container">
+            <% _.each(users, function(user) { %>
+                <a href="<%= user.url %>" target="_blank" title="<%= user.username %> - <%= user.time_ago %> ago">
         <img class="eyebrowse-bubble-user-icon
         eyebrowse-bubble-old-level-<%= user.old_level %>">
       </a>
-      <% }); %>
-  </div>
-</div>
-<!-- END: Underscore Template Definition. -->
+                <% }); %>
+        </div>
+    </div>
+    <!-- END: Underscore Template Definition. -->

@@ -1,4 +1,5 @@
 /* CSS reset */
+
 .eyebrowse-frame,
 .eyebrowse-frame *,
 .eyebrowse-frame *::before,
@@ -7,207 +8,189 @@
 .eyebrowse-reset *,
 .eyebrowse-reset *::before,
 .eyebrowse-reset *::after {
-	/* all: unset; is currently buggy in Chrome (boo!) so we’ll manually inherit inherited properties
+    /* all: unset; is currently buggy in Chrome (boo!) so we’ll manually inherit inherited properties
 	   TODO update this to just all: unset; once Chrome bug #472259 is fixed */
-	all: initial;
-	
-	font: inherit;
-	color: inherit;
-	cursor: inherit;
-	letter-spacing: inherit;
-	text-align: inherit;
-	white-space: inherit;
-	visibility: inherit;
-	text-shadow: inherit;
-	text-decoration: inherit;
-	/* …there are many more inherited properties, but we don’t need them for now */
+    all: initial;
+    font: inherit;
+    color: inherit;
+    cursor: inherit;
+    letter-spacing: inherit;
+    text-align: inherit;
+    white-space: inherit;
+    visibility: inherit;
+    text-shadow: inherit;
+    text-decoration: inherit;
+    /* …there are many more inherited properties, but we don’t need them for now */
 }
-
 .eyebrowse-frame em,
 .eyebrowse-reset em {
-	font-style: italic;
+    font-style: italic;
 }
-
-@-webkit-keyframes fade { to { opacity: 0; } }
-@keyframes fade { to { opacity: 0; } }
-
+@-webkit-keyframes fade {
+    to {
+        opacity: 0;
+    }
+}
+@keyframes fade {
+    to {
+        opacity: 0;
+    }
+}
 .eyebrowse-frame {
-	z-index: 2147483646 !important;
-	position: fixed;
-	right: 20px;
-	top: 15px;
-	border: 1px solid black;
-	border-radius: 8px;
-	text-align: center;	
-	-webkit-animation: 1s 8s fade forwards;
-	animation: 1s 8s fade forwards;
+    z-index: 2147483646 !important;
+    position: fixed;
+    right: 20px;
+    top: 15px;
+    border: 1px solid black;
+    border-radius: 8px;
+    text-align: center;
+    -webkit-animation: 1s 8s fade forwards;
+    animation: 1s 8s fade forwards;
 }
-
 .eyebrowse-frame:hover {
-	-webkit-animation: none;
-	animation: none;
+    -webkit-animation: none;
+    animation: none;
 }
-
 .eyebrowse-frame:not(.eyebrowse-bubble-frame) {
-	padding: 10px 15px 15px;
-	background: hsla(0,0%,25%,.8) linear-gradient(transparent, rgba(0,0,0,.6));
-	box-shadow: 1px 1px 8px rgba(0,0,0,.5),
-	            0 1px 0px hsla(0,0%,100%,.4) inset,
-	            0 -4px 10px -3px black inset;
-	font: 500 15px/1.4 Helvetica Neue, sans-serif;
-	color: white;
-	text-shadow: 0 -1px 1px rgba(0,0,0,.5);
+    padding: 10px 15px 15px;
+    background: hsla(0, 0%, 25%, .8) linear-gradient(transparent, rgba(0, 0, 0, .6));
+    box-shadow: 1px 1px 8px rgba(0, 0, 0, .5), 0 1px 0px hsla(0, 0%, 100%, .4) inset, 0 -4px 10px -3px black inset;
+    font: 500 15px/1.4 Helvetica Neue, sans-serif;
+    color: white;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, .5);
 }
-
 .eyebrowse-bubble-frame {
-	padding: 5px 5px 6px;
-	max-width: 390px;
-	background: linear-gradient(white, hsla(0,0%,100%,.9));
-	border: 1px solid rgba(0,0,0,.2);
-	box-sizing: border-box;
-	box-shadow: 1px 1px 2px rgba(0,0,0,.1);
+    padding: 5px 5px 6px;
+    max-width: 390px;
+    background: linear-gradient(white, hsla(0, 0%, 100%, .9));
+    border: 1px solid rgba(0, 0, 0, .2);
+    box-sizing: border-box;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, .1);
 }
-	
-	/* “Speech bubble”-style pointer */
-	.eyebrowse-bubble-frame::before {
-		content: '';
-		position: absolute;
-		z-index: 1;
-		top: -4px;
-		right: 12px; /* Must be larger than bubble’s border-radius + 1 */
-		width: 0; height: 0;
-		padding: 3px;
-		border: inherit;
-		border-right: 0;
-		border-bottom: 0;
-		background: inherit;
-		transform: rotate(45deg);
-	}
+/* “Speech bubble”-style pointer */
 
+.eyebrowse-bubble-frame::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    top: -4px;
+    right: 12px;
+    /* Must be larger than bubble’s border-radius + 1 */
+    width: 0;
+    height: 0;
+    padding: 3px;
+    border: inherit;
+    border-right: 0;
+    border-bottom: 0;
+    background: inherit;
+    transform: rotate(45deg);
+}
 .eyebrowse-bubble-msg-container {
-	font-size: 9px;
-	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-	line-height: 1.2;
-	display: inline;
-	max-width: 160px;
-	/* width set in js */
-	position: relative;
+    font-size: 9px;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    line-height: 1.2;
+    display: inline;
+    max-width: 160px;
+    /* width set in js */
+    position: relative;
 }
-
 .eyebrowse-bubble-user-container {
-	display: block;
-	line-height: 0; /* <-- horrible hack */
+    display: block;
+    line-height: 0;
+    /* <-- horrible hack */
 }
-
-	.eyebrowse-bubble-user-container > a {
-		display: inline-block;
-	}
-	
-		.eyebrowse-bubble-user-container > a > img {
-			display: block;
-			border-radius: 3px;
-		}
-
+.eyebrowse-bubble-user-container > a {
+    display: inline-block;
+}
+.eyebrowse-bubble-user-container > a > img {
+    display: block;
+    border-radius: 3px;
+}
 .eyebrowse-bubble-user-icon {
-	margin: 1px;
-	border: 0;
-	padding: 0;
-	max-height: 22px;
-	max-width: 22px;
+    margin: 1px;
+    border: 0;
+    padding: 0;
+    max-height: 22px;
+    max-width: 22px;
 }
-
 .eyebrowse-bubble-old-level-0 {
-  height: 18px;
-  width: 18px;
-  border: #ffff00 solid 2px;
-  margin: 0px;
+    height: 18px;
+    width: 18px;
+    border: #ffff00 solid 2px;
+    margin: 0px;
 }
-
 .eyebrowse-bubble-old-level-1 {
-	opacity: .9;
+    opacity: .9;
 }
-
 .eyebrowse-bubble-old-level-2 {
-	opacity: .75;
+    opacity: .75;
 }
-
 .eyebrowse-bubble-old-level-3 {
-	opacity: .6;
+    opacity: .6;
 }
-
 .eyebrowse-close {
-	position: absolute;
-	top: -.3em;
-	right: -.3em;
-	z-index: 2;
-	padding: .12em .2em .15em;
-	border: 0;
-	border-radius: 50%;
-	background: black;
-	background-clip: padding-box;
-	border: 2px solid white;
-	color: white;
-	cursor: pointer;
-	font: bold 100%/1 Verdana;
-	transition: .4s cubic-bezier(.3,.2,.5,1.5);
-	box-shadow: 0 1px 5px rgba(0,0,0,.5);
+    position: absolute;
+    top: -.3em;
+    right: -.3em;
+    z-index: 2;
+    padding: .12em .2em .15em;
+    border: 0;
+    border-radius: 50%;
+    background: black;
+    background-clip: padding-box;
+    border: 2px solid white;
+    color: white;
+    cursor: pointer;
+    font: bold 100%/1 Verdana;
+    transition: .4s cubic-bezier(.3, .2, .5, 1.5);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .5);
 }
-	
-	.eyebrowse-close > span {
-		display: block;
-	}
-	
-	.eyebrowse-bubble-frame .eyebrowse-close {
-		right: -.5em;
-		padding: .1em .22em .15em;
-		background: #bbb;
-		border: none;
-		box-shadow: none;
-		font-size: 10px;
-	}
-	
-	.eyebrowse-frame:not(.eyebrowse-bubble-frame) .eyebrowse-close {
-		right: -.5em;
-	}
-	
-	.eyebrowse-close:hover:not(enough-specificity) {
-		background: #d00;
-		transform: scale(1.2);
-	}
-
+.eyebrowse-close > span {
+    display: block;
+}
+.eyebrowse-bubble-frame .eyebrowse-close {
+    right: -.5em;
+    padding: .1em .22em .15em;
+    background: #bbb;
+    border: none;
+    box-shadow: none;
+    font-size: 10px;
+}
+.eyebrowse-frame:not(.eyebrowse-bubble-frame) .eyebrowse-close {
+    right: -.5em;
+}
+.eyebrowse-close:hover:not(enough-specificity) {
+    background: #d00;
+    transform: scale(1.2);
+}
 .eyebrowse-btn-container {
-	display: block;
-	margin-top: .6em;
+    display: block;
+    margin-top: .6em;
 }
-
-.eyebrowse-btn  {
-	padding: .5em .8em;
-	margin: 0 2px;
-	cursor: pointer;
-	border: 1px solid rgba(0,0,0,.3);
-	border-radius: 4px;
-	box-shadow: 0 1px hsla(0,0%,100%,.6) inset, 0 .2em .3em -.1em black;
-	background: linear-gradient(hsla(0,0%,100%,.4), hsla(0,0%,100%,0));
-	color: white;
-	font-size: 90%;
-	line-height: 1;
-	font-weight: 900;
-	transition: .4s;
+.eyebrowse-btn {
+    padding: .5em .8em;
+    margin: 0 2px;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, .3);
+    border-radius: 4px;
+    box-shadow: 0 1px hsla(0, 0%, 100%, .6) inset, 0 .2em .3em -.1em black;
+    background: linear-gradient(hsla(0, 0%, 100%, .4), hsla(0, 0%, 100%, 0));
+    color: white;
+    font-size: 90%;
+    line-height: 1;
+    font-weight: 900;
+    transition: .4s;
 }
-
-	.eyebrowse-allow-btn {
-		background-color: hsl(100, 70%, 40%);
-	}
-	
-	.eyebrowse-deny-btn {
-		background-color: hsl(25, 100%, 45%);
-	}
-	
-	.eyebrowse-btn:hover {
-		background-image: linear-gradient(hsla(0,0%,100%,.5), hsla(0,0%,100%,.2));
-	}
-	
-	.eyebrowse-btn:active {
-		background-image: linear-gradient(rgba(0,0,0,.1), transparent);
-		box-shadow: 0 -1px .2em rgba(0,0,0,.1) inset;
-	}
+.eyebrowse-allow-btn {
+    background-color: hsl(100, 70%, 40%);
+}
+.eyebrowse-deny-btn {
+    background-color: hsl(25, 100%, 45%);
+}
+.eyebrowse-btn:hover {
+    background-image: linear-gradient(hsla(0, 0%, 100%, .5), hsla(0, 0%, 100%, .2));
+}
+.eyebrowse-btn:active {
+    background-image: linear-gradient(rgba(0, 0, 0, .1), transparent);
+    box-shadow: 0 -1px .2em rgba(0, 0, 0, .1) inset;
+}
