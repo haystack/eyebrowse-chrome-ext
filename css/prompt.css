@@ -30,15 +30,18 @@
 }
 
 @-webkit-keyframes fade {
-    to {
-        opacity: 0;
-    }
+    to { opacity: 0; }
 }
 
 @keyframes fade {
-    to {
-        opacity: 0;
-    }
+    to { opacity: 0; }
+}
+
+@-webkit-keyframes slide {
+    from { top: -100%; }
+}
+@keyframes slide {
+    from { top: -100%; }
 }
 
 #eyebrowse-frame {
@@ -49,10 +52,12 @@
     border: 1px solid black;
     border-radius: 8px;
     text-align: center;
+    -webkit-animation: 1s 8s fade forwards;
     animation: 1s 8s fade forwards;
 }
 
 #eyebrowse-frame:hover {
+	-webkit-animation: none;
     animation: none;
 }
 
@@ -63,6 +68,8 @@
     font: 500 15px/1.4 Helvetica Neue, sans-serif;
     color: white;
     text-shadow: 0 -1px 1px rgba(0, 0, 0, .5);
+    -webkit-animation: .4s slide, 1s 8s fade forwards;
+    animation: .4s slide, 1s 8s fade forwards;
 }
 
 #eyebrowse-frame.eyebrowse-bubble-frame {
@@ -165,7 +172,7 @@
     display: block;
 }
 
-#eyebrowse-frame .eyebrowse-bubble-frame .eyebrowse-close {
+#eyebrowse-frame.eyebrowse-bubble-frame .eyebrowse-close {
     right: -.5em;
     padding: .1em .22em .15em;
     background: #bbb;
