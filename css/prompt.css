@@ -9,8 +9,8 @@
 .eyebrowse-reset *::before,
 .eyebrowse-reset *::after {
     /* all: unset; is currently buggy in Chrome (boo!) so we’ll manually inherit inherited properties
-	   TODO update this to just all: unset; once Chrome bug #472259 is fixed */
-    
+     TODO update this to just all: unset; once Chrome bug #472259 is fixed */
+
     all: initial;
     font: inherit;
     color: inherit;
@@ -49,12 +49,10 @@
     border: 1px solid black;
     border-radius: 8px;
     text-align: center;
-    -webkit-animation: 1s 8s fade forwards;
     animation: 1s 8s fade forwards;
 }
 
 .eyebrowse-frame:hover {
-    -webkit-animation: none;
     animation: none;
 }
 
@@ -84,7 +82,7 @@
     top: -4px;
     right: 12px;
     /* Must be larger than bubble’s border-radius + 1 */
-    
+
     width: 0;
     height: 0;
     padding: 3px;
