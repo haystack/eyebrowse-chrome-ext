@@ -142,7 +142,7 @@ function addFrame(frameHtml) {
     
     // Remove the element after it fades out. The fading & delay is taken care by CSS
     $(FRAME_ID).bind("animationend webkitAnimationEnd", function (evt) {
-    	if (evt.animationName == "fade") {
+    	if (evt.originalEvent.animationName == "fade") {
     		this.parentNode.removeChild(this);
     	}
     });
