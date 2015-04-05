@@ -9,7 +9,8 @@
 .eyebrowse-reset *::before,
 .eyebrowse-reset *::after {
     /* all: unset; is currently buggy in Chrome (boo!) so we’ll manually inherit inherited properties
-	   TODO update this to just all: unset; once Chrome bug #472259 is fixed */
+     TODO update this to just all: unset; once Chrome bug #472259 is fixed */
+
     all: initial;
     font: inherit;
     color: inherit;
@@ -33,6 +34,7 @@
         opacity: 0;
     }
 }
+
 @keyframes fade {
     to {
         opacity: 0;
@@ -47,12 +49,10 @@
     border: 1px solid black;
     border-radius: 8px;
     text-align: center;
-    -webkit-animation: 1s 8s fade forwards;
     animation: 1s 8s fade forwards;
 }
 
 .eyebrowse-frame:hover {
-    -webkit-animation: none;
     animation: none;
 }
 
@@ -98,6 +98,7 @@
     display: inline;
     max-width: 160px;
     /* width set in js */
+    
     position: relative;
 }
 
@@ -105,13 +106,16 @@
     display: block;
     line-height: 0; /* <-- horrible hack */
 }
+
 .eyebrowse-bubble-user-container > a {
     display: inline-block;
 }
+
 .eyebrowse-bubble-user-container > a > img {
     display: block;
     border-radius: 3px;
 }
+
 .eyebrowse-bubble-user-icon {
     margin: 1px;
     border: 0;
@@ -119,21 +123,26 @@
     max-height: 22px;
     max-width: 22px;
 }
+
 .eyebrowse-bubble-old-level-0 {
     height: 18px;
     width: 18px;
     border: #ffff00 solid 2px;
     margin: 0px;
 }
+
 .eyebrowse-bubble-old-level-1 {
     opacity: .9;
 }
+
 .eyebrowse-bubble-old-level-2 {
     opacity: .75;
 }
+
 .eyebrowse-bubble-old-level-3 {
     opacity: .6;
 }
+
 .eyebrowse-close {
     position: absolute;
     top: -.3em;
@@ -151,9 +160,11 @@
     transition: .4s cubic-bezier(.3, .2, .5, 1.5);
     box-shadow: 0 1px 5px rgba(0, 0, 0, .5);
 }
+
 .eyebrowse-close > span {
     display: block;
 }
+
 .eyebrowse-bubble-frame .eyebrowse-close {
     right: -.5em;
     padding: .1em .22em .15em;
@@ -162,17 +173,21 @@
     box-shadow: none;
     font-size: 10px;
 }
+
 .eyebrowse-frame:not(.eyebrowse-bubble-frame) .eyebrowse-close {
     right: -.5em;
 }
+
 .eyebrowse-close:hover:not(enough-specificity) {
     background: #d00;
     transform: scale(1.2);
 }
+
 .eyebrowse-btn-container {
     display: block;
     margin-top: .6em;
 }
+
 .eyebrowse-btn {
     padding: .5em .8em;
     margin: 0 2px;
@@ -187,15 +202,19 @@
     font-weight: 900;
     transition: .4s;
 }
+
 .eyebrowse-allow-btn {
     background-color: hsl(100, 70%, 40%);
 }
+
 .eyebrowse-deny-btn {
     background-color: hsl(25, 100%, 45%);
 }
+
 .eyebrowse-btn:hover {
     background-image: linear-gradient(hsla(0, 0%, 100%, .5), hsla(0, 0%, 100%, .2));
 }
+
 .eyebrowse-btn:active {
     background-image: linear-gradient(rgba(0, 0, 0, .1), transparent);
     box-shadow: 0 -1px .2em rgba(0, 0, 0, .1) inset;

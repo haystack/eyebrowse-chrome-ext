@@ -1,6 +1,7 @@
 html {
     height: 190px;
 }
+
 body {
     padding-top: 0px;
     padding-bottom: 0px;
@@ -10,27 +11,34 @@ body {
     font-size: 100%;
     line-height: 1.125em;
 }
+
 .navbar .nav>.active>a,
 .navbar .nav>.active>a:hover,
 .navbar .nav>.active>a:focus {
     box-shadow: none;
 }
+
 .stat_table {
     width: 100%;
 }
+
 .older0 {
     border: #ffff00 solid 2px;
     margin: 0px;
 }
+
 .older1 {
     opacity: .9;
 }
+
 .older2 {
     opacity: .75;
 }
+
 .older3 {
     opacity: .6;
 }
+
 .ago-time {
     font-size: 9px;
     line-height: 9px;
@@ -40,31 +48,39 @@ body {
     top: -5px;
     color: #767676;
 }
+
 .stat_table td {
     padding-left: 6px;
     padding-right: 6px;
 }
+
 #navSubLinks {
     font-size: .9em;
 }
+
 .green {
     color: green;
     font-weight: bold;
 }
+
 .red {
     color: red;
     font-weight: bold;
 }
+
 #login_container {
     margin-bottom: 0px;
 }
+
 li {
     height: 30px;
     margin-top: -2px;
 }
+
 .nav-bg {
     background-color: #f5f5f5;
 }
+
 .nav-container,
 .nav,
 .topbar,
@@ -76,6 +92,7 @@ li {
     min-height: 30px;
     height: 30px;
 }
+
 .nav>li>a {
     margin-top: 8px;
     margin-left: 5px;
@@ -84,71 +101,85 @@ li {
     padding-left: 5px;
     padding-right: 5px;
 }
+
 a:focus {
     outline: none;
 }
+
 .nav>li>a:focus {
     outline: none;
     outline-offset: 0px;
 }
+
 .nav-container {
     width: 404px;
     margin-left: -2px;
 }
+
 .navbar-inner {
     padding: 0px;
 }
+
 .login-text {
     font-size: 13px;
 }
+
 .nav {
     margin: 0 0 0 0;
 }
+
 .navbar {
     margin-top: -5px;
     margin-bottom: 0px;
     padding: 0px
 }
+
 .container2 {
     margin-top: 0px;
     padding: 0px;
 }
+
 .content-container {
     margin-top: 0px;
     padding: 0px;
 }
+
 @media (max-width: 767px) {
     .content-container {
         margin-top: 0px;
     }
 }
+
 .brand {
     height: 30px;
     min-height: 30px;
     border: 0px;
 }
+
 .logo {
     padding: 0px 0px 3px 5px;
     margin-top: 3px;
     width: 27px;
     height: 27px;
 }
+
 .nav-prof-img {
     height: 24px;
     width: 24px;
     margin-right: 5px;
     float: left;
 }
+
 .nav-prof-img2 {
     height: 30px;
     width: 30px;
     margin-right: 8px;
 }
+
 .img-rounded {
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
     border-radius: 6px;
 }
+
 #chatuserbox {
     float: left;
     display: block;
@@ -162,12 +193,9 @@ a:focus {
     left: 0px;
     padding: 4px;
     border: 1px solid #e3e3e3;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
     border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
+
 #chatmessage {
     float: right;
     display: block;
@@ -184,35 +212,37 @@ a:focus {
     margin-bottom: 10px;
     border: 1px solid #e3e3e3;
     font-size: .8em;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
     border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
+
 .chattitle {
     color: #000000;
 }
+
 .name {
     color: #000000;
     line-height: 10px;
     margin: 0px;
     padding: 0px;
 }
+
 #chatwrapper {
     width: 379px;
     height: 200px;
 }
+
 #lowerarea {
     position: relative;
     top: -20px;
     height: 225px;
 }
+
 #chattingarea {
     float: right;
     width: 224px;
     height: 160px;
 }
+
 #navlinks {
     position: relative;
     top: 5px;
@@ -222,28 +252,34 @@ a:focus {
     width: 380px;
     border-bottom: 1px solid #a9a9a9;
 }
+
 #navlinks a {
     font-size: .9em;
     color: #336699;
 }
+
 #navlinks img {
     height: 32px;
     width: 32px;
 }
+
 #userpic {
     float: left;
     width: 35px;
 }
+
 #rightnav {
     width: 345px;
     position: relative;
     left: 5px;
     float: right;
 }
+
 #username {
     font-size: 1em;
     font-weight: bold;
 }
+
 #textbox {
     position: relative;
     top: 10px;
@@ -256,6 +292,7 @@ a:focus {
     height: 20px;
     width: 224px;
 }
+
 #messagebox {
     border: 1px solid #d3d3d3s;
     padding: 0px;
@@ -268,6 +305,7 @@ a:focus {
     width: 308px;
     resize: none;
 }
+
 #submitmessage {
     display: block;
     float: right;
@@ -278,6 +316,7 @@ a:focus {
     width: 60px;
     height: 23px;
 }
+
 .chatuser_pic {
     min-width: 24px;
     min-height: 24px;
@@ -285,15 +324,18 @@ a:focus {
     white-space: normal;
     padding: 2px;
 }
+
 .chatuser_row {
     white-space: nowrap;
 }
+
 .their_message {
     float: left;
     width: 100%;
     padding-top: 2px;
     padding-bottom: 2px;
 }
+
 .my_message {
     float: right;
     text-align: right;
@@ -301,6 +343,7 @@ a:focus {
     padding-top: 2px;
     padding-bottom: 2px;
 }
+
 .date {
     color: #a9a9a9;
     ;
@@ -308,45 +351,49 @@ a:focus {
     line-height: 1.2em;
     cursor: default;
 }
+
 .message-name {
     color: #d3d3d3;
     font-size: .7em;
 }
+
 .right {
     text-align: right;
 }
+
 .pagefeed_text {
     display: block;
     padding: 5px 5px 5px 5px;
     border: 1px solid #e3e3e3;
     color: #000000;
     background-color: #ffffff;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
     border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
+
 .pagefeed_item {
     display: block;
     margin: 5px 5px 5px 5px;
 }
+
 .pagefeed_item2 {
     display: block;
     line-height: 12px;
     margin: 0px 10px 0px 5px;
 }
+
 .message-text {
     color: #000000;
     font-size: .9em;
     line-height: 1.4em;
 }
+
 .unread {
     display: inline-block;
     width: 15px;
     font-size: 1em;
     color: blue;
 }
+
 #pagefeed {
     width: 368px;
     display: block;
@@ -356,12 +403,9 @@ a:focus {
     padding: 5px 5px 5px 5px;
     background-color: #f5f5f5;
     border: 1px solid #e3e3e3;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
     border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
+
 #stats {
     width: 350px;
     display: block;
@@ -370,6 +414,7 @@ a:focus {
     margin-bottom: 0px;
     line-height: 1.1em;
 }
+
 #btitle {
     padding-top: 4px;
     padding-bottom: 0px;
@@ -377,6 +422,7 @@ a:focus {
     font-weight: bold;
     position: relative;
 }
+
 #btitle2 {
     padding-top: 4px;
     padding-bottom: 0px;
@@ -385,21 +431,26 @@ a:focus {
     position: relative;
     top: 10px;
 }
+
 .my_stats {
     font-size: 0.8em;
 }
+
 .all_stats {
     font-size: 0.8em;
 }
+
 .stat_title a {
     color: #336699;
     font-weight: bold;
     font-size: 1em;
 }
+
 a:hover {
     color: #e5b75b;
     text-decoration: none;
 }
+
 .well3 {
     min-height: 20px;
     padding: 10px;
