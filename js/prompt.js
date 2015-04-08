@@ -124,7 +124,9 @@ function setup(baseUrl, promptType, user, url, protocol) {
 function addStyle() {
     if (!$("#eyebrowse-frame-css").length) {
         var url = chrome.extension.getURL("../css/prompt.css");
-        $("head").append("<link id='eyebrowse-frame-css' href='" + url + "' type='text/css' rel='stylesheet' />");
+        var link = $("<link id='eyebrowse-frame-css' href='" + url + "' rel='stylesheet' />")[0];
+        
+        (document.head || document.body).appendChild(link);
     }
 }
 
