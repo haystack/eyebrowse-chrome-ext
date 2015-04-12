@@ -52,8 +52,8 @@
     border: 1px solid black;
     border-radius: 8px;
     text-align: center;
-    -webkit-animation: 1s 8s fade forwards;
-    animation: 1s 8s fade forwards;
+    -webkit-animation: 1s 12s fade forwards;
+    animation: 1s 12s fade forwards;
 }
 
 #eyebrowse-frame:not(.eyebrowse-bubble-frame) {
@@ -63,8 +63,8 @@
     font: 500 15px/1.4 Helvetica Neue, sans-serif;
     color: white;
     text-shadow: 0 -1px 1px rgba(0, 0, 0, .5);
-    -webkit-animation: .4s slide, 1s 8s fade forwards;
-    animation: .4s slide, 1s 8s fade forwards;
+    -webkit-animation: .4s slide, 1s 12s fade forwards;
+    animation: .4s slide, 1s 12s fade forwards;
 }
 
 #eyebrowse-frame:hover {
