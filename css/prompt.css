@@ -49,6 +49,7 @@
     position: fixed;
     right: 20px;
     top: 15px;
+    max-width: 20em;
     border: 1px solid black;
     border-radius: 8px;
     text-align: center;
