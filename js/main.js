@@ -79,6 +79,7 @@ var User = Backbone.Model.extend({
             "visits": 0,
             "lastNag": (new Date()).getTime() - 24 * 360000
         },
+        "ticker": false,
         "username": "",
         "incognito": false,
         "resourceURI": "/api/v1/user/",
@@ -112,6 +113,10 @@ var User = Backbone.Model.extend({
 
     getNags: function() {
         return this.get("nags");
+    },
+    
+    getTicker: function() {
+        return this.get("ticker");
     },
 
     getUsername: function() {
@@ -190,6 +195,13 @@ var User = Backbone.Model.extend({
 
     logout: function() {
         this.setLogin(false);
+    },
+    
+    setTicker: function(value) {
+    	localStorage.ticker = value;
+        this.set({
+            "ticker": value,
+        });
     },
 
     setUsername: function(username) {
@@ -567,7 +579,7 @@ function handleFilterListMsg(msg) {
         "user": user.getResourceURI(),
     });
 
-    localStorage.user = JSON.stringify(user);
+	user.saveState();
 }
 
 /*
@@ -828,6 +840,12 @@ function getLocalStorageUser() {
 
     var o = JSON.parse(storedUser);
     var u = new User();
+    
+    var ticker = localStorage.ticker;
+    if (ticker === undefined || ticker === "null") {
+    	ticker = false;
+    }
+    u.setTicker(ticker);
 
     u.setUsername(o.username);
     u.setCSRF(o.csrf);

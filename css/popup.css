@@ -278,6 +278,13 @@ a:focus {
 #username {
     font-size: 1em;
     font-weight: bold;
+    display: inline;
+}
+
+#eyebrowseToggle {
+    font-size: .9em;
+    font-weight: bold;
+    display: inline;
 }
 
 #textbox {

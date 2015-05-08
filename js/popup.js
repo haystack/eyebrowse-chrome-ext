@@ -453,7 +453,9 @@ function populateSubNav() {
 
     $("#username").append(user.get("username"));
 
-    $("#navSubLinks").append(" <a href='' id='incognito'></a> | ");
+    $("#eyebrowseToggle").append(" <a href='' id='incognito'></a>");
+    
+    $("#navSubLinks").append(" <a href='' id='ticker_toggle'></a> | ");
 
     $("#navSubLinks").append(" <a href='' id='mark_visit'>Mark visit to this page</a> | ");
 
@@ -463,6 +465,12 @@ function populateSubNav() {
         $("#incognito").html("<span class='red'>Eyebrowse Off</span>");
     } else {
         $("#incognito").html("<span class='green'>Eyebrowse On</span>");
+    }
+    
+    if (user.getTicker() === true) {
+        $("#ticker_toggle").html("Turn ticker off");
+    } else {
+        $("#ticker_toggle").html("Turn ticker on");
     }
 
 
@@ -479,6 +487,17 @@ function populateSubNav() {
         postMessage(null, window.g_url, function(data) {
             $("#mark_visit").replaceWith("Page Marked");
         });
+    });
+    
+    $("#ticker_toggle").click(function(e) {
+        e.preventDefault();
+        if (user.getTicker() === false) {
+            user.setTicker(true);
+            $("#ticker_toggle").html("Turn ticker off");
+        } else {
+            user.setTicker(false);
+            $("#ticker_toggle").html("Turn ticker on");
+        }
     });
 
     $("#incognito").click(function(e) {
