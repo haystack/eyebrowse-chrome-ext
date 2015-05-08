@@ -467,11 +467,11 @@ function populateSubNav() {
 
 
     if (user.inWhitelist(window.g_url)) {
-        $("#whitelist").text("Domain is whitelisted");
+        $("#whitelist").text("Domain is shared");
         $("#whitelist").css("cursor", "default");
         $("#whitelist").css("color", "#000000");
     } else {
-        $("#whitelist").text("Whitelist this domain");
+        $("#whitelist").text("Share this domain");
     }
 
     $("#mark_visit").click(function(e) {
@@ -506,7 +506,7 @@ function populateSubNav() {
 
     $("#whitelist").click(function(e) {
         e.preventDefault();
-        if ($("#whitelist").text() === "Whitelist this domain") {
+        if ($("#whitelist").text() === "Share this domain") {
             var whitelist = user.getWhitelist();
             var uri = new URI(window.g_url);
             var hostname = uri.hostname;
@@ -519,7 +519,7 @@ function populateSubNav() {
             }
 
             postMessage(null, window.g_url, function() {
-                $("#whitelist").text("Domain is whitelisted");
+                $("#whitelist").text("Domain is shared");
                 $("#whitelist").css("cursor", "default");
                 $("#whitelist").css("color", "#000000");
             });
