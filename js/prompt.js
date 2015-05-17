@@ -106,7 +106,7 @@ function setup(baseUrl, promptType, user, url, protocol) {
         });
 
     } else if (promptType === "bubbleInfo" && protocol === "http:") { // TODO fix with ssl certs for eyebrowse
-        if (Date.now() - LAST_BUBBLE >= BUBBLE_THRESHOLD) {
+        if (LAST_BUBBLE !== -1 && Date.now() - LAST_BUBBLE >= BUBBLE_THRESHOLD) {
             LAST_BUBBLE = Date.now();
             $.ajax({
                 url: baseUrl + "/ext/bubbleInfo/",
@@ -118,6 +118,9 @@ function setup(baseUrl, promptType, user, url, protocol) {
                 success: function(data) {
                     frameHtml = createBubblePrompt(data, baseUrl);
                     addFrame(frameHtml);
+                },
+                error: function(data) {
+                  LAST_BUBBLE = -1;
                 }
             });
         }
