@@ -2,6 +2,9 @@
 
 var FRAME_ID = "#eyebrowse-frame";
 var TEMPLATE_HTML = {};
+// only request the bubble every BUBBLE_THRESHOLD milliseconds
+var BUBBLE_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+var LAST_BUBBLE = Date.now() - BUBBLE_THRESHOLD; // we should initially show the bubble
 
 function truncate(str, length) {
     if (str.length > length) {
@@ -22,17 +25,16 @@ function createLoginPrompt() {
 }
 
 function createBubblePrompt(data, baseUrl) {
-
     if (data.active_users.length === 0 && data.message === "") {
         return null;
     }
 
     var msg = truncate(data.message, 51);
-    
+
     if (data.user_url === "") {
         msg = truncate(data.message, 78);
     }
-    
+
     msg = createMentionTag(msg);
 
     var template = getPromptTemplate("#bubble-prompt", {
@@ -49,6 +51,7 @@ function createBubblePrompt(data, baseUrl) {
     }
     return template;
 }
+
 /*
     Call the eyebrowse server to get an iframe with a prompt
     Can either be a login or track type prompt.
@@ -102,19 +105,22 @@ function setup(baseUrl, promptType, user, url, protocol) {
             chrome.extension.sendMessage(JSON.stringify(msg));
         });
 
-    } else if (promptType === "getInfo" && protocol === "http:") { // TODO fix with ssl certs for eyebrowse
-        $.ajax({
-            url: baseUrl + "/ext/bubbleInfo/",
-            type: "POST",
-            data: {
-                "url": url,
-                "csrfmiddlewaretoken": user.csrf,
-            },
-            success: function(data) {
-                frameHtml = createBubblePrompt(data, baseUrl);
-                addFrame(frameHtml);
-            }
-        });
+    } else if (promptType === "bubbleInfo" && protocol === "http:") { // TODO fix with ssl certs for eyebrowse
+        if (Date.now() - LAST_BUBBLE >= BUBBLE_THRESHOLD) {
+            LAST_BUBBLE = Date.now();
+            $.ajax({
+                url: baseUrl + "/ext/bubbleInfo/",
+                type: "POST",
+                data: {
+                    "url": url,
+                    "csrfmiddlewaretoken": user.csrf,
+                },
+                success: function(data) {
+                    frameHtml = createBubblePrompt(data, baseUrl);
+                    addFrame(frameHtml);
+                }
+            });
+        }
     }
 }
 
@@ -125,7 +131,7 @@ function addStyle() {
     if (!$("#eyebrowse-frame-css").length) {
         var url = chrome.extension.getURL("../css/prompt.css");
         var link = $("<link id='eyebrowse-frame-css' href='" + url + "' rel='stylesheet' />")[0];
-        
+
         (document.head || document.body).appendChild(link);
     }
 }
@@ -138,17 +144,17 @@ function addFrame(frameHtml) {
     if (frameHtml === null) {
         return;
     }
-    
+
     addStyle();
     $("body").append(frameHtml);
-    
+
     // Remove the element after it fades out. The fading & delay is taken care by CSS
-    $(FRAME_ID).bind("animationend webkitAnimationEnd", function (evt) {
-    	if (evt.originalEvent.animationName == "fade") {
-    		this.parentNode.removeChild(this);
-    	}
+    $(FRAME_ID).bind("animationend webkitAnimationEnd", function(evt) {
+        if (evt.originalEvent.animationName === "fade") {
+            this.parentNode.removeChild(this);
+        }
     });
-    
+
     $("#eyebrowse-close-btn").click(function() {
         $(FRAME_ID).remove();
     });

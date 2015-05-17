@@ -449,7 +449,7 @@ function bubbleInfo(tabId, url) {
         if (isActiveTab(tabArray, tabId)) {
             chrome.tabs.sendMessage(tabId, {
                 "action": "prompt",
-                "type": "getInfo",
+                "type": "bubbleInfo",
                 "baseUrl": baseUrl,
                 "user": user,
             });
