@@ -264,7 +264,7 @@ a:focus {
 }
 
 #userpic {
-    float: left;
+    /*float: left;*/
     width: 35px;
 }
 
@@ -272,6 +272,7 @@ a:focus {
     width: 345px;
     position: relative;
     left: 5px;
+    top: -32px;
     float: right;
 }
 
@@ -411,7 +412,7 @@ a:focus {
     display: block;
     height: 45px;
     font-size: 0.8em;
-    margin-bottom: 0px;
+    margin-bottom: 25px;
     line-height: 1.1em;
 }
 
