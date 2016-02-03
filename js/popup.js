@@ -356,6 +356,7 @@ var HomeView = Backbone.View.extend({
             window.g_url = tabs[0].url;
             window.g_title = tabs[0].title;
             populateSubNav();
+            
             populateStats();
             window.g_favIcon = tabs[0].favIconUrl;
             populateActiveUsers();
@@ -531,130 +532,27 @@ function populateSubNav() {
 
 // populate chat message box
 function populateChatMessageBox(first) {
-    var message_text = getMessages(window.g_url);
-    var parsed = JSON.parse(message_text).objects;
-    var messages = [];
-    $.each(parsed, function(index, value) {
-        value.message = createMentionTag(value.message);
-        messages.push(value);
-    });
-    if (messages.length !== 0) {
-        var messages_coll = new ChatMessageCollection(messages);
-        var messages_view = new ChatMessageCollectionView({
-            collection: messages_coll
-        });
-
-        var c = messages_view.render().el;
-        $("#chatmessage").empty().append(c);
-    } else {
-        $("#chatmessage").empty().append("No Chat Messages on this page.");
-    }
-
-
-    if (first === 0) {
-        $("#chatmessage").scrollTop($("#chatmessage")[0].scrollHeight);
-
-        $("#textbox").bind("enterKey", function(e) {
-            var text = $("#lowerarea .mentions").text();
-            postChatMessage(text, window.g_url);
-        });
-        $("#textbox").keyup(function(e) {
-            if (e.keyCode === 13) {
-                $(this).trigger("enterKey");
-            }
-        });
-    }
+    getMessages(window.g_url, first);
 }
 
 
 // get all the stats for a page and domain and populate the view
 function populateStats() {
     var tab_url = window.g_url;
-    var title = window.g_title;
-    var info = getStats(tab_url);
-    var parsed = JSON.parse(info);
-    var values = parsed.result;
-    var stats = new Stats(values);
-    var statview = new StatsView({
-        model: stats
-    });
-    var c = statview.render().el;
-    $("#stats").empty().append(c);
+    getStats(tab_url);
 }
 
 
 // get all the active users on a page and populate the view
 function populateActiveUsers() {
     var tab_url = window.g_url;
-    var text = getActiveUsers(tab_url);
-    var parsed = JSON.parse(text);
-
-    var users = parsed.result.page;
-    var active_users = [];
-    $.each(users, function(index, value) {
-        active_users.push(value);
-    });
-
-    var dusers = parsed.result.domain;
-    var active_dusers = [];
-    $.each(dusers, function(index, value) {
-        active_dusers.push(value);
-    });
-
-    if (active_users.length === 0 && active_dusers.length === 0) {
-        $("#chatuserbox").empty().append("No one's been here recently");
-        window.selected_user = null;
-    } else {
-        var page, domain, user_coll, user_view;
-        if (active_users.length !== 0) {
-            user_coll = new ChatUserCollection(active_users);
-            user_view = new ChatCollectionView({
-                collection: user_coll
-            });
-            var c = user_view.render().el;
-            page = $("<div class='chattitle'>On this page:</div>").append(c);
-        } else {
-            page = "";
-        }
-
-        if (active_dusers.length !== 0) {
-            user_coll = new ChatUserCollection(active_dusers);
-            user_view = new ChatCollectionView({
-                collection: user_coll
-            });
-            var d = user_view.render().el;
-            domain = $("<div class='chattitle'>On this site:</div>").append(d);
-        } else {
-            domain = "";
-        }
-
-        $("#chatuserbox").empty().append(page).append(domain);
-    }
+    getActiveUsers(tab_url);
 }
 
 // populate feed for a page
 function populateFeed(first) {
     var tab_url = window.g_url;
-    var text = getFeed(tab_url);
-    var parsed = JSON.parse(text);
-    var histories = parsed.result.messages;
-    var feed_items = [];
-    $.each(histories, function(index, value) {
-        feed_items.push(value);
-    });
-    if (feed_items.length === 0) {
-        $("#pagefeed").empty().append("No bulletins yet.");
-    } else {
-        var feed_coll = new PageFeedCollection(feed_items);
-        var feed_view = new PageFeedCollectionView({
-            collection: feed_coll
-        });
-        var c = feed_view.render().el;
-        $("#pagefeed").empty().append(c);
-    }
-    if (first === 0) {
-        $("#pagefeed").scrollTop(0);
-    }
+    getFeed(tab_url, first);
 }
 
 function clickHandle(e) {
@@ -718,15 +616,33 @@ function ajaxSetup(csrftoken) {
  * Get Activity Feed from server
  */
 
-function getFeed(url) {
+function getFeed(url, first) {
     var encoded_url = encodeURIComponent(url);
     var req_url = sprintf("%s/ext/getMessages?url=%s", baseUrl, encoded_url);
     return $.ajax({
         type: "GET",
         url: req_url,
-        dataType: "json",
-        async: false
-    }).responseText;
+        dataType: "json"
+    }).done(function(parsed) {
+	    var histories = parsed.result.messages;
+	    var feed_items = [];
+	    $.each(histories, function(index, value) {
+	        feed_items.push(value);
+	    });
+	    if (feed_items.length === 0) {
+	        $("#pagefeed").empty().append("No bulletins yet.");
+	    } else {
+	        var feed_coll = new PageFeedCollection(feed_items);
+	        var feed_view = new PageFeedCollectionView({
+	            collection: feed_coll
+	        });
+	        var c = feed_view.render().el;
+	        $("#pagefeed").empty().append(c);
+	    }
+	    if (first === 0) {
+	        $("#pagefeed").scrollTop(0);
+	    }
+    });
 }
 
 /*
@@ -735,12 +651,56 @@ function getFeed(url) {
 function getActiveUsers(url) {
     var encoded_url = encodeURIComponent(url);
     var req_url = sprintf("%s/ext/getActiveUsers?url=%s", baseUrl, encoded_url);
-    return $.ajax({
+    $.ajax({
         type: "GET",
         url: req_url,
-        dataType: "json",
-        async: false
-    }).responseText;
+        dataType: "json"
+    }).done(function(parsed) {
+
+	    var users = parsed.result.page;
+	    var active_users = [];
+	    $.each(users, function(index, value) {
+	        active_users.push(value);
+	    });
+	
+	    var dusers = parsed.result.domain;
+	    var active_dusers = [];
+	    $.each(dusers, function(index, value) {
+	        active_dusers.push(value);
+	    });
+	
+	    if (active_users.length === 0 && active_dusers.length === 0) {
+	        $("#chatuserbox").empty().append("No one's been here recently");
+	        window.selected_user = null;
+	    } else {
+	        var page, domain, user_coll, user_view;
+	        if (active_users.length !== 0) {
+	            user_coll = new ChatUserCollection(active_users);
+	            user_view = new ChatCollectionView({
+	                collection: user_coll
+	            });
+	            var c = user_view.render().el;
+	            page = $("<div class='chattitle'>On this page:</div>").append(c);
+	        } else {
+	            page = "";
+	        }
+	
+	        if (active_dusers.length !== 0) {
+	            user_coll = new ChatUserCollection(active_dusers);
+	            user_view = new ChatCollectionView({
+	                collection: user_coll
+	            });
+	            var d = user_view.render().el;
+	            domain = $("<div class='chattitle'>On this site:</div>").append(d);
+	        } else {
+	            domain = "";
+	        }
+	
+	        $("#chatuserbox").empty().append(page).append(domain);
+	    }
+	    	
+    	
+    });
 }
 
 /*
@@ -752,9 +712,17 @@ function getStats(url) {
     return $.ajax({
         type: "GET",
         url: req_url,
-        dataType: "json",
-        async: false
-    }).responseText;
+        dataType: "json"
+    }).done(function(parsed) {
+    	var title = window.g_title;
+	    var values = parsed.result;
+	    var stats = new Stats(values);
+	    var statview = new StatsView({
+	        model: stats
+	    });
+	    var c = statview.render().el;
+	    $("#stats").empty().append(c);
+    });
 }
 
 
@@ -855,15 +823,49 @@ function getActiveTab() {
 /*
   Get Chat messages on a page
 */
-function getMessages(url) {
+function getMessages(url, first) {
     var encoded_url = encodeURIComponent(url);
     var req_url = sprintf("%s/api/v1/chatmessages?format=json&url=%s", baseUrl, encoded_url);
     return $.ajax({
         type: "GET",
         url: req_url,
-        dataType: "json",
-        async: false
-    }).responseText;
+        dataType: "json"
+    }).done(function(parsed){
+    	var parsed = parsed.objects;
+	    var messages = [];
+	    $.each(parsed, function(index, value) {
+	        value.message = createMentionTag(value.message);
+	        messages.push(value);
+	    });
+	    if (messages.length !== 0) {
+	        var messages_coll = new ChatMessageCollection(messages);
+	        var messages_view = new ChatMessageCollectionView({
+	            collection: messages_coll
+	        });
+	
+	        var c = messages_view.render().el;
+	        $("#chatmessage").empty().append(c);
+	    } else {
+	        $("#chatmessage").empty().append("No Chat Messages on this page.");
+	    }
+	
+	
+	    if (first === 0) {
+	        $("#chatmessage").scrollTop($("#chatmessage")[0].scrollHeight);
+	
+	        $("#textbox").bind("enterKey", function(e) {
+	            var text = $("#lowerarea .mentions").text();
+	            postChatMessage(text, window.g_url);
+	        });
+	        $("#textbox").keyup(function(e) {
+	            if (e.keyCode === 13) {
+	                $(this).trigger("enterKey");
+	            }
+	        });
+	    }
+    	
+    	
+    });
 }
 
 

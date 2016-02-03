@@ -20,6 +20,9 @@ body {
 
 .stat_table {
     width: 100%;
+    top: -10px;
+    position: relative;
+    display: block;
 }
 
 .older0 {
@@ -408,7 +411,7 @@ a:focus {
 }
 
 #stats {
-    width: 350px;
+    width: 100%;
     display: block;
     height: 45px;
     font-size: 0.8em;
