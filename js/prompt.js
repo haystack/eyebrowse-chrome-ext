@@ -52,6 +52,14 @@ function createBubblePrompt(data, baseUrl) {
     return template;
 }
 
+function inDefaultBlacklist(url) {
+	var hostname = new URL(url).hostname;
+	if (hostname.indexOf('google.com') > -1) {
+		return true;
+	}
+	return false;
+}
+
 /*
     Call the eyebrowse server to get an iframe with a prompt
     Can either be a login or track type prompt.
@@ -65,6 +73,9 @@ function setup(baseUrl, promptType, user, url, protocol) {
     var frameHtml;
 
     if (promptType === "trackPrompt") {
+    	
+    	if (inDefaultBlacklist(url)) return;
+    	
         frameHtml = createTrackPrompt(url);
         addFrame(frameHtml);
 
