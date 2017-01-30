@@ -283,7 +283,7 @@ var User = Backbone.Model.extend({
         if (url !== "") {
             var nags = this.getNags();
             if (url in nags) {
-                nags[url] = Math.max(Math.min(nags[url].factor * rate, 16), 1);
+                nags[url].factor = Math.max(Math.min(nags[url].factor * rate, 16), 1);
             } else {
                 nags[url] = this.createNagSite();
             }
