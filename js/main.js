@@ -410,10 +410,13 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 
         // close previous activeItem
         if (activeItem !== undefined) {
-            if (activeItem.url !== url && activeItem.tabId !== tabId) {
+            if (activeItem.url !== url || activeItem.tabId !== tabId) {
                 closeItem(activeItem.tabId, activeItem.url, "blur", timeCheck.time);
                 activeItem = undefined;
                 updateBadge("");
+            } else if (activeItem.url === url) {
+                // page was refreshed
+                return;
             }
         }
         if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(url)) {
