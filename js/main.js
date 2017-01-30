@@ -308,7 +308,7 @@ var User = Backbone.Model.extend({
                     nags.visits = 0;
                     nags.lastNag = now;
                 } else {
-                    site.vists++;
+                    site.visits++;
                     nags.visits++;
                 }
             } else {
