@@ -206,6 +206,31 @@
             <div class="value_content"></div>
           </div>
         </script>
+
+        <script type="text/template" id="value_display_template">
+          <div class="value_tabs">
+            <ul class="value_tab_nav">
+              <li class="value_framing active">Framing</lli>
+              <li class="value_comp">Comparisons</li>
+            </ul>
+          </div>
+          <div class="value_subtext">
+            <%= subtitle_text %>
+          </div>
+          <div class="value_boxes"></div>
+          <div class="value_highlight_btn"></div>
+        </script>
+
+        <script type="text/template" id="value_template">
+
+        <div class="value_container" style="background-color: <%= color %>;">
+            <div class="value_box <%= value.name %>">
+              <%= value.name %>
+            </div>
+            <div class="value_desc <%= value.name %>"> <%= value.description %> </div>
+        </div>
+
+        </script>
         <!-- END: Underscore Template Definition. -->
 
         <!--  javascript -->

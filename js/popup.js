@@ -1,6 +1,6 @@
 "use strict";
 
-var user, baseUrl, logged_in, navView, loginView, homeView, valueView;
+var user, baseUrl, logged_in, navView, loginView, homeView, valueView, vdView;
 
 ////// MODELS //////////
 var ChatUser = Backbone.Model.extend({
@@ -372,7 +372,60 @@ var ValueView = Backbone.View.extend({
                     },
                 });
                 container.append(value_title_template);
+
+                vdView = new ValueDisplayView(url, loggedIn);
             });
+        });
+    }
+});
+
+var ValueDisplayView = Backbone.View.extend({
+    "el": $(".content-container"),
+    "url": "",
+    "loggedIn": false,
+
+    initialize: function(url, loggedIn) {
+        this.url = url;
+        this.loggedIn = loggedIn;
+        this.render(url, loggedIn);
+    },
+
+    render: function() {
+        var container = $(this.el);
+
+        if (!user.isLoggedIn()) {
+            return;
+        }
+
+        $.get("http://localhost:8000/tags/tags/page", {
+          "url": this.url,
+        }).done(function(res) {
+            console.log(res);
+            var valueTags = res.value_tags;
+            var subtitle = '';
+
+            if (Object.keys(valueTags).length > 0) {
+                subtitle = "This article is framed under the following values:"; 
+            } else {
+                subtitle = "No values to display :(";
+            }
+
+            var value_display_template = _.template($("#value_display_template").html(), {
+                subtitle_text: subtitle,
+            });
+            $(".value_content").html(value_display_template);
+
+            for (var val in valueTags) {
+                var tag_info = valueTags[val]
+                tag_info.name = tag_info.name[0].toUpperCase() + tag_info.name.substring(1, tag_info.name.length)
+
+                var template = _.template($("#value_template").html(), {
+                    loggedIn: this.loggedIn,
+                    value: tag_info,
+                    color: muteColor(tag_info.color),
+                });
+                $(".value_boxes").append(template);
+            }
         });
     }
 });
