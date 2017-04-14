@@ -523,6 +523,40 @@ a:hover {
     padding: 15px 0;
 }
 
+.highlighting_toggle {
+    margin-left: auto;
+    margin-right: auto;
+    width: 170px;
+    text-align: center;
+    padding: 5px 10px;
+    border-radius: 3px;
+    box-shadow: -2px 2px 4px #eee;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.turn_off {
+    background-color: #ddd;
+    color: #2b2a2d;
+    transition: background-color 0.3s ease-in;
+}
+
+.turn_off:hover {
+    background-color: #bbb;
+}
+
+.turn_on {
+    background-color: #bef4c1;
+    color: #2b2a2d;
+    transition: background-color 0.3s ease-in;
+}
+
+.turn_on:hover {
+    background-color: #9ff4a5;
+}
+
 .value_tabs {
     border-bottom: 1px solid #f2f2f2;
 }

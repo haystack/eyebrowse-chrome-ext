@@ -1,6 +1,6 @@
 "use strict";
 
-var user, baseUrl, logged_in, navView, loginView, homeView, valueView, vdView, vcView;
+var user, baseUrl, logged_in, navView, loginView, homeView, valueView, vdView, vcView, htView;
 
 ////// MODELS //////////
 var ChatUser = Backbone.Model.extend({
@@ -342,6 +342,7 @@ var ValueView = Backbone.View.extend({
     "el": $(".content-container"),
 
     initialize: function() {
+        htView = new HighlightToggleView();
         this.render();
     },
 
@@ -427,6 +428,8 @@ var ValueDisplayView = Backbone.View.extend({
                 });
                 $(".value_boxes").append(template);
             }
+
+            var htView = new HighlightToggleView();
         });
     }
 });
@@ -486,6 +489,24 @@ var ValueCompView = Backbone.View.extend({
             });
           });
         });
+    }
+});
+
+var HighlightToggleView = Backbone.View.extend({
+    initialize: function() {
+        this.render();
+    },
+
+    render: function() {
+        var state_text = user.getHighlighting() ? "Turn off " : "Turn on ";
+        var class_name = user.getHighlighting() ? "turn_off" : "turn_on";
+
+        var highlight_template = _.template($("#highlight_toggle_template").html(), {
+            "state": state_text,
+            "class_name": class_name,
+        });
+        
+        $(".value_highlight_btn").html(highlight_template);
     }
 });
 
@@ -1069,6 +1090,20 @@ $(document).ready(function() {
                 vdView.render();
             }
         }
+    });
+
+    $("body").on("click", ".highlighting_toggle", function() {
+        var state = !user.getHighlighting();
+        user.setHighlighting(state);
+
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            "type": "toggleHighlight",
+            "user": user,
+          });
+        });
+
+        htView.render();
     });
 
     $("a").click(clickHandle);
