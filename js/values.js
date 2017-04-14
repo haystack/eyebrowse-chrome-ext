@@ -10,13 +10,13 @@ function fixedEncodeURIComponent(str) {
   });
 }
 
-function highlighting(user) {
+function highlighting(user, baseUrl) {
   if (!run_once) {
     $(document).ready(function() {
       run_once = true;
       var vote_counts = {}; // Keeps track of client-side vote changes
       highlighting_enabled = user.highlighting; // Pulls user state from extension
-      var user_pic_url = 'http://localhost:8000/ext/profilepic';
+      var user_pic_url = baseUrl + '/ext/profilepic';
 
       // Global tags
       var tags_to_save = {};
@@ -104,7 +104,7 @@ function highlighting(user) {
         var title = $("meta[property='og:title']").attr("content") ? $("meta[property='og:title']").attr("content") : "";
 
         // Add page
-        $.post("http://localhost:8000/tags/initialize_page", {
+        $.post(baseUrl + "/tags/initialize_page", {
           "url": url,
           "domain_name": domain_name,
           "title": title,
@@ -413,7 +413,7 @@ function highlighting(user) {
           return;
         }
 
-        $.post("http://localhost:8000/tags/highlight", {
+        $.post(baseUrl + "/tags/highlight", {
           "url": url,
           "tags": JSON.stringify(tags_with_highlight),
           "csrfmiddlewaretoken": user.csrf,
@@ -423,7 +423,7 @@ function highlighting(user) {
             console.log("Added new highlight!");
             $.each(tags_to_save, function(tag, val){
               if (val) {
-                $.post("http://localhost:8000/tags/vote/add", {
+                $.post(baseUrl + "/tags/vote/add", {
                   "valuetag": tag,
                   "highlight": text,
                   "url": url,
@@ -508,7 +508,7 @@ function highlighting(user) {
           $('.annote-text').animate({"height": "auto"});
         
           // Get tag information for this highlight
-          $.get("http://localhost:8000/tags/tags/highlight", {
+          $.get(baseUrl + "/tags/tags/highlight", {
             "highlight": highlight,
             "url": url,
           }).done(function(res) {
@@ -645,7 +645,7 @@ function highlighting(user) {
         if ($(this).hasClass("valuetag_vote")) {
           console.log("Adding vote");
 
-          $.post("http://localhost:8000/tags/vote/add", {
+          $.post(baseUrl + "/tags/vote/add", {
             "valuetag": tagName,
             "highlight": highlight,
             "csrfmiddlewaretoken": user.csrf,
@@ -684,7 +684,7 @@ function highlighting(user) {
           console.log("Removing vote");
 
           $.ajax({
-            url: "http://localhost:8000/tags/vote/remove",
+            url: baseUrl + "/tags/vote/remove",
             type: "POST",
             data: {
               "valuetag": tagName,
@@ -715,7 +715,7 @@ function highlighting(user) {
 
 // Fetch highlights on page load
 function getHighlights(url) {
-  $.get("http://localhost:8000/tags/highlights", {
+  $.get(baseUrl + "/tags/highlights", {
     "url": url,
   }).done(function(res) {
     if (res.success) {
@@ -797,7 +797,7 @@ function reenable_highlighting() {
 // Trigger highlighting 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.type === "highlight") {
-    highlighting(request.user);
+    highlighting(request.user, request.baseUrl);
   }
 
   if (request.type === "toggleHighlight") {
