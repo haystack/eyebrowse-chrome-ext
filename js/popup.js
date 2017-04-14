@@ -1,6 +1,6 @@
 "use strict";
 
-var user, baseUrl, logged_in, navView, loginView, homeView;
+var user, baseUrl, logged_in, navView, loginView, homeView, valueView;
 
 ////// MODELS //////////
 var ChatUser = Backbone.Model.extend({
@@ -336,6 +336,45 @@ var NavView = Backbone.View.extend({
         }
         $("nav-tab").removeClass("active");
     },
+});
+
+var ValueView = Backbone.View.extend({
+    "el": $(".content-container"),
+
+    initialize: function() {
+        this.render();
+    },
+
+    render: function() {
+        $(".content-container").empty();
+        var loggedIn = user.isLoggedIn();
+        var container = $(this.el);
+
+        chrome.tabs.query({
+            currentWindow: true,
+            active: true
+        }, function(tabs) {
+            var url = tabs[0].url;
+
+            $.get("http://localhost:8000/tags/page", {
+                "url": url,
+            }).done(function(res) {
+                var page_info = res.page;
+                var name = page_info ? page_info.domain.name : "";
+
+                var value_title_template = _.template($("#value_title_template").html(), {
+                    page: {
+                        "title": tabs[0].title,
+                        "favicon": tabs[0].favIconUrl,
+                        "domain": {
+                            "name": name,
+                        },
+                    },
+                });
+                container.append(value_title_template);
+            });
+        });
+    }
 });
 
 var HomeView = Backbone.View.extend({
@@ -888,6 +927,7 @@ $(document).ready(function() {
     });
 
     if (logged_in) {
+        valueView = new ValueView();
         homeView = new HomeView();
     }
     $("#home_tab").click(function() {
@@ -898,5 +938,14 @@ $(document).ready(function() {
             homeView.render();
         }
     });
+
+    $("#values_tab").click(function() {
+        if (valueView !== undefined) {
+            valueView.render();
+            $("#values_tab").addClass("active");
+            $("#home_tab").removeClass("active");
+        }
+    });
+
     $("a").click(clickHandle);
 });

@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="../css/bootstrap-responsive.min.css" />
         <link rel="stylesheet" href="../css/jquery.mentionsInput.css" />
         <link rel="stylesheet" href="../css/popup.css" />
-
+        <link rel="stylesheet" href="../css/font-awesome.min.css" />
     </head>
 
     <body>
@@ -36,6 +36,9 @@
                     <% if( loggedIn ) { %>
                         <li id="home_tab" class="nav-tab active">
                             <a href="<%= baseUrl %>">Home</a>
+                        </li>
+                        <li id="values_tab" class="nav-tab">
+                            <div class="link">Values</div>
                         </li>
                         <li id="settings">
                         	<a href="<%= baseUrl %>/accounts/profile/edit" target="_blank">Settings</a>
@@ -188,6 +191,20 @@
               </div>
             </tr>
           </table>
+        </script>
+
+        <script type="text/template" id="value_title_template">
+          <div class="value_wrapper">
+            <div class="value_page_info">
+              <div class="value_page_title">
+                <%= page.title %>
+              </div>
+              <div class="value_page_domain">
+                <img class="favicon" src="<%= page.favicon %>"> <%= page.domain.name %>
+              </div>
+            </div>
+            <div class="value_content"></div>
+          </div>
         </script>
         <!-- END: Underscore Template Definition. -->
 
