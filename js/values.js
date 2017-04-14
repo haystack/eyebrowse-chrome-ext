@@ -2,6 +2,7 @@
 
 var run_once = false;
 var highlighting_enabled;
+var url = window.location.href;
 
 function fixedEncodeURIComponent(str) {
   return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
@@ -13,7 +14,6 @@ function highlighting(user) {
   if (!run_once) {
     $(document).ready(function() {
       run_once = true;
-      var url = window.location.href;
       var vote_counts = {}; // Keeps track of client-side vote changes
       highlighting_enabled = user.highlighting; // Pulls user state from extension
       var user_pic_url = 'http://localhost:8000/ext/profilepic';
@@ -116,41 +116,9 @@ function highlighting(user) {
       }();
 
       // Fetch highlights on page load
-      var getHighlights = function(url) {
-        $.get("http://localhost:8000/tags/highlights", {
-          "url": url,
-        }).done(function(res) {
-          if (res.success) {
-            if (!res.highlights.length) {
-              console.log("No highlights to display");
-            }
-
-            for (var h in res.highlights) {
-              var entire_highlight_present = true;
-              var html = $.parseHTML(h);
-              var base = $('*:contains("' + html[0].textContent + '"):last');
-
-              for (var i in html.slice(1, html.length)) {
-                if (!base.has(html[i])) {
-                  entire_highlight_present = false;
-                }
-              }
-
-              if (entire_highlight_present) {
-                console.log(res.highlights[h]);
-                base.wrapInner("<div class='highlight-annote' highlight=" + fixedEncodeURIComponent(h) + "></div>");
-                $(".highlight-annote[highlight='"+fixedEncodeURIComponent(h)+"']").css({
-                  "background-color": muteColor(res.highlights[h][1]),
-                  "display": "inline",
-                  "padding": "0px 5px",
-                });
-              }
-            }
-          } else {
-            console.log(res.errors['get_highlights']);
-          }
-        });
-      }(url)
+      if (highlighting_enabled) {
+        getHighlights(url);
+      }
 
       // ***
       // *** FRONT-END RENDERING HELPER FUNCTIONS *** //
@@ -745,6 +713,43 @@ function highlighting(user) {
 // *** MORE HELPER FUNCTIONS *** //
 // ***
 
+// Fetch highlights on page load
+function getHighlights(url) {
+  $.get("http://localhost:8000/tags/highlights", {
+    "url": url,
+  }).done(function(res) {
+    if (res.success) {
+      if (!res.highlights.length) {
+        console.log("No highlights to display");
+      }
+
+      for (var h in res.highlights) {
+        var entire_highlight_present = true;
+        var html = $.parseHTML(h);
+        var base = $('*:contains("' + html[0].textContent + '"):last');
+
+        for (var i in html.slice(1, html.length)) {
+          if (!base.has(html[i])) {
+            entire_highlight_present = false;
+          }
+        }
+
+        if (entire_highlight_present) {
+          console.log(res.highlights[h]);
+          base.wrapInner("<div class='highlight-annote' highlight=" + fixedEncodeURIComponent(h) + "></div>");
+          $(".highlight-annote[highlight='"+fixedEncodeURIComponent(h)+"']").css({
+            "background-color": muteColor(res.highlights[h][1]),
+            "display": "inline",
+            "padding": "0px 5px",
+          });
+        }
+      }
+    } else {
+      console.log(res.errors['get_highlights']);
+    }
+  });
+}
+
 function formatDescription(desc) {
   var formattedString = "<strong>";
   for (var c = 0; c < desc.length; c++) {
@@ -775,12 +780,18 @@ function disable_highlighting() {
 }
 
 function reenable_highlighting() {
+  var highlight_exists = false;
   $(".highlight-annote").each(function() {
+    highlight_exists = true;
     var old_bg = $(this).attr("old-background-color");
     $(this).css({
       "background-color": old_bg,
     });
   });
+
+  if (!highlight_exists) {
+    getHighlights(url);
+  }
 }
 
 // Trigger highlighting 
