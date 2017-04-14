@@ -357,7 +357,8 @@ var ValueView = Backbone.View.extend({
         }, function(tabs) {
             var url = tabs[0].url;
 
-            $.get("http://localhost:8000/tags/page", {
+            var page_url = sprintf("%s/tags/page", baseUrl);
+            $.get(page_url, {
                 "url": url,
             }).done(function(res) {
                 var page_info = res.page;
@@ -399,7 +400,8 @@ var ValueDisplayView = Backbone.View.extend({
             return;
         }
 
-        $.get("http://localhost:8000/tags/tags/page", {
+        var tags_by_page_url = sprintf("%s/tags/tags/page", baseUrl);
+        $.get(tags_by_page_url, {
           "url": this.url,
         }).done(function(res) {
             console.log(res);
@@ -454,7 +456,8 @@ var ValueCompView = Backbone.View.extend({
         $(".value_content").html(value_comp_template);
         $(".value_comps").html('<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>');
 
-        $.get("http://localhost:8000/tags/page/related_stories", {
+        var related_stories_url = sprintf("%s/tags/page/related_stories", baseUrl);
+        $.get(related_stories_url, {
           "url": this.url,
         }).done(function(res) {
           var related_stories = res.data;
@@ -468,7 +471,8 @@ var ValueCompView = Backbone.View.extend({
                 summary += "..."
             } 
 
-            $.post("http://localhost:8000/tags/initialize_page", {
+            var initialize_page_url = sprintf("%s/tags/initialize_page", baseUrl);
+            $.post(initialize_page_url, {
                 "url": story.link,
                 "domain_name": story.domain,
                 "title": story.title,
