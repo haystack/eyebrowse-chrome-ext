@@ -1106,5 +1106,11 @@ $(document).ready(function() {
         htView.render();
     });
 
+    $("body").on("click", ".story_container", function() {
+        var link = $(this).attr("link");
+
+        chrome.tabs.create({ url: link });
+    });
+
     $("a").click(clickHandle);
 });
