@@ -1,6 +1,6 @@
 "use strict";
 
-var user, baseUrl, logged_in, navView, loginView, homeView, valueView, vdView;
+var user, baseUrl, logged_in, navView, loginView, homeView, valueView, vdView, vcView;
 
 ////// MODELS //////////
 var ChatUser = Backbone.Model.extend({
@@ -374,6 +374,7 @@ var ValueView = Backbone.View.extend({
                 container.append(value_title_template);
 
                 vdView = new ValueDisplayView(url, loggedIn);
+                vcView = new ValueCompView(url, loggedIn);
             });
         });
     }
@@ -426,6 +427,64 @@ var ValueDisplayView = Backbone.View.extend({
                 });
                 $(".value_boxes").append(template);
             }
+        });
+    }
+});
+
+var ValueCompView = Backbone.View.extend({
+    "el": $(".content-container"),
+    "url": "",
+
+    initialize: function(url, loggedIn) {
+        this.url = url;
+        this.render(url, loggedIn);
+    },
+
+    render: function() {
+        var container = $(this.el);
+
+        if (!user.isLoggedIn()) {
+            return;
+        }
+
+        var value_comp_template = _.template($("#value_comp_template").html());
+        $(".value_content").html(value_comp_template);
+        $(".value_comps").html('<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>');
+
+        $.get("http://localhost:8000/tags/page/related_stories", {
+          "url": this.url,
+        }).done(function(res) {
+          var related_stories = res.data;
+          $(".value_comps").html("");
+
+          $.each(related_stories, function(id, story) {
+            var summary = story.summary;
+
+            if (summary.length > 150) {
+                summary = summary.substring(0, 150);
+                summary += "..."
+            } 
+
+            $.post("http://localhost:8000/tags/initialize_page", {
+                "url": story.link,
+                "domain_name": story.domain,
+                "title": story.title,
+                "add_usertags": "false",
+                "csrfmiddlewaretoken": user.csrf,
+            }).done(function(res) {
+                var valuetags = res.value_tags
+                var template = _.template($("#relatedstories_template").html(), {
+                    id: id,
+                    link: story.link,
+                    logo: story.logo,
+                    title: story.title,
+                    source: story.source,
+                    summary: summary,
+                    value_tags: valuetags,
+                });
+                $(".value_comps").append(template);
+            });
+          });
         });
     }
 });
@@ -997,6 +1056,18 @@ $(document).ready(function() {
             valueView.render();
             $("#values_tab").addClass("active");
             $("#home_tab").removeClass("active");
+        }
+    });
+
+    $("body").on("click", ".value_tab_nav li", function() {
+        if ($(this).hasClass("value_comp")) {
+            if (vcView !== undefined) {
+                vcView.render();
+            }
+        } else if ($(this).hasClass("value_framing")) {
+            if (vdView != undefined) {
+                vdView.render();
+            }
         }
     });
 

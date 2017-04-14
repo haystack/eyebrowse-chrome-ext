@@ -231,6 +231,37 @@
         </div>
 
         </script>
+
+        <script type="text/template" id="value_comp_template">
+          <div class="value_tabs">
+            <ul class="value_tab_nav">
+              <li class="value_framing">Framing</lli>
+              <li class="value_comp active">Comparisons</li>
+            </ul>
+          </div>
+          <div class="value_comps">
+          </div>
+        </script>
+
+        <script type="text/template" id="relatedstories_template">
+          <div class="story_container" link="<%= link %>">
+            <div class="story_source <%= id %>">
+              <% if (logo !== "") { %>
+                <img class="favicon" src="<%= logo %>"> 
+              <% } %>
+              <%= source %>
+            </div>
+            <div class="story_title <%= id %>">
+              <%= title %>
+            </div>
+            <div class="story_desc <%= id %>"> <%= summary %> </div>
+            <div class="story_tags <%= id %>">
+              <% _.each(value_tags, function(tag){ %>
+                <div class="story_tag <%= id %>" style="background-color: <%= tag.color %>"><%= tag.name %></div>
+              <% }); %>
+            </div>
+          </div>
+        </script> 
         <!-- END: Underscore Template Definition. -->
 
         <!--  javascript -->
