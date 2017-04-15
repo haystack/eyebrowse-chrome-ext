@@ -4,15 +4,13 @@ var run_once = false;
 var highlighting_enabled;
 var url = window.location.href;
 
-function fixedEncodeURIComponent(str) {
-  return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
-    return '%' + c.charCodeAt(0).toString(16);
-  });
-}
-
 function highlighting(user, baseUrl) {
   if (!run_once) {
     $(document).ready(function() {
+      $("body").children().each(function () {
+        $(this).html($(this).html().replace(/&nbsp;/gi,''));
+      });
+
       run_once = true;
       var vote_counts = {}; // Keeps track of client-side vote changes
       highlighting_enabled = user.highlighting; // Pulls user state from extension
@@ -417,7 +415,7 @@ function highlighting(user, baseUrl) {
           "url": url,
           "tags": JSON.stringify(tags_with_highlight),
           "csrfmiddlewaretoken": user.csrf,
-          "highlight": text,
+          "highlight": encodeURIComponent(text),
         }).done(function(res) {
           if (res.success) {
             console.log("Added new highlight!");
@@ -425,13 +423,13 @@ function highlighting(user, baseUrl) {
               if (val) {
                 $.post(baseUrl + "/tags/vote/add", {
                   "valuetag": tag,
-                  "highlight": text,
+                  "highlight": encodeURIComponent(text),
                   "url": url,
                   "csrfmiddlewaretoken": user.csrf,
                 }).done(function(res) {
                   console.log("Added vote in highlight creation!");
                   setTimeout(function() {
-                    $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr("highlight", fixedEncodeURIComponent(text));
+                    $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr("highlight", text);
                     // removeTemporaryHighlight();
                     current_temp_highlight = null;
                     current_temp_highlight_content = null;
@@ -503,13 +501,12 @@ function highlighting(user, baseUrl) {
 
       function makeAnnotationBox(obj, e) {
         if (highlighting_enabled) {
-          var highlight = obj.attr("highlight");
-
+          var highlight = obj[0].innerHTML;
           $('.annote-text').animate({"height": "auto"});
         
           // Get tag information for this highlight
           $.get(baseUrl + "/tags/tags/highlight", {
-            "highlight": highlight,
+            "highlight": encodeURIComponent(highlight),
             "url": url,
           }).done(function(res) {
             vote_counts = {}
@@ -647,7 +644,7 @@ function highlighting(user, baseUrl) {
 
           $.post(baseUrl + "/tags/vote/add", {
             "valuetag": tagName,
-            "highlight": highlight,
+            "highlight": encodeURIComponent(highlight),
             "csrfmiddlewaretoken": user.csrf,
             "url": url,
           }).done(function(res) {
@@ -688,7 +685,7 @@ function highlighting(user, baseUrl) {
             type: "POST",
             data: {
               "valuetag": tagName,
-              "highlight": highlight,
+              "highlight": encodeURIComponent(highlight),
               "url": url,
               "csrfmiddlewaretoken": user.csrf,
             }, 
@@ -724,8 +721,9 @@ function getHighlights(url) {
       }
 
       for (var h in res.highlights) {
+        var hl = decodeURIComponent(h);
         var entire_highlight_present = true;
-        var html = $.parseHTML(h);
+        var html = $.parseHTML(hl);
         var base = $('*:contains("' + html[0].textContent + '"):last');
 
         for (var i in html.slice(1, html.length)) {
@@ -735,9 +733,8 @@ function getHighlights(url) {
         }
 
         if (entire_highlight_present) {
-          console.log(res.highlights[h]);
-          base.wrapInner("<div class='highlight-annote' highlight=" + fixedEncodeURIComponent(h) + "></div>");
-          $(".highlight-annote[highlight='"+fixedEncodeURIComponent(h)+"']").css({
+          base.wrapInner("<div class='highlight-annote' highlight='" + hl + "'></div>");
+          $(".highlight-annote[highlight='"+hl+"']").css({
             "background-color": muteColor(res.highlights[h][1]),
             "display": "inline",
             "padding": "0px 5px",
