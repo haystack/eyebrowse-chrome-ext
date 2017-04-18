@@ -405,13 +405,13 @@ var ValueDisplayView = Backbone.View.extend({
           "url": this.url,
         }).done(function(res) {
             console.log(res);
-            var valueTags = res.value_tags;
+            var valueTags = res.tags;
             var subtitle = '';
 
             if (Object.keys(valueTags).length > 0) {
-                subtitle = "This article is framed under the following values:"; 
+                subtitle = "This article is framed under the following tags:"; 
             } else {
-                subtitle = "No values to display :(";
+                subtitle = "No tags to display :(";
             }
 
             var value_display_template = _.template($("#value_display_template").html(), {
@@ -479,7 +479,7 @@ var ValueCompView = Backbone.View.extend({
                 "add_usertags": "false",
                 "csrfmiddlewaretoken": user.csrf,
             }).done(function(res) {
-                var valuetags = res.value_tags
+                var valuetags = res.tags
                 var template = _.template($("#relatedstories_template").html(), {
                     id: id,
                     link: story.link,
