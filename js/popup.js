@@ -409,9 +409,9 @@ var ValueDisplayView = Backbone.View.extend({
             var subtitle = '';
 
             if (Object.keys(valueTags).length > 0) {
-                subtitle = "This article is framed under the following values:"; 
+                subtitle = "This article is framed under the following tags:"; 
             } else {
-                subtitle = "No values to display :(";
+                subtitle = "No tags to display :(";
             }
 
             var value_display_template = _.template($("#value_display_template").html(), {
