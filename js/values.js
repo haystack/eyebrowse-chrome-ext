@@ -60,13 +60,11 @@ function highlighting(user, baseUrl) {
           "add_usertags": "true",
           "csrfmiddlewaretoken": user.csrf,
         }).done(function(res) {
-          generated_tags = res.value_tags;
-        });
-      }();
+          generated_tags = res.tags;
 
-      var getBaseTags = function() {
-        $.get(baseUrl + "/tags/base_tags").done(function(res) {
-          all_tags = res.base_tags;
+          $.get(baseUrl + "/tags/base_tags").done(function(res) {
+            all_tags = res.base_tags;
+          });
         });
       }();
 
@@ -486,7 +484,7 @@ function highlighting(user, baseUrl) {
             "url": url,
           }).done(function(res) {
             vote_counts = {}
-            var vts = res.value_tags
+            var vts = res.tags
 
             removeTemporaryHighlight();
 
