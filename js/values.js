@@ -31,52 +31,7 @@ function highlighting(user, baseUrl) {
         anchor_left: 0,
       }
 
-      var all_tags = {
-        "fairness": {
-          "description": "Fairness is ideas of justice, rights, and autonomy.", 
-          "color": "#bcf0ff",
-        },
-        "cheating": {
-          "description": "Cheating is acting dishonestly or unfairly in order to gain an advantage.",
-          "color": "#feffbc",
-        },
-        "loyalty": {
-          "description": "Loyalty underlies virtues of patriotism and self-sacrifice for the group.", 
-          "color": "#bcffe2",
-        },
-        "betrayal": {
-          "description": "Betrayal is disloyalty and the destruction of trust.",
-          "color": "#ffe5bc",
-        },
-        "care": {
-          "description": "Care is concern for the well-being of others.",
-          "color": "#bcc1ff",
-        },
-        "harm": {
-          "description": "Harm is something that causes someone or something to be hurt, broken, made less valuable or successful, etc.",
-          "color": "#ffbcf5",
-        },
-        "authority": {
-          "description": "Authority underlies virtues of leadership and followership, including deference to legitimate authority and respect for traditions.",
-          "color": "#ffb29e",
-        },
-        "subversion": {
-          "description": "Subversion is the undermining of the power and authority of an established system or institution.",
-          "color": "#e7bcff",
-        },
-        "sanctity": {
-          "description": "Sanctity underlies notions of striving to live in an elevated, less carnal, more noble way.",
-          "color": "#d6ffbc",
-        },
-        "degradation": {
-          "description": "Degradation is the process in which the beauty or quality of something is destroyed or spoiled",
-          "color": "#ffbcd1",
-        },
-        "morality": {
-          "description": "Morality is a particular system of values and principles of conduct.",
-          "color": "#c1bfc0",
-        },
-      };
+      var all_tags = {};
 
       // ***
       // *** INITIAL SETUP FUNCTIONS *** //
@@ -106,6 +61,12 @@ function highlighting(user, baseUrl) {
           "csrfmiddlewaretoken": user.csrf,
         }).done(function(res) {
           generated_tags = res.value_tags;
+        });
+      }();
+
+      var getBaseTags = function() {
+        $.get(baseUrl + "/tags/base_tags").done(function(res) {
+          all_tags = res.base_tags;
         });
       }();
 
@@ -489,15 +450,17 @@ function highlighting(user, baseUrl) {
       // Display valuetag description above tag
       $("body").on("mouseenter", ".add-valuetag-tag", function(e) {
         var obj = $(this);
-        tooltipDelay = setTimeout(function() {
-          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
-          $(tooltip).html(all_tags[obj.attr("name")].description);
-          obj.append(tooltip);
-          $(tooltip).css({
-            "top": $(e.target).offset().top - $(window).scrollTop() - 33,
-            "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 + obj.width() / 2 + 10,
-          });
-        }, 700);
+        if (all_tags[obj.attr("name")].description != "") {
+          tooltipDelay = setTimeout(function() {
+            var tooltip = $("<span>", {"class": "icon-name-tooltip"});
+            $(tooltip).html(all_tags[obj.attr("name")].description);
+            obj.append(tooltip);
+            $(tooltip).css({
+              "top": $(e.target).offset().top - $(window).scrollTop() - 33,
+              "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 + obj.width() / 2 + 10,
+            });
+          }, 700);
+        }
       });
 
       // Remove valuetag description tooltip upon leaving hover
@@ -538,7 +501,7 @@ function highlighting(user, baseUrl) {
             // If no value tags for this highlight, display helper text
             if (vts.length === 0) {
               var empty_message = $("<div>", {"class": "empty-valuetags"})
-              empty_message.append("No values :(");
+              empty_message.append("No tags to show :(");
               $('.annote-text').append(empty_message);
             }
 
