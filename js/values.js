@@ -7,10 +7,11 @@ var url = window.location.href;
 function highlighting(user, baseUrl) {
   if (!run_once) {
     $(document).ready(function() {
-      $("body").children().each(function () {
-        $(this).html($(this).html().replace(/&nbsp;/gi,''));
-      });
-
+      // $("body").children().each(function () {
+      //   // console.log($(this).html().replace(/&nbsp;/gi,' '));
+      //   $(this).html($(this).html().replace(/&nbsp;/gi,' '));
+      // });
+      
       run_once = true;
       var vote_counts = {}; // Keeps track of client-side vote changes
       highlighting_enabled = user.highlighting; // Pulls user state from extension
@@ -298,6 +299,10 @@ function highlighting(user, baseUrl) {
           if (window.getSelection) {
             var selection = window.getSelection();
             var selection_text = selection.toString();
+
+            var beginOffset = selection.anchorOffset;
+            var endOffset = selection.focusOffset;
+
             // Ensure empty string not selected
             if (!selection_text 
               || selection_text.charCodeAt(0) === 10
@@ -306,7 +311,8 @@ function highlighting(user, baseUrl) {
               return;
             } 
 
-            parent = selection.anchorNode.parentElement
+            var parentNode = selection.anchorNode;
+            parent = parentNode.parentElement;
             text = parent.innerHTML;
 
             // Ensure not trying to highlight on annotation
@@ -331,7 +337,19 @@ function highlighting(user, baseUrl) {
 
           // Add temporary highlighting class to identified object
           $(parent).wrapInner("<div class='temp-highlight'></div>");
-          $('.temp-highlight').select();
+
+          var range = document.createRange();
+
+          if (beginOffset < endOffset) {
+            range.setStart(parentNode, beginOffset);
+            range.setEnd(parentNode, endOffset);
+          } else {
+            range.setStart(parentNode, endOffset);
+            range.setEnd(parentNode, beginOffset);
+          }
+          var selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
 
           current_temp_highlight = parent;
           current_temp_highlight_content = text;
@@ -544,7 +562,7 @@ function highlighting(user, baseUrl) {
               });
 
               var vote_count = 0
-              var extra_votes;
+              var extra_votes = null;
 
               // Add voter icons
               for (var vote in tag_attrs.votes) {
@@ -659,11 +677,12 @@ function highlighting(user, baseUrl) {
 
               if ($(".extra-votes-count[name=" + tagName + "]").is(":visible")) {
                 var num_votes = parseInt($(".extra-votes-count").attr("votes"));
+                console.log(num_votes);
 
-                if (!$(".annote-voters span:nth-child(2)").hasClass("extra-votes-count")) {
-                  $(".annote-voters span:nth-child(2)").hide(function() { $(this).remove(); });
-                  $(".extra-votes-count").html('<span class="votes-byuser extra-votes-count" name="' + tagName + '" votes=' + (num_votes + 1).toString() + ' id="+' + (num_votes - 2).toString() + ' more"><div class="votes-icon"><span class="plus_symbol"> +' + (num_votes + 1).toString() + '</span></div></span>');
-                  $(".extra-votes-count").attr("votes", (num_votes + 1).toString());
+                if (!$(".annote-voters#" + tagName + " .extra-votes-count").hasClass("extra-votes-count")) {
+                  $(".annote-voters#" + tagName + " span:nth-child(2)").hide(function() { $(this).remove(); });
+                  $(".extra-votes-count[name=" + tagName + "]").html('<div class="votes-icon"><span class="plus_symbol"> +' + (num_votes + 1).toString() + '</span></div>');
+                  $(".extra-votes-count[name=" + tagName + "]").attr("votes", (num_votes + 1).toString());
                 }
               }
 
@@ -696,6 +715,18 @@ function highlighting(user, baseUrl) {
                 $(this).removeClass("valuetag_rmvote").addClass("valuetag_vote");
                 $(".annote-votecount#" + tagName).html(vote_counts[tagName]);
                 $(".annote-votebutton#" + tagName).html(getVoteButton(tagName, false, highlight));
+                console.log($(".votes-byuser#" + user.username + "[name=" + tagName + "]"));
+                if (!$(".votes-byuser#" + user.username + "[name=" + tagName + "]").is(":visible")) {
+                  var extra_votes_count = parseInt($(".extra-votes-count[name=" + tagName + "]").attr("votes"));
+
+                  if (extra_votes_count > 1) {
+                    $(".extra-votes-count[name=" + tagName + "]").attr("votes", (extra_votes_count - 1).toString());
+                    $(".extra-votes-count[name=" + tagName + "]").attr("id", "+" + (extra_votes_count - 1).toString() + " more");
+                    $(".extra-votes-count[name=" + tagName + "]").html('<div class="votes-icon"><span class="plus_symbol"> +' + (extra_votes_count - 1).toString() + '</span></div>');
+                  } else {
+                    $(".extra-votes-count[name=" + tagName + "]").hide(function() { $(this).remove(); });
+                  }
+                }
                 $(".votes-byuser#" + user.username + "[name=" + tagName + "]").hide(function() { $(this).remove(); });
               }
             }
