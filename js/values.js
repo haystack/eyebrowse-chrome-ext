@@ -6,12 +6,7 @@ var url = window.location.href;
 
 function highlighting(user, baseUrl) {
   if (!run_once) {
-    $(document).ready(function() {
-      // $("body").children().each(function () {
-      //   // console.log($(this).html().replace(/&nbsp;/gi,' '));
-      //   $(this).html($(this).html().replace(/&nbsp;/gi,' '));
-      // });
-      
+    $(document).ready(function() {      
       run_once = true;
       var vote_counts = {}; // Keeps track of client-side vote changes
       highlighting_enabled = user.highlighting; // Pulls user state from extension
@@ -433,7 +428,7 @@ function highlighting(user, baseUrl) {
           "url": url,
           "tags": JSON.stringify(tags_with_highlight),
           "csrfmiddlewaretoken": user.csrf,
-          "highlight": encodeURIComponent(text),
+          "highlight": encode_highlight(text),
         }).done(function(res) {
           if (res.success) {
             console.log("Added new highlight!");
@@ -441,13 +436,13 @@ function highlighting(user, baseUrl) {
               if (val) {
                 $.post(baseUrl + "/tags/vote/add", {
                   "valuetag": tag,
-                  "highlight": encodeURIComponent(text),
+                  "highlight": encode_highlight(text),
                   "url": url,
                   "csrfmiddlewaretoken": user.csrf,
                 }).done(function(res) {
                   console.log("Added vote in highlight creation!");
                   setTimeout(function() {
-                    $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr("highlight", text);
+                    $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr("highlight", remove_nbsp(text));
                     // removeTemporaryHighlight();
                     current_temp_highlight = null;
                     current_temp_highlight_content = null;
@@ -519,12 +514,12 @@ function highlighting(user, baseUrl) {
 
       function makeAnnotationBox(obj, e) {
         if (highlighting_enabled) {
-          var highlight = obj[0].innerHTML;
+          var highlight = $(obj).attr("highlight");
           $('.annote-text').animate({"height": "auto"});
         
           // Get tag information for this highlight
           $.get(baseUrl + "/tags/tags/highlight", {
-            "highlight": encodeURIComponent(highlight),
+            "highlight": encode_highlight(highlight),
             "url": url,
           }).done(function(res) {
             vote_counts = {}
@@ -662,7 +657,7 @@ function highlighting(user, baseUrl) {
 
           $.post(baseUrl + "/tags/vote/add", {
             "valuetag": tagName,
-            "highlight": encodeURIComponent(highlight),
+            "highlight": encode_highlight(highlight),
             "csrfmiddlewaretoken": user.csrf,
             "url": url,
           }).done(function(res) {
@@ -704,7 +699,7 @@ function highlighting(user, baseUrl) {
             type: "POST",
             data: {
               "valuetag": tagName,
-              "highlight": encodeURIComponent(highlight),
+              "highlight": encode_highlight(highlight),
               "url": url,
               "csrfmiddlewaretoken": user.csrf,
             }, 
@@ -747,23 +742,35 @@ function getHighlights(url) {
     "url": url,
   }).done(function(res) {
     if (res.success) {
-      if (!res.highlights.length) {
-        console.log("No highlights to display");
-      }
-
       for (var h in res.highlights) {
-        var hl = decodeURIComponent(h);
+        var hl = decode_highlight(h);
         var entire_highlight_present = true;
         var html = $.parseHTML(hl);
-        var base = $('*:contains("' + html[0].textContent + '"):last');
 
-        for (var i in html.slice(1, html.length)) {
-          if (!base.has(html[i])) {
-            entire_highlight_present = false;
-          }
-        }
+        var all_eligible = $.merge($("p"), $("div"));
+        var regex = /&nbsp;/gi; // expression here
+        var last = null;
 
-        if (entire_highlight_present) {
+        if ($("body").html().indexOf(hl) === -1) {
+          all_eligible.filter(function () {
+            if (/&nbsp;/gi.test($(this).html())) {
+              if ($(this).html().replace(/&nbsp;/gi,'').indexOf(hl) > -1) {
+                if (last === null || $(this).children().length < last.children().length) {
+                  last = $(this);
+                }
+              }
+            }
+          });
+
+          last.wrapInner("<div class='highlight-annote' highlight='" + hl + "'></div>");
+          $(".highlight-annote[highlight='"+hl+"']").css({
+            "background-color": muteColor(res.highlights[h][1]),
+            "display": "inline",
+            "padding": "0px 5px",
+          });
+        } else {
+          var base = $('*:contains("' + html[0].textContent + '"):last');
+
           base.wrapInner("<div class='highlight-annote' highlight='" + hl + "'></div>");
           $(".highlight-annote[highlight='"+hl+"']").css({
             "background-color": muteColor(res.highlights[h][1]),
@@ -805,6 +812,18 @@ function disable_highlighting() {
       "background-color": "#fff",
     });
   });
+}
+
+function encode_highlight(highlight) {
+  return encodeURIComponent(highlight.replace(/&nbsp;/gi,''));
+}
+
+function decode_highlight(highlight) {
+  return decodeURIComponent(highlight).replace(/&nbsp;/gi,'');
+}
+
+function remove_nbsp(text) {
+  return text.replace(/&nbsp;/gi,'');
 }
 
 function reenable_highlighting() {
