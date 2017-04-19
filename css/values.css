@@ -115,7 +115,6 @@
 
 .annote-vote {
   display: inline-block;
-  margin-left: 8px;
 }
 
 .annote-valuetag-desc {
@@ -135,6 +134,7 @@
 
 .annote-votebutton {
   display: inline-block;
+  vertical-align: middle;
 }
 
 .annote-valuetag-desc {
@@ -288,6 +288,14 @@
 
 .highlight-add-custom-tag-tags {
   display: none;
+}
+
+.existing {
+  margin-top: 10px;
+}
+
+.vertical-space {
+  margin-bottom: 15px;
 }
 /*
 #add-highlight-button.changed::after {

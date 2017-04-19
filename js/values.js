@@ -81,7 +81,7 @@ function highlighting(user, baseUrl) {
                   + item 
                   + "' name='" 
                   + item 
-                  + "' class='valuetag_vote_btn fa fa-thumbs-up fa-lg " 
+                  + "' class='valuetag_vote_btn fa fa-caret-up fa-2x " 
                   + vote_class 
                   + "' highlight='"
                   + highlight
@@ -337,12 +337,18 @@ function highlighting(user, baseUrl) {
       // ***
 
       $("body").on("click", ".highlight-add-custom-tag", function() {
+        var less_message = "- Show less tags";
+        var more_message = "+ Show more tags"
+        if ($(this).hasClass('existing')) {
+          less_message = "- Hide additional tags";
+          more_message = "+ Add additional tags";
+        }
         if ($('.highlight-add-custom-tag-tags').attr("tag-status") === "less") {
           $('.highlight-add-custom-tag-tags').attr("tag-status", "more");
-          $('.highlight-add-custom-tag').html("+ Show more tags");
+          $('.highlight-add-custom-tag').html(more_message);
         } else {
           $('.highlight-add-custom-tag-tags').attr("tag-status", "less");
-          $('.highlight-add-custom-tag').html("- Show less tags");
+          $('.highlight-add-custom-tag').html(less_message);
         }
         
         $('.highlight-add-custom-tag-tags').animate({
@@ -550,6 +556,45 @@ function highlighting(user, baseUrl) {
               annote_text_wrapper.append(annote_valuetag_desc);
               $('.annote-text').append(annote_text_wrapper);
             }  
+
+            var add_tag_existing = $("<div>", {"class": "highlight-add-custom-tag existing"});
+            var add_tag_existing_tags = $("<div>", {"class": "highlight-add-custom-tag-tags"});
+            var vertical_space = $("<div>", {"class": "vertical-space"});
+            add_tag_existing.html("+ Add additional tags");
+
+            console.log(vts);
+            for (var t in all_tags) {
+              var already_exists = false;
+              for (var item in vts) {
+                console.log(vts[item]);
+                console.log(t);
+                if (t === vts[item].name) {
+                  already_exists = true;
+                }
+              }
+
+              if (!already_exists) {
+                var add_valuetag_tag = $("<div>", {
+                  "class": "add-valuetag-tag deselected",
+                  "name": t,
+                  "bgColor": all_tags[t.toLowerCase()].color
+                });
+
+                add_valuetag_tag.html(t);
+                add_tag_existing_tags.append(add_valuetag_tag);
+              }
+            }
+
+            if (add_tag_existing_tags.children().length > 0) {
+              var add_tag_existing_submit = $("<div>", {"class": "highlight-add-valuetag-submit"});
+              add_tag_existing_submit.html("Save");
+            }
+
+            text = $(e.target).attr("highlight");
+            $('.annote-text').append(add_tag_existing);
+            add_tag_existing_tags.append(add_tag_existing_submit);
+            $('.annote-text').append(add_tag_existing_tags);
+            $('.annote-text').append(vertical_space);
           });
 
           // Get position to display annotation box in
