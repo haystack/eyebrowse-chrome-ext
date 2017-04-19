@@ -495,13 +495,13 @@ function highlighting(user, baseUrl) {
             // Add value tags to DOM
             for (var item in vts) {
               var tag_attrs = vts[item];
-              var annote_text_wrapper = $("<div>", {"class": "annote-text-wrapper", "id": item});
-              var annote_valuetag = $("<div>", {"class": "annote-valuetag", "id": item});
-              var annote_vote = $("<div>", {"class": "annote-vote", "id": item});
-              var annote_voters = $("<div>", {"class": "annote-voters", "id": item});
-              var annote_valuetag_desc = $("<div>", {"class": "annote-valuetag-desc", "id": item});
+              var annote_text_wrapper = $("<div>", {"class": "annote-text-wrapper", "id": tag_attrs.name});
+              var annote_valuetag = $("<div>", {"class": "annote-valuetag", "id": tag_attrs.name});
+              var annote_vote = $("<div>", {"class": "annote-vote", "id": tag_attrs.name});
+              var annote_voters = $("<div>", {"class": "annote-voters", "id": tag_attrs.name});
+              var annote_valuetag_desc = $("<div>", {"class": "annote-valuetag-desc", "id": tag_attrs.name});
 
-              annote_valuetag.html(item);
+              annote_valuetag.html(tag_attrs.name);
               annote_valuetag.css({
                 'background-color': tag_attrs.color,
               });
@@ -514,12 +514,12 @@ function highlighting(user, baseUrl) {
                 vote_count += 1;
 
                 if (vote_count > 2) {
-                  extra_votes = '<span class="votes-byuser extra-votes-count" name="' + item + '" votes=' + (vote_count - 2).toString() + ' id="+' + (vote_count - 2).toString() + ' more"><div class="votes-icon"><span class="plus_symbol"> +' + (vote_count - 2).toString() + '</span></div></span>'
+                  extra_votes = '<span class="votes-byuser extra-votes-count" name="' + tag_attrs.name + '" votes=' + (vote_count - 2).toString() + ' id="+' + (vote_count - 2).toString() + ' more"><div class="votes-icon"><span class="plus_symbol"> +' + (vote_count - 2).toString() + '</span></div></span>'
                 } else {
                   var pic_url = tag_attrs.votes[vote].pic;
 
                   annote_voters.append(
-                    '<span class="votes-byuser" name="' + item + '" id="' + tag_attrs.votes[vote].name + '"><img class="votes-icon" src=' + pic_url + '></span>'
+                    '<span class="votes-byuser" name="' + tag_attrs.name + '" id="' + tag_attrs.votes[vote].name + '"><img class="votes-icon" src=' + pic_url + '></span>'
                   );
                 }
               }
@@ -529,19 +529,19 @@ function highlighting(user, baseUrl) {
               }
 
               // Add vote button
-              vote_counts[item] = tag_attrs.votes.length;
-              var vote_button = getVoteButton(item, tag_attrs.user_voted, highlight);
+              vote_counts[tag_attrs.name] = tag_attrs.votes.length;
+              var vote_button = getVoteButton(tag_attrs.name, tag_attrs.user_voted, highlight);
 
               annote_vote.html(
-                "<div class='annote-votebutton' id='" + item + "'>"
+                "<div class='annote-votebutton' id='" + tag_attrs.name + "'>"
                 + vote_button
                 + "</div>"
-                + "<div class='annote-votecount' id='" + item + "'>" 
-                + vote_counts[item] 
+                + "<div class='annote-votecount' id='" + tag_attrs.name + "'>" 
+                + vote_counts[tag_attrs.name] 
                 + "</div>");
 
               annote_valuetag_desc.html(formatDescription(tag_attrs.description));
-              var annote_left_box = $("<div>", {"class": "annote-left", "id": item});
+              var annote_left_box = $("<div>", {"class": "annote-left", "id": tag_attrs.name});
               annote_left_box.append(annote_valuetag);
               annote_left_box.append(annote_vote);
 
