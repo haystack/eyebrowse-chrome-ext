@@ -15,10 +15,6 @@ function highlighting(user, baseUrl) {
       // Global tags
       var tags_to_save = {};
       var generated_tags = {}; 
-      
-      // Keep track of temporarily highlighted page objects that need to be reset
-      var current_temp_highlight;
-      var current_temp_highlight_content;
 
       var text = "";
       var parent;
@@ -95,10 +91,8 @@ function highlighting(user, baseUrl) {
 
       // Helper function to remove temporary highlighting from front end
       var removeTemporaryHighlight = function() {
-        if (current_temp_highlight) {
-          $(current_temp_highlight).html(current_temp_highlight_content);
-          current_temp_highlight = null;
-          current_temp_highlight_content = null;
+        if ($('.temp-highlight').is(':visible')) {
+          $('.temp-highlight').contents().unwrap();
         }
       }
 
@@ -305,9 +299,6 @@ function highlighting(user, baseUrl) {
           selection.removeAllRanges();
           selection.addRange(range);
 
-          current_temp_highlight = parent;
-          current_temp_highlight_content = text;
-
           var parentTop = $(parent).offset().top - $(window).scrollTop() - 48;
           var parentLeft = $(parent).offset().left - $(window).scrollLeft() + $(parent).width() / 2;
 
@@ -403,8 +394,6 @@ function highlighting(user, baseUrl) {
                   setTimeout(function() {
                     $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr("highlight", remove_nbsp(text));
                     // removeTemporaryHighlight();
-                    current_temp_highlight = null;
-                    current_temp_highlight_content = null;
                     $('.annote-text').animate({
                       height: '0px',
                     });
