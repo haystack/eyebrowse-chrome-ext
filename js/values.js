@@ -58,8 +58,8 @@ function highlighting(user, baseUrl) {
         }).done(function(res) {
           generated_tags = res.tags;
 
-          $.get(baseUrl + "/tags/base_tags").done(function(res) {
-            all_tags = res.base_tags;
+          $.get(baseUrl + "/tags/common_tags").done(function(res) {
+            all_tags = res.common_tags;
           });
         });
       }();
