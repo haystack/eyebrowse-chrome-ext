@@ -156,3 +156,18 @@ function getTemplate(templateId, templateArgs, templatePage, templateCache) {
     var template = _unescape(templateCache[templateId].html());
     return $(_.template(template, templateArgs));
 }
+
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+      r: Math.min(parseInt(result[1], 16) + 35, 255),
+      g: Math.min(parseInt(result[2], 16) + 35, 255),
+      b: Math.min(parseInt(result[3], 16) + 35, 255)
+  } : null;
+}
+
+function muteColor(colorString) {
+  var rgb = hexToRgb(colorString);
+  var rgbString = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
+  return rgbString;
+}

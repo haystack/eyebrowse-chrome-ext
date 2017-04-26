@@ -84,6 +84,7 @@ var User = Backbone.Model.extend({
         "resourceURI": "/api/v1/user/",
         "ignoreLoginPrompt": false,
         "csrf": "",
+        "highlighting": true,
     },
 
     initialize: function() {
@@ -124,6 +125,10 @@ var User = Backbone.Model.extend({
 
     getResourceURI: function() {
         return this.get("resourceURI");
+    },
+
+    getHighlighting: function() {
+        return this.get("highlighting");
     },
 
     attemptSetCSRF: function(data) {
@@ -235,6 +240,12 @@ var User = Backbone.Model.extend({
     setNags: function(nags) {
         this.set({
             "nags": nags
+        });
+    },
+
+    setHighlighting: function(bool) {
+        this.set({
+            "highlighting": bool
         });
     },
 
