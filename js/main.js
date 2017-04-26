@@ -405,6 +405,8 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         bubbleInfo(tabId, url);
     }, 3000);
 
+    highlight();
+
     if (user.getIncognito() === false) {
 
         // close previous activeItem
@@ -470,6 +472,25 @@ function bubbleInfo(tabId, url) {
             });
         }
     });
+}
+
+function highlight() {
+    chrome.tabs.getSelected(null, function(tab) {
+        var id = tab.id;
+
+        chrome.tabs.query({
+            active: true,
+            currentWindow: true
+        }, function(tabArray) {
+            if (isActiveTab(tabArray, id)) {
+                chrome.tabs.sendMessage(id, {
+                    "type": "highlight",
+                    "user": user,
+                    "baseUrl": baseUrl,
+                });
+            }
+        });
+    }); 
 }
 
 /*
