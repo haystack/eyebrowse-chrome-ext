@@ -608,7 +608,7 @@ function highlighting(user, baseUrl) {
       // Pop up annotation box on hover with delay
       $('body').on('mouseenter', '.highlight-annote', function(e) {
         var obj = $(this);
-        var annotationDelay = setTimeout(function() {
+        annotationDelay = setTimeout(function() {
           makeAnnotationBox(obj, e);
         }, 700);
       });
