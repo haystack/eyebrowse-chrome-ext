@@ -135,8 +135,9 @@ var User = Backbone.Model.extend({
 
     attemptLogin: function(callback) {
         if (callback !== undefined) {
+            var this_user = this;
             $.get(getLoginUrl(), function(data) {
-                this.attemptSetCSRF(data);
+                this_user.attemptSetCSRF(data);
                 callback(parseUsername(data));
             });
         } else {
@@ -818,7 +819,7 @@ function getLocalStorageUser() {
         user = new User();
 
         $.get(getLoginUrl(), function(data) {
-            var csrf = getCSRFToken(data);
+            var csrf = parseCSRFToken(data);
             if (csrf) {
                 user.setCSRF(csrf);
                 localStorage.user = JSON.stringify(user);
