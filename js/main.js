@@ -84,6 +84,7 @@ var User = Backbone.Model.extend({
         "resourceURI": "/api/v1/user/",
         "ignoreLoginPrompt": false,
         "csrf": "",
+        "highlighting": true,
     },
 
     initialize: function() {
@@ -126,6 +127,10 @@ var User = Backbone.Model.extend({
         return this.get("resourceURI");
     },
 
+    getHighlighting: function() {
+        return this.get("highlighting");
+    },
+
     attemptSetCSRF: function(data) {
         var csrf = parseCSRFToken(data);
         if (csrf !== null) {
@@ -135,8 +140,9 @@ var User = Backbone.Model.extend({
 
     attemptLogin: function(callback) {
         if (callback !== undefined) {
+            var this_user = this;
             $.get(getLoginUrl(), function(data) {
-                this.attemptSetCSRF(data);
+                this_user.attemptSetCSRF(data);
                 callback(parseUsername(data));
             });
         } else {
@@ -237,6 +243,12 @@ var User = Backbone.Model.extend({
         });
     },
 
+    setHighlighting: function(bool) {
+        this.set({
+            "highlighting": bool
+        });
+    },
+
     // check if a url is in the blacklist
     inBlackList: function(url) {
         return this.inSet("blacklist", url);
@@ -272,7 +284,7 @@ var User = Backbone.Model.extend({
         if (url !== "") {
             var nags = this.getNags();
             if (url in nags) {
-                nags[url] = Math.max(Math.min(nags[url].factor * rate, 16), 1);
+                nags[url].factor = Math.max(Math.min(nags[url].factor * rate, 16), 1);
             } else {
                 nags[url] = this.createNagSite();
             }
@@ -308,7 +320,7 @@ var User = Backbone.Model.extend({
                     nags.visits = 0;
                     nags.lastNag = now;
                 } else {
-                    site.vists++;
+                    site.visits++;
                     nags.visits++;
                 }
             } else {
@@ -393,14 +405,19 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         bubbleInfo(tabId, url);
     }, 3000);
 
+    highlight();
+
     if (user.getIncognito() === false) {
 
         // close previous activeItem
         if (activeItem !== undefined) {
-            if (activeItem.url !== url && activeItem.tabId !== tabId) {
+            if (activeItem.url !== url || activeItem.tabId !== tabId) {
                 closeItem(activeItem.tabId, activeItem.url, "blur", timeCheck.time);
                 activeItem = undefined;
                 updateBadge("");
+            } else if (activeItem.url === url) {
+                // page was refreshed
+                return;
             }
         }
         if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(url)) {
@@ -455,6 +472,25 @@ function bubbleInfo(tabId, url) {
             });
         }
     });
+}
+
+function highlight() {
+    chrome.tabs.getSelected(null, function(tab) {
+        var id = tab.id;
+
+        chrome.tabs.query({
+            active: true,
+            currentWindow: true
+        }, function(tabArray) {
+            if (isActiveTab(tabArray, id)) {
+                chrome.tabs.sendMessage(id, {
+                    "type": "highlight",
+                    "user": user,
+                    "baseUrl": baseUrl,
+                });
+            }
+        });
+    }); 
 }
 
 /*
@@ -815,7 +851,7 @@ function getLocalStorageUser() {
         user = new User();
 
         $.get(getLoginUrl(), function(data) {
-            var csrf = getCSRFToken(data);
+            var csrf = parseCSRFToken(data);
             if (csrf) {
                 user.setCSRF(csrf);
                 localStorage.user = JSON.stringify(user);

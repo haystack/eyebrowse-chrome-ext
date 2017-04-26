@@ -1,6 +1,6 @@
 "use strict";
 
-var user, baseUrl, logged_in, navView, loginView, homeView;
+var user, baseUrl, logged_in, navView, loginView, homeView, valueView, vdView, vcView, htView;
 
 ////// MODELS //////////
 var ChatUser = Backbone.Model.extend({
@@ -336,6 +336,182 @@ var NavView = Backbone.View.extend({
         }
         $("nav-tab").removeClass("active");
     },
+});
+
+var ValueView = Backbone.View.extend({
+    "el": $(".content-container"),
+
+    initialize: function() {
+        htView = new HighlightToggleView();
+        this.render();
+    },
+
+    render: function() {
+        $(".content-container").empty();
+        var loggedIn = user.isLoggedIn();
+        var container = $(this.el);
+
+        chrome.tabs.query({
+            currentWindow: true,
+            active: true
+        }, function(tabs) {
+            var url = tabs[0].url;
+
+            var page_url = sprintf("%s/tags/page", baseUrl);
+            $.get(page_url, {
+                "url": url,
+            }).done(function(res) {
+                var page_info = res.page;
+                var name = page_info ? page_info.domain.name : "";
+
+                var value_title_template = _.template($("#value_title_template").html(), {
+                    page: {
+                        "title": tabs[0].title,
+                        "favicon": tabs[0].favIconUrl,
+                        "domain": {
+                            "name": name,
+                        },
+                    },
+                });
+                container.append(value_title_template);
+
+                vdView = new ValueDisplayView(url, loggedIn);
+                vcView = new ValueCompView(url, loggedIn);
+            });
+        });
+    }
+});
+
+var ValueDisplayView = Backbone.View.extend({
+    "el": $(".content-container"),
+    "url": "",
+    "loggedIn": false,
+
+    initialize: function(url, loggedIn) {
+        this.url = url;
+        this.loggedIn = loggedIn;
+        this.render(url, loggedIn);
+    },
+
+    render: function() {
+        var container = $(this.el);
+
+        if (!user.isLoggedIn()) {
+            return;
+        }
+
+        var tags_by_page_url = sprintf("%s/tags/tags/page", baseUrl);
+        $.get(tags_by_page_url, {
+          "url": this.url,
+        }).done(function(res) {
+            console.log(res);
+            var valueTags = res.tags;
+            var subtitle = '';
+
+            if (Object.keys(valueTags).length > 0) {
+                subtitle = "This article is framed under the following tags:"; 
+            } else {
+                subtitle = "No tags to display :(";
+            }
+
+            var value_display_template = _.template($("#value_display_template").html(), {
+                subtitle_text: subtitle,
+            });
+            $(".value_content").html(value_display_template);
+
+            for (var val in valueTags) {
+                var tag_info = valueTags[val]
+                tag_info.name = tag_info.name[0].toUpperCase() + tag_info.name.substring(1, tag_info.name.length)
+
+                var template = _.template($("#value_template").html(), {
+                    loggedIn: this.loggedIn,
+                    value: tag_info,
+                    color: muteColor(tag_info.color),
+                });
+                $(".value_boxes").append(template);
+            }
+
+            var htView = new HighlightToggleView();
+        });
+    }
+});
+
+var ValueCompView = Backbone.View.extend({
+    "el": $(".content-container"),
+    "url": "",
+
+    initialize: function(url, loggedIn) {
+        this.url = url;
+        this.render(url, loggedIn);
+    },
+
+    render: function() {
+        var container = $(this.el);
+
+        if (!user.isLoggedIn()) {
+            return;
+        }
+
+        var value_comp_template = _.template($("#value_comp_template").html());
+        $(".value_content").html(value_comp_template);
+        $(".value_comps").html('<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>');
+
+        var related_stories_url = sprintf("%s/tags/page/related_stories", baseUrl);
+        $.get(related_stories_url, {
+          "url": this.url,
+        }).done(function(res) {
+          var related_stories = res.data;
+          $(".value_comps").html("");
+
+          $.each(related_stories, function(id, story) {
+            var summary = story.summary;
+
+            if (summary.length > 150) {
+                summary = summary.substring(0, 150);
+                summary += "..."
+            } 
+
+            var initialize_page_url = sprintf("%s/tags/initialize_page", baseUrl);
+            $.post(initialize_page_url, {
+                "url": story.link,
+                "domain_name": story.domain,
+                "title": story.title,
+                "add_usertags": "false",
+                "csrfmiddlewaretoken": user.csrf,
+            }).done(function(res) {
+                var valuetags = res.tags
+                var template = _.template($("#relatedstories_template").html(), {
+                    id: id,
+                    link: story.link,
+                    logo: story.logo,
+                    title: story.title,
+                    source: story.source,
+                    summary: summary,
+                    value_tags: valuetags,
+                });
+                $(".value_comps").append(template);
+            });
+          });
+        });
+    }
+});
+
+var HighlightToggleView = Backbone.View.extend({
+    initialize: function() {
+        this.render();
+    },
+
+    render: function() {
+        var state_text = user.getHighlighting() ? "Turn off " : "Turn on ";
+        var class_name = user.getHighlighting() ? "turn_off" : "turn_on";
+
+        var highlight_template = _.template($("#highlight_toggle_template").html(), {
+            "state": state_text,
+            "class_name": class_name,
+        });
+        
+        $(".value_highlight_btn").html(highlight_template);
+    }
 });
 
 var HomeView = Backbone.View.extend({
@@ -888,6 +1064,7 @@ $(document).ready(function() {
     });
 
     if (logged_in) {
+        valueView = new ValueView();
         homeView = new HomeView();
     }
     $("#home_tab").click(function() {
@@ -898,5 +1075,46 @@ $(document).ready(function() {
             homeView.render();
         }
     });
+
+    $("#values_tab").click(function() {
+        if (valueView !== undefined) {
+            valueView.render();
+            $("#values_tab").addClass("active");
+            $("#home_tab").removeClass("active");
+        }
+    });
+
+    $("body").on("click", ".value_tab_nav li", function() {
+        if ($(this).hasClass("value_comp")) {
+            if (vcView !== undefined) {
+                vcView.render();
+            }
+        } else if ($(this).hasClass("value_framing")) {
+            if (vdView != undefined) {
+                vdView.render();
+            }
+        }
+    });
+
+    $("body").on("click", ".highlighting_toggle", function() {
+        var state = !user.getHighlighting();
+        user.setHighlighting(state);
+
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            "type": "toggleHighlight",
+            "user": user,
+          });
+        });
+
+        htView.render();
+    });
+
+    $("body").on("click", ".story_container", function() {
+        var link = $(this).attr("link");
+
+        chrome.tabs.create({ url: link });
+    });
+
     $("a").click(clickHandle);
 });
