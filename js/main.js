@@ -272,7 +272,7 @@ var User = Backbone.Model.extend({
         if (url !== "") {
             var nags = this.getNags();
             if (url in nags) {
-                nags[url] = Math.max(Math.min(nags[url].factor * rate, 16), 1);
+                nags[url].factor = Math.max(Math.min(nags[url].factor * rate, 16), 1);
             } else {
                 nags[url] = this.createNagSite();
             }
@@ -308,7 +308,7 @@ var User = Backbone.Model.extend({
                     nags.visits = 0;
                     nags.lastNag = now;
                 } else {
-                    site.vists++;
+                    site.visits++;
                     nags.visits++;
                 }
             } else {
@@ -397,10 +397,13 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
 
         // close previous activeItem
         if (activeItem !== undefined) {
-            if (activeItem.url !== url && activeItem.tabId !== tabId) {
+            if (activeItem.url !== url || activeItem.tabId !== tabId) {
                 closeItem(activeItem.tabId, activeItem.url, "blur", timeCheck.time);
                 activeItem = undefined;
                 updateBadge("");
+            } else if (activeItem.url === url) {
+                // page was refreshed
+                return;
             }
         }
         if (!user.inWhitelist(url) && !user.inBlackList(url) && user.shouldNag(url)) {
