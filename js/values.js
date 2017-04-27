@@ -250,7 +250,8 @@ function highlighting(user, baseUrl) {
             // Ensure empty string not selected
             if (!selection_text 
               || selection_text.charCodeAt(0) === 10
-              || selection_text.charCodeAt(0) === 32) {
+              || selection_text.charCodeAt(0) === 32
+              || selection.isCollapsed) {
               removeAddHighlightButton();
               return;
             } 
@@ -305,6 +306,7 @@ function highlighting(user, baseUrl) {
         if (typeof window.getSelection != "undefined") {
           var sel = window.getSelection();
           var punctuation = [".", "!", "?", ">", "<"];
+          console.log(sel);
 
           if (sel.anchorOffset < sel.focusOffset) {
             var begin = sel.anchorOffset;
