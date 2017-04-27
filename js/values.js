@@ -17,7 +17,6 @@ function highlighting(user, baseUrl) {
       var generated_tags = {}; 
 
       var text = "";
-      var parent;
 
       // Position of popup boxes
       var annote_position = {
@@ -248,9 +247,6 @@ function highlighting(user, baseUrl) {
             var selection = window.getSelection();
             var selection_text = selection.toString();
 
-            var beginOffset = selection.anchorOffset;
-            var endOffset = selection.focusOffset;
-
             // Ensure empty string not selected
             if (!selection_text 
               || selection_text.charCodeAt(0) === 10
@@ -259,17 +255,13 @@ function highlighting(user, baseUrl) {
               return;
             } 
 
-            var parentNode = selection.anchorNode;
-            parent = parentNode.parentElement;
-            text = parent.innerHTML;
-
             // Ensure not trying to highlight on annotation
-            if ($.contains($('.annotation').get(0), parent)) {
+            if ($.contains($('.annotation').get(0), e.target)) {
               return;
             }
 
             // Ensure only trying to highlight in a text block
-            if (!$(parent).is("p") && !$(parent).is("div")) {
+            if (!$(e.target).is("p") && !$(e.target).is("div")) {
               removeAddHighlightButton();
               return;
             }
@@ -278,29 +270,15 @@ function highlighting(user, baseUrl) {
           } 
 
           // If already highlighted, don't do anything
-          if (parent.classList.contains('highlight-annote') || 
-            parent.classList.contains('temp-highlight')) {
+          if (e.target.classList.contains('highlight-annote') || 
+            e.target.classList.contains('temp-highlight')) {
             return;
           }
 
-          // Add temporary highlighting class to identified object
-          $(parent).wrapInner("<div class='temp-highlight'></div>");
+          getSentenceAndHighlight();
 
-          var range = document.createRange();
-
-          if (beginOffset < endOffset) {
-            range.setStart(parentNode, beginOffset);
-            range.setEnd(parentNode, endOffset);
-          } else {
-            range.setStart(parentNode, endOffset);
-            range.setEnd(parentNode, beginOffset);
-          }
-          var selection = window.getSelection();
-          selection.removeAllRanges();
-          selection.addRange(range);
-
-          var parentTop = $(parent).offset().top - $(window).scrollTop() - 48;
-          var parentLeft = $(parent).offset().left - $(window).scrollLeft() + $(parent).width() / 2;
+          var parentTop = $('.temp-highlight').offset().top - $(window).scrollTop() - 48;
+          var parentLeft = $('.temp-highlight').offset().left - $(window).scrollLeft() + $('.temp-highlight').width() / 2;
 
           if ($("#add-highlight-button").is(":visible")) {
             $("#add-highlight-button").animate({
@@ -313,19 +291,65 @@ function highlighting(user, baseUrl) {
               'top': parentTop,
             });
             $("#add-highlight-button").fadeIn("fast");
-
-            annote_position.left = parentLeft;
-            annote_position.top = parentTop;
-            annote_position.anchor_top = $(window).scrollTop();
-            annote_position.anchor_left = $(window).scrollLeft();
           }
+
+          annote_position.left = parentLeft;
+          annote_position.top = parentTop;
+          annote_position.anchor_top = $(window).scrollTop();
+          annote_position.anchor_left = $(window).scrollLeft();
         }
       });
 
+      function getSentenceAndHighlight() {
+        var html = "";
+        if (typeof window.getSelection != "undefined") {
+          var sel = window.getSelection();
+          var punctuation = [".", "!", "?", ">", "<"];
+
+          if (sel.anchorOffset < sel.focusOffset) {
+            var begin = sel.anchorOffset;
+            var end = sel.focusOffset;
+            var parentNode = sel.anchorNode;
+          } else {
+            var begin = sel.focusOffset;
+            var end = sel.anchorOffset;
+            var parentNode = sel.focusNode
+          }
+
+          var frag = parentNode.textContent;
+          var parent = parentNode.parentElement;
+
+          var newBegin, newEnd;
+
+          var last_non_whitespace_index = begin;
+          for (var i = begin; i >= 0; i--) {
+            if ($.inArray(frag[i], punctuation) !== -1) {
+              break;
+            }
+
+            if (/\S/.test(frag[i])) {
+              last_non_whitespace_index = i;
+            }
+          } 
+
+          for (var i = end; i < frag.length; i++) {
+            if ($.inArray(frag[i], punctuation) !== -1) {
+              newEnd = i + 1;
+              break;
+            }
+          }
+
+          var sentence = frag.substring(last_non_whitespace_index, newEnd);
+          text = sentence;
+          var newText = $(parent).html().replace(sentence, "<span class='temp-highlight'>" + sentence + "</span>");
+          $(parent).html(newText);
+        }
+      }
+
       // Show add highlight box on add highlight button click
       $("body").on("click", "#add-highlight-button", function(e) {
-        var parentTop = $(parent).offset().top - $(window).scrollTop() + $(parent).height() + 10;
-        var parentLeft = $(parent).offset().left - $(window).scrollLeft() + $(parent).width() / 2;
+        var parentTop = $('.temp-highlight').offset().top - $(window).scrollTop() + $('.temp-highlight').height() + 10;
+        var parentLeft = $('.temp-highlight').offset().left - $(window).scrollLeft() + $('.temp-highlight').width() / 2;
 
         removeAddHighlightButton();
         showAnnotationBox([parentLeft, parentTop]);
@@ -416,7 +440,6 @@ function highlighting(user, baseUrl) {
             });
           } else {
             console.log("Highlight already exists");
-            $(parent).html(text);
           }
           tags_to_save = {};
         });
@@ -756,23 +779,17 @@ function getHighlights(url) {
               }
             }
           });
-
-          last.wrapInner("<div class='highlight-annote' highlight='" + hl + "'></div>");
-          $(".highlight-annote[highlight='"+hl+"']").css({
-            "background-color": muteColor(res.highlights[h][1]),
-            "display": "inline",
-            "padding": "0px 5px",
-          });
+          last.html(last.html().replace(hl, "<div class='highlight-annote' highlight='" + hl + "'>"+hl+"</div>")); 
         } else {
           var base = $('*:contains("' + html[0].textContent + '"):last');
-
-          base.wrapInner("<div class='highlight-annote' highlight='" + hl + "'></div>");
-          $(".highlight-annote[highlight='"+hl+"']").css({
-            "background-color": muteColor(res.highlights[h][1]),
-            "display": "inline",
-            "padding": "0px 5px",
-          });
+          base.html(base.html().replace(hl, "<div class='highlight-annote' highlight='" + hl + "'>"+hl+"</div>"));
         }
+
+        $(".highlight-annote[highlight='"+hl+"']").css({
+          "background-color": muteColor(res.highlights[h][1]),
+          "display": "inline",
+          "padding": "0px 5px",
+        });
       }
     } else {
       console.log(res.errors['get_highlights']);
