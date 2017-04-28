@@ -97,10 +97,12 @@
 
 .valuetag_rmvote:hover {
   opacity: 0.60;
+  cursor: pointer;
 }
 
 .valuetag_vote:hover {
   opacity: 0.60;
+  cursor: pointer;
 }
 
 .valuetag_vote {
@@ -189,6 +191,7 @@
 .highlight-add-valuetag-submit:hover {
   background-color: #00cc89;
   color: #fff;
+  cursor: pointer;
 }
 
 .deselected {
@@ -199,11 +202,16 @@
 
 .deselected:hover {
   opacity: 1;
+  cursor: pointer;
 }
 
 .selected {
   opacity: 1;
   box-shadow: -1px 1px 2px #f9f9f9;
+}
+
+.selected:hover {
+  cursor: pointer;
 }
 
 #add-highlight-button {
@@ -243,6 +251,7 @@
 
 #add-highlight-button:hover {
   color: #878c94;
+  cursor: pointer;
 }
 
 .extra-votes-count {

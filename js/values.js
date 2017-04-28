@@ -306,7 +306,6 @@ function highlighting(user, baseUrl) {
         if (typeof window.getSelection != "undefined") {
           var sel = window.getSelection();
           var punctuation = [".", "!", "?", ">", "<"];
-          console.log(sel);
 
           if (sel.anchorOffset < sel.focusOffset) {
             var begin = sel.anchorOffset;
@@ -406,32 +405,37 @@ function highlighting(user, baseUrl) {
           return;
         }
 
+        var highlight_id = null;
+
+        if ($(this).attr("highlight_id")) {
+          highlight_id = $(this).attr("highlight_id");
+        }
+
         $.post(baseUrl + "/tags/highlight", {
           "url": url,
           "tags": JSON.stringify(tags_with_highlight),
           "csrfmiddlewaretoken": user.csrf,
           "highlight": encode_highlight(text),
+          "highlight_id": highlight_id,
         }).done(function(res) {
           if (res.success) {
-            console.log("Added new highlight!");
+            var hl_id = res.data.highlight_id;
             $.each(tags_to_save, function(tag, val){
               if (val) {
                 $.post(baseUrl + "/tags/vote/add", {
                   "valuetag": tag,
-                  "highlight": encode_highlight(text),
+                  "highlight": hl_id,
                   "url": url,
                   "csrfmiddlewaretoken": user.csrf,
                 }).done(function(res) {
-                  console.log("Added vote in highlight creation!");
                   setTimeout(function() {
-                    $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr("highlight", remove_nbsp(text));
+                    $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr("highlight", hl_id);
                     // removeTemporaryHighlight();
                     $('.annote-text').animate({
                       height: '0px',
                     });
                     $('.annote-header').html("Success - tags added!");
                     $('.annote-text').html("")
-                    console.log(tags_to_save);
 
                     setTimeout(function() {
                       $('.annotation').fadeOut('fast');
@@ -500,7 +504,7 @@ function highlighting(user, baseUrl) {
         
           // Get tag information for this highlight
           $.get(baseUrl + "/tags/tags/highlight", {
-            "highlight": encode_highlight(highlight),
+            "highlight": highlight,
             "url": url,
           }).done(function(res) {
             vote_counts = {}
@@ -587,12 +591,9 @@ function highlighting(user, baseUrl) {
             var vertical_space = $("<div>", {"class": "vertical-space"});
             add_tag_existing.html("+ Add additional tags");
 
-            console.log(vts);
             for (var t in all_tags) {
               var already_exists = false;
               for (var item in vts) {
-                console.log(vts[item]);
-                console.log(t);
                 if (t === vts[item].name) {
                   already_exists = true;
                 }
@@ -611,12 +612,15 @@ function highlighting(user, baseUrl) {
             }
 
             if (add_tag_existing_tags.children().length > 0) {
-              var add_tag_existing_submit = $("<div>", {"class": "highlight-add-valuetag-submit"});
+              var add_tag_existing_submit = $("<div>", {"class": "highlight-add-valuetag-submit", "highlight_id": highlight});
               add_tag_existing_submit.html("Save");
             }
 
+            var hl_error = $("<div>", {"class": "highlight-error"});
+
             text = $(e.target).attr("highlight");
             $('.annote-text').append(add_tag_existing);
+            add_tag_existing_tags.append(hl_error);
             add_tag_existing_tags.append(add_tag_existing_submit);
             $('.annote-text').append(add_tag_existing_tags);
             $('.annote-text').append(vertical_space);
@@ -673,7 +677,6 @@ function highlighting(user, baseUrl) {
 
         // Add vote
         if ($(this).hasClass("valuetag_vote")) {
-          console.log("Adding vote");
 
           $.post(baseUrl + "/tags/vote/add", {
             "valuetag": tagName,
@@ -682,17 +685,13 @@ function highlighting(user, baseUrl) {
             "url": url,
           }).done(function(res) {
             if (res.success) {
-              console.log("Added vote!");
               vote_counts[tagName] += 1;
               $(this).removeClass("valuetag_vote").addClass("valuetag_rmvote");
               $(".annote-votecount#" + tagName).html(vote_counts[tagName]);
               $(".annote-votebutton#" + tagName).html(getVoteButton(tagName, true, highlight));
 
-              console.log($(".extra-votes-count[name=" + tagName + "]"));
-
               if ($(".extra-votes-count[name=" + tagName + "]").is(":visible")) {
                 var num_votes = parseInt($(".extra-votes-count").attr("votes"));
-                console.log(num_votes);
 
                 if (!$(".annote-voters#" + tagName + " .extra-votes-count").hasClass("extra-votes-count")) {
                   $(".annote-voters#" + tagName + " span:nth-child(2)").hide(function() { $(this).remove(); });
@@ -712,8 +711,6 @@ function highlighting(user, baseUrl) {
             }
           });
         } else if ($(this).hasClass("valuetag_rmvote")) {
-          console.log("Removing vote");
-
           $.ajax({
             url: baseUrl + "/tags/vote/remove",
             type: "POST",
@@ -725,12 +722,10 @@ function highlighting(user, baseUrl) {
             }, 
             success: function(res) {
               if (res.success) {
-                console.log("Removed vote!");
                 vote_counts[tagName] -= 1;
                 $(this).removeClass("valuetag_rmvote").addClass("valuetag_vote");
                 $(".annote-votecount#" + tagName).html(vote_counts[tagName]);
                 $(".annote-votebutton#" + tagName).html(getVoteButton(tagName, false, highlight));
-                console.log($(".votes-byuser#" + user.username + "[name=" + tagName + "]"));
                 if (!$(".votes-byuser#" + user.username + "[name=" + tagName + "]").is(":visible")) {
                   var extra_votes_count = parseInt($(".extra-votes-count[name=" + tagName + "]").attr("votes"));
 
@@ -764,6 +759,8 @@ function getHighlights(url) {
     if (res.success) {
       for (var h in res.highlights) {
         var hl = decode_highlight(h);
+        var hl_id = res.highlights[h].id
+        var max_tag = res.highlights[h].max_tag
         var entire_highlight_present = true;
         var html = $.parseHTML(hl);
 
@@ -781,14 +778,14 @@ function getHighlights(url) {
               }
             }
           });
-          last.html(last.html().replace(hl, "<div class='highlight-annote' highlight='" + hl + "'>"+hl+"</div>")); 
+          last.html(last.html().replace(hl, "<div class='highlight-annote' highlight='" + hl_id + "'>"+hl+"</div>")); 
         } else {
           var base = $('*:contains("' + html[0].textContent + '"):last');
-          base.html(base.html().replace(hl, "<div class='highlight-annote' highlight='" + hl + "'>"+hl+"</div>"));
+          base.html(base.html().replace(hl, "<div class='highlight-annote' highlight='" + hl_id + "'>"+hl+"</div>"));
         }
 
-        $(".highlight-annote[highlight='"+hl+"']").css({
-          "background-color": muteColor(res.highlights[h][1]),
+        $(".highlight-annote[highlight='"+hl_id+"']").css({
+          "background-color": muteColor(max_tag[1]),
           "display": "inline",
           "padding": "0px 5px",
         });

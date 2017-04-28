@@ -414,7 +414,6 @@ var ValueDisplayView = Backbone.View.extend({
         $.get(tags_by_page_url, {
           "url": this.url,
         }).done(function(res) {
-            console.log(res);
             var valueTags = res.tags;
             var subtitle = '';
 
