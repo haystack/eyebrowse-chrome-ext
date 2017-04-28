@@ -3,6 +3,7 @@
 var run_once = false;
 var highlighting_enabled;
 var url = window.location.href;
+var generated_tags = {}
 
 function highlighting(user, baseUrl) {
   if (!run_once) {
@@ -13,8 +14,7 @@ function highlighting(user, baseUrl) {
       var user_pic_url = baseUrl + '/ext/profilepic';
 
       // Global tags
-      var tags_to_save = {};
-      var generated_tags = {}; 
+      var tags_to_save = {}; 
 
       var text = "";
 
@@ -31,7 +31,6 @@ function highlighting(user, baseUrl) {
       // ***
       // *** INITIAL SETUP FUNCTIONS *** //
       // ***
-
 
       // Inject scripts and elements into page
       var injectSetup = function() {
@@ -871,5 +870,15 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     } else {
       reenable_highlighting();
     }
+  }
+
+  if (request.type === "initialize_page") {
+    $.get(baseUrl + "/tags/tags/page", {
+      url: request.page_url,
+    }).done(function(res) {
+      if (res.success) {
+        generated_tags = res.tags;
+      }
+    });
   }
 });

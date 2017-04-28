@@ -951,7 +951,15 @@ function postMessage(message, url, successCallback) {
                 add_usertags: true,
                 domain_name: null,
                 csrfmiddlewaretoken: user.getCSRF(),
-            }).done(function(res) {});
+            }).done(function(res) {
+                chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                  chrome.tabs.sendMessage(tabs[0].id, {
+                    "type": "initialize_page",
+                    "page_url": tabs[0].url,
+                    "user": user,
+                  });
+                });
+            });
 
             if (successCallback) {
                 successCallback(data);
