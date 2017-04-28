@@ -485,6 +485,7 @@ var ValueCompView = Backbone.View.extend({
                 "url": story.link,
                 "domain_name": story.domain,
                 "title": story.title,
+                "favIconUrl": "",
                 "add_usertags": "false",
                 "csrfmiddlewaretoken": user.csrf,
             }).done(function(res) {
@@ -941,6 +942,17 @@ function postMessage(message, url, successCallback) {
             $("#messagebox").val("");
             $("#upperarea .mentions").html("<div></div>");
             $("#messagebox").blur();
+
+            var hl_url = sprintf("%s/tags/initialize_page", baseUrl);
+            $.post(hl_url, {
+                url: active_tab.url,
+                favIconUrl: active_tab.favIconUrl,
+                title: active_tab.title,
+                add_usertags: true,
+                domain_name: null,
+                csrfmiddlewaretoken: user.getCSRF(),
+            }).done(function(res) {});
+
             if (successCallback) {
                 successCallback(data);
             }

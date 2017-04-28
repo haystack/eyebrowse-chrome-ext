@@ -42,26 +42,18 @@ function highlighting(user, baseUrl) {
         $('head').append("<script type='text/javascript' src='https://use.fontawesome.com/8c63cff961.js'><script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>");
       }();
 
-      // Add article upon visit to page
-      var addPage = function() {
-        var domain_name = $("meta[property='og:site_name']").attr("content") ? $("meta[property='og:site_name']").attr("content") : "";
-        var title = $("meta[property='og:title']").attr("content") ? $("meta[property='og:title']").attr("content") : "";
-
-        // Add page
-        $.post(baseUrl + "/tags/initialize_page", {
-          "url": url,
-          "domain_name": domain_name,
-          "title": title,
-          "add_usertags": "true",
-          "csrfmiddlewaretoken": user.csrf,
-        }).done(function(res) {
+      // TODO: update domain name?
+      $.get(baseUrl + "/tags/tags/page", {
+        url: url,
+      }).done(function(res) {
+        if (res.success) {
           generated_tags = res.tags;
+        }
+      });
 
-          $.get(baseUrl + "/tags/common_tags").done(function(res) {
-            all_tags = res.common_tags;
-          });
-        });
-      }();
+      $.get(baseUrl + "/tags/common_tags").done(function(res) {
+        all_tags = res.common_tags;
+      });
 
       // Fetch highlights on page load
       if (highlighting_enabled) {
@@ -71,7 +63,6 @@ function highlighting(user, baseUrl) {
       // ***
       // *** FRONT-END RENDERING HELPER FUNCTIONS *** //
       // ***
-
 
       // Helper function to generate vote button for annotation
       var getVoteButton = function(item, user_voted, highlight) {
@@ -411,43 +402,57 @@ function highlighting(user, baseUrl) {
           highlight_id = $(this).attr("highlight_id");
         }
 
-        $.post(baseUrl + "/tags/highlight", {
-          "url": url,
-          "tags": JSON.stringify(tags_with_highlight),
-          "csrfmiddlewaretoken": user.csrf,
-          "highlight": encode_highlight(text),
-          "highlight_id": highlight_id,
-        }).done(function(res) {
-          if (res.success) {
-            var hl_id = res.data.highlight_id;
-            $.each(tags_to_save, function(tag, val){
-              if (val) {
-                $.post(baseUrl + "/tags/vote/add", {
-                  "valuetag": tag,
-                  "highlight": hl_id,
-                  "url": url,
-                  "csrfmiddlewaretoken": user.csrf,
-                }).done(function(res) {
-                  setTimeout(function() {
-                    $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr("highlight", hl_id);
-                    // removeTemporaryHighlight();
-                    $('.annote-text').animate({
-                      height: '0px',
-                    });
-                    $('.annote-header').html("Success - tags added!");
-                    $('.annote-text').html("")
+        var domain_name = $("meta[property='og:site_name']").attr("content") ? $("meta[property='og:site_name']").attr("content") : "";
+        var title = $("meta[property='og:title']").attr("content") ? $("meta[property='og:title']").attr("content") : "";
 
+        $.post(baseUrl + "/tags/initialize_page", {
+          "url": url,
+          "domain_name": domain_name,
+          "title": title,
+          "favIconUrl": "",
+          "add_usertags": "true",
+          "csrfmiddlewaretoken": user.csrf,
+        }).done(function(res) {
+          generated_tags = res.tags;
+
+          $.post(baseUrl + "/tags/highlight", {
+            "url": url,
+            "tags": JSON.stringify(tags_with_highlight),
+            "csrfmiddlewaretoken": user.csrf,
+            "highlight": encode_highlight(text),
+            "highlight_id": highlight_id,
+          }).done(function(res) {
+            if (res.success) {
+              var hl_id = res.data.highlight_id;
+              $.each(tags_to_save, function(tag, val){
+                if (val) {
+                  $.post(baseUrl + "/tags/vote/add", {
+                    "valuetag": tag,
+                    "highlight": hl_id,
+                    "url": url,
+                    "csrfmiddlewaretoken": user.csrf,
+                  }).done(function(res) {
                     setTimeout(function() {
-                      $('.annotation').fadeOut('fast');
-                    }, 2000);
-                  }, 1200);
-                });
-              }
-            });
-          } else {
-            console.log("Highlight already exists");
-          }
-          tags_to_save = {};
+                      $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr("highlight", hl_id);
+                      // removeTemporaryHighlight();
+                      $('.annote-text').animate({
+                        height: '0px',
+                      });
+                      $('.annote-header').html("Success - tags added!");
+                      $('.annote-text').html("")
+
+                      setTimeout(function() {
+                        $('.annotation').fadeOut('fast');
+                      }, 2000);
+                    }, 1200);
+                  });
+                }
+              });
+            } else {
+              console.log("Highlight already exists");
+            }
+            tags_to_save = {};
+          });
         });
       });
 
