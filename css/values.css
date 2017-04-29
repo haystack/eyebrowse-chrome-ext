@@ -181,7 +181,7 @@
   padding: 15px 0;
 }
 
-.highlight-add-valuetag-submit {
+/*.highlight-add-valuetag-submit {
   margin-top: 10px;
   background-color: #fff;
   padding: 8px 15px;
@@ -196,7 +196,7 @@
   background-color: #00cc89;
   color: #fff;
   cursor: pointer;
-}
+}*/
 
 .deselected {
   opacity: 0.8;
@@ -308,6 +308,33 @@
 
 .vertical-space {
   margin-bottom: 15px;
+}
+
+.delete-highlight {
+  font-size: 11px;
+  color: #bbb;
+}
+
+.delete-highlight:hover {
+  cursor: pointer;
+  color: #696969;
+}
+
+.btn {
+  margin-top: 10px;
+  background-color: #fff;
+  padding: 8px 15px;
+  border-radius: 500px;
+  color: #00cc89;
+  text-align: center;
+  border: 2px solid #00cc89;
+  transition: background-color 0.3s ease-in;
+}
+
+.btn:hover {
+  background-color: #00cc89;
+  color: #fff;
+  cursor: pointer;
 }
 /*
 #add-highlight-button.changed::after {
