@@ -81,7 +81,9 @@ function highlighting(user, baseUrl) {
       // Helper function to remove temporary highlighting from front end
       var removeTemporaryHighlight = function() {
         if ($('.temp-highlight').is(':visible')) {
-          $('.temp-highlight').contents().unwrap();
+          var parent = $('.temp-highlight').parent();
+          $('.temp-highlight').contents().unwrap()
+          parent.get(0).normalize();
         }
       }
 
@@ -184,27 +186,6 @@ function highlighting(user, baseUrl) {
         }
       });
 
-      // Removes temporary highlighting if click outside of:
-      //  - temporary highlight
-      //  - add highlight btn
-      //  - annotation box
-      $('body').on('mouseup', function(e) {
-        if (!$(e.target).hasClass('temp-highlight') 
-          && $(e.target).attr("id") != "add-highlight-button"
-          && $(e.target).attr("id") != "add-symbol"
-          && !$.contains($('.annotation').get(0), e.target)) {
-          removeTemporaryHighlight();
-
-          if (window.getSelection) {
-            var selection = window.getSelection();
-            var selection_text = selection.toString();
-            if (selection_text.length < 2) {
-              removeAddHighlightButton();
-            }
-          }    
-        }
-      });
-
       // Close annotation box if click outside of:
       //  - annotation box
       //  - temporary highlight
@@ -222,6 +203,13 @@ function highlighting(user, baseUrl) {
             }
           }
         }
+
+        if ($(e.target).attr("id") != "add-highlight-button"
+          && $(e.target).attr("id") != "add-symbol"
+          && !$.contains($('.annotation').get(0), e.target)) {
+          removeTemporaryHighlight();
+          removeAddHighlightButton();    
+        }
       });
 
       // ***
@@ -230,7 +218,6 @@ function highlighting(user, baseUrl) {
 
       // Display add highlight functionality on sentence highlight
       $('body').on('click', function(e){
-
         // Get highlighted DOM element
         if (highlighting_enabled) {
           if (window.getSelection) {
@@ -239,8 +226,6 @@ function highlighting(user, baseUrl) {
 
             // Ensure empty string not selected
             if (!selection_text 
-              || selection_text.charCodeAt(0) === 10
-              || selection_text.charCodeAt(0) === 32
               || selection.isCollapsed) {
               removeAddHighlightButton();
               return;
@@ -257,37 +242,37 @@ function highlighting(user, baseUrl) {
               return;
             }
 
-            removeTemporaryHighlight();
+            // If already highlighted, don't do anything
+            if (e.target.classList.contains('highlight-annote') || 
+              e.target.classList.contains('temp-highlight')) {
+              return;
+            }
+
+            getSentenceAndHighlight();
+
+            if ($('.temp-highlight').is(':visible')) {
+              var parentTop = $('.temp-highlight').offset().top - $(window).scrollTop() - 48;
+              var parentLeft = $('.temp-highlight').offset().left - $(window).scrollLeft() + $('.temp-highlight').width() / 2;
+
+              if ($("#add-highlight-button").is(":visible")) {
+                $("#add-highlight-button").animate({
+                  'left': parentLeft,
+                  'top': parentTop,
+                }, 250);
+              } else {
+                $("#add-highlight-button").css({
+                  'left': parentLeft,
+                  'top': parentTop,
+                });
+                $("#add-highlight-button").fadeIn("fast");
+              }
+
+              annote_position.left = parentLeft;
+              annote_position.top = parentTop;
+              annote_position.anchor_top = $(window).scrollTop();
+              annote_position.anchor_left = $(window).scrollLeft();
+            }
           } 
-
-          // If already highlighted, don't do anything
-          if (e.target.classList.contains('highlight-annote') || 
-            e.target.classList.contains('temp-highlight')) {
-            return;
-          }
-
-          getSentenceAndHighlight();
-
-          var parentTop = $('.temp-highlight').offset().top - $(window).scrollTop() - 48;
-          var parentLeft = $('.temp-highlight').offset().left - $(window).scrollLeft() + $('.temp-highlight').width() / 2;
-
-          if ($("#add-highlight-button").is(":visible")) {
-            $("#add-highlight-button").animate({
-              'left': parentLeft,
-              'top': parentTop,
-            }, 250);
-          } else {
-            $("#add-highlight-button").css({
-              'left': parentLeft,
-              'top': parentTop,
-            });
-            $("#add-highlight-button").fadeIn("fast");
-          }
-
-          annote_position.left = parentLeft;
-          annote_position.top = parentTop;
-          annote_position.anchor_top = $(window).scrollTop();
-          annote_position.anchor_left = $(window).scrollLeft();
         }
       });
 
@@ -295,45 +280,19 @@ function highlighting(user, baseUrl) {
         var html = "";
         if (typeof window.getSelection != "undefined") {
           var sel = window.getSelection();
-          var punctuation = [".", "!", "?", ">", "<"];
+          var range = sel.getRangeAt(0)
+          var temp_hl = document.createElement("span");
+          temp_hl.className = 'temp-highlight';
+          range.surroundContents(temp_hl);
+          text = $('.temp-highlight').html();
 
-          if (sel.anchorOffset < sel.focusOffset) {
-            var begin = sel.anchorOffset;
-            var end = sel.focusOffset;
-            var parentNode = sel.anchorNode;
-          } else {
-            var begin = sel.focusOffset;
-            var end = sel.anchorOffset;
-            var parentNode = sel.focusNode
+          if ($('.temp-highlight').is(':visible')) {
+            var range = document.createRange();
+            range.selectNode($('.temp-highlight').get(0));
+            var selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
           }
-
-          var frag = parentNode.textContent;
-          var parent = parentNode.parentElement;
-
-          var newBegin, newEnd;
-
-          var last_non_whitespace_index = begin;
-          for (var i = begin; i >= 0; i--) {
-            if ($.inArray(frag[i], punctuation) !== -1) {
-              break;
-            }
-
-            if (/\S/.test(frag[i])) {
-              last_non_whitespace_index = i;
-            }
-          } 
-
-          for (var i = end; i < frag.length; i++) {
-            if ($.inArray(frag[i], punctuation) !== -1) {
-              newEnd = i + 1;
-              break;
-            }
-          }
-
-          var sentence = frag.substring(last_non_whitespace_index, newEnd);
-          text = sentence;
-          var newText = $(parent).html().replace(sentence, "<span class='temp-highlight'>" + sentence + "</span>");
-          $(parent).html(newText);
         }
       }
 
@@ -418,7 +377,7 @@ function highlighting(user, baseUrl) {
             "url": url,
             "tags": JSON.stringify(tags_with_highlight),
             "csrfmiddlewaretoken": user.csrf,
-            "highlight": encode_highlight(text),
+            "highlight": encodeURIComponent(text),
             "highlight_id": highlight_id,
           }).done(function(res) {
             if (res.success) {
@@ -443,7 +402,7 @@ function highlighting(user, baseUrl) {
                       setTimeout(function() {
                         $('.annotation').fadeOut('fast');
                       }, 2000);
-                    }, 1200);
+                    }, 1000);
                   });
                 }
               });
@@ -684,7 +643,7 @@ function highlighting(user, baseUrl) {
 
           $.post(baseUrl + "/tags/vote/add", {
             "valuetag": tagName,
-            "highlight": encode_highlight(highlight),
+            "highlight": encodeURIComponent(highlight),
             "csrfmiddlewaretoken": user.csrf,
             "url": url,
           }).done(function(res) {
@@ -720,7 +679,7 @@ function highlighting(user, baseUrl) {
             type: "POST",
             data: {
               "valuetag": tagName,
-              "highlight": encode_highlight(highlight),
+              "highlight": encodeURIComponent(highlight),
               "url": url,
               "csrfmiddlewaretoken": user.csrf,
             }, 
@@ -762,14 +721,13 @@ function getHighlights(url) {
   }).done(function(res) {
     if (res.success) {
       for (var h in res.highlights) {
-        var hl = decode_highlight(h);
+        var hl = decodeURIComponent(h);
         var hl_id = res.highlights[h].id
         var max_tag = res.highlights[h].max_tag
         var entire_highlight_present = true;
         var html = $.parseHTML(hl);
 
         var all_eligible = $.merge($("p"), $("div"));
-        var regex = /&nbsp;/gi; // expression here
         var last = null;
 
         if ($("body").html().indexOf(hl) === -1) {
@@ -791,7 +749,6 @@ function getHighlights(url) {
         $(".highlight-annote[highlight='"+hl_id+"']").css({
           "background-color": muteColor(max_tag[1]),
           "display": "inline",
-          "padding": "0px 5px",
         });
       }
     } else {
@@ -827,18 +784,6 @@ function disable_highlighting() {
       "background-color": "#fff",
     });
   });
-}
-
-function encode_highlight(highlight) {
-  return encodeURIComponent(highlight.replace(/&nbsp;/gi,''));
-}
-
-function decode_highlight(highlight) {
-  return decodeURIComponent(highlight).replace(/&nbsp;/gi,'');
-}
-
-function remove_nbsp(text) {
-  return text.replace(/&nbsp;/gi,'');
 }
 
 function reenable_highlighting() {
