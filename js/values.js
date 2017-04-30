@@ -506,7 +506,7 @@ function highlighting(user, baseUrl) {
               var annote_voters = $("<div>", {"class": "annote-voters", "id": tag_attrs.name});
               var annote_valuetag_desc = $("<div>", {"class": "annote-valuetag-desc", "id": tag_attrs.name});
 
-              annote_valuetag.html(tag_attrs.name);
+              annote_valuetag.html(tag_attrs.name + "<span class='delete-tag-btn' tag=" + tag_attrs.name + "><i class='fa fa-trash' aria-hidden='true'></i></span>");
               annote_valuetag.css({
                 'background-color': tag_attrs.color,
               });
@@ -609,6 +609,73 @@ function highlighting(user, baseUrl) {
           showAnnotationBox([left, top]);
         }
       }
+
+      $('body').on('click', '.delete-tag-btn', function(e) {
+        var tag_name = $(this).attr('tag');
+        $.post(baseUrl + "/delete_tag", {
+          "url": url,
+          "tag": tag_name,
+          "csrfmiddlewaretoken": user.csrf,
+        }).done(function(res) {
+          if (res.res === 'success') {
+            $('.annote-text-wrapper #' + tag_name).animate({
+              'height': 0,
+            }, 300, "linear", function(){
+              $('.annote-text-wrapper #' + tag_name).remove();
+            });
+          }
+        });
+      });
+
+      $('body').on('mouseenter', '.annote-valuetag', function(e) {
+        var tag = $(this).attr('id');
+        $('.delete-tag-btn[tag=' + tag + ']').show();
+      });
+
+      $('body').on('mouseleave', '.annote-valuetag', function(e) {
+        var tag = $(this).attr('id');
+        $('.delete-tag-btn[tag=' + tag + ']').hide();
+      });
+
+      $('body').on('mouseenter', '.delete-tag-btn', function(e) {
+        var obj = $(this);
+        tooltipDelay = setTimeout(function() {
+          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
+          $(tooltip).html("Delete this tag");
+          obj.append(tooltip);
+          $(tooltip).css({
+            "top": $(e.target).offset().top - $(window).scrollTop() - 33,
+            "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 - 8,
+          });
+        }, 300);
+      });
+
+      $('body').on('mouseleave', '.delete-tag-btn', function(e) {
+        clearTimeout(tooltipDelay);
+        if ($(".icon-name-tooltip").is(":visible")) {
+          $(".icon-name-tooltip").remove();
+        }
+      });
+
+      $('body').on('mouseenter', '.annote-votebutton', function(e) {
+        var obj = $(this);
+        tooltipDelay = setTimeout(function() {
+          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
+          $(tooltip).html("Upvote this tag");
+          obj.append(tooltip);
+          $(tooltip).css({
+            "top": $(e.target).offset().top - $(window).scrollTop() - 33,
+            "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 - 4,
+          });
+        }, 300);
+      });
+
+      $('body').on('mouseleave', '.annote-votebutton', function(e) {
+        clearTimeout(tooltipDelay);
+        if ($(".icon-name-tooltip").is(":visible")) {
+          $(".icon-name-tooltip").remove();
+        }
+      });
 
       $('body').on('click', '.delete-highlight', function(e) {
         $('.annote-text').animate({

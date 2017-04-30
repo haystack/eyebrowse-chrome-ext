@@ -4,11 +4,11 @@
 }
 
 ::selection {
-  background: #f9f9f9;
+  background: #f3f3f3;
 }
 
 .temp-highlight {
-  background-color: #f9f9f9;
+  background-color: #f3f3f3;
   display: inline;
   border-bottom: 2px solid #a5cbe7;
 }
@@ -269,6 +269,7 @@
   background-color: #2a2f36;
   color: #fff;
   position: fixed;
+  font-size: 10px;
 }
 
 .icon-name-tooltip::after {
@@ -337,6 +338,12 @@
   background-color: #00cc89;
   color: #fff;
   cursor: pointer;
+}
+
+.delete-tag-btn {
+  position: absolute;
+  left: 110px;
+  display: none;
 }
 /*
 #add-highlight-button.changed::after {
