@@ -210,8 +210,7 @@ function highlighting(user, baseUrl) {
         if ($(e.target).attr("id") != "add-highlight-button"
           && $(e.target).attr("id") != "add-symbol"
           && !$.contains($('.annotation').get(0), e.target)) {
-          removeTemporaryHighlight();
-          removeAddHighlightButton();    
+          removeTemporaryHighlight();   
         }
       });
 
@@ -261,13 +260,24 @@ function highlighting(user, baseUrl) {
                 $("#add-highlight-button").animate({
                   'left': parentLeft,
                   'top': parentTop,
-                }, 250);
+                }, 250).animate({
+                  'top': parentTop - 3,
+                }, 30).animate({
+                  'top': parentTop,
+                });
               } else {
                 $("#add-highlight-button").css({
                   'left': parentLeft,
                   'top': parentTop,
                 });
-                $("#add-highlight-button").fadeIn("fast");
+                // $("#add-highlight-button").fadeIn("fast");
+                $("#add-highlight-button").animate({
+                  'left': parentLeft,
+                  'top': parentTop - 4,
+                  'opacity': "show",
+                }, 200).animate({
+                  'top': parentTop,
+                }, 70);
               }
 
               annote_position.left = parentLeft;
