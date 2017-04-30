@@ -167,7 +167,12 @@ function hexToRgb(hex) {
 }
 
 function muteColor(colorString) {
-  var rgb = hexToRgb(colorString);
-  var rgbString = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
+  var rgbString = '';
+
+  if (colorString) {
+    var rgb = hexToRgb(colorString);
+    rgbString = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
+  }
+  
   return rgbString;
 }
