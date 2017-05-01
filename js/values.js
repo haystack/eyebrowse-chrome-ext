@@ -516,10 +516,14 @@ function highlighting(user, baseUrl) {
               var annote_voters = $("<div>", {"class": "annote-voters", "id": tag_attrs.name});
               var annote_valuetag_desc = $("<div>", {"class": "annote-valuetag-desc", "id": tag_attrs.name});
 
-              annote_valuetag.html(tag_attrs.name + "<span class='delete-tag-btn' tag=" + tag_attrs.name + "><i class='fa fa-trash' aria-hidden='true'></i></span>");
+              annote_valuetag.html(tag_attrs.name);
               annote_valuetag.css({
                 'background-color': tag_attrs.color,
               });
+
+              if (tag_attrs.is_owner) {
+                annote_valuetag.append("<span class='delete-tag-btn' tag=" + tag_attrs.name + "><i class='fa fa-trash' aria-hidden='true'></i></span>")
+              }
 
               var vote_count = 0
               var extra_votes = null;
@@ -600,7 +604,7 @@ function highlighting(user, baseUrl) {
             text = $(e.target).attr("highlight");
             $('.annote-text').append(add_tag_existing);
 
-            if ($(obj).attr('is_owner')) {
+            if ($(obj).attr('is_owner') === 'true') {
               var hl_error = $("<div>", {"class": "highlight-error"});
               var delete_highlight = $("<div>", {"class": "delete-highlight"});
               delete_highlight.html("Delete this highlight");            
