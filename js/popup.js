@@ -1190,6 +1190,7 @@ $(document).ready(function() {
           chrome.tabs.sendMessage(tabs[0].id, {
             "type": "toggleHighlight",
             "user": user,
+            "baseUrl": baseUrl,
           });
         });
 

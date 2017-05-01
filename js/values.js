@@ -959,6 +959,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
   if (request.type === "toggleHighlight") {
     highlighting_enabled = request.user.highlighting;
+    highlighting(request.user, request.baseUrl);
 
     if (!highlighting_enabled) {
       disable_highlighting();
