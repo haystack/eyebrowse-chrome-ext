@@ -3,16 +3,20 @@
     margin: 5px auto;
 }
 
+::selection {
+  background: #f3f3f3;
+}
 
 .temp-highlight {
-  background-color: #eee;
+  background-color: #f3f3f3;
   display: inline;
+  border-bottom: 2px solid #a5cbe7;
 }
 
 .annotation {
   display: none;
   background-color: #fff;
-  box-shadow: -2px 2px 7px #ddd;
+  box-shadow: -2px 2px 9px #ccc;
   border: 1px solid #ccc;
   background-color: #fff;
   border-radius: 4px;
@@ -142,16 +146,17 @@
 .annote-valuetag-desc {
   display: block;
   clear: both;
+  font-size: 11.5px;
 }
 
 .annote-text-wrapper {
-  padding-bottom: 15px;
-  padding-top: 15px;
+  padding-bottom: 10px;
+  padding-top: 10px;
   border-bottom: 1px solid #eee;
 }
 
 .empty-valuetags {
-  padding: 15px 0;
+  padding: 10px 0;
 }
 
 .add-valuetag-tag {
@@ -177,7 +182,7 @@
   padding: 15px 0;
 }
 
-.highlight-add-valuetag-submit {
+/*.highlight-add-valuetag-submit {
   margin-top: 10px;
   background-color: #fff;
   padding: 8px 15px;
@@ -192,7 +197,7 @@
   background-color: #00cc89;
   color: #fff;
   cursor: pointer;
-}
+}*/
 
 .deselected {
   opacity: 0.8;
@@ -264,6 +269,7 @@
   background-color: #2a2f36;
   color: #fff;
   position: fixed;
+  font-size: 11px;
 }
 
 .icon-name-tooltip::after {
@@ -279,7 +285,7 @@
 }
 
 .highlight-add-custom-tag {
-  padding: 5px 0;
+  padding-top: 5px;
   font-size: 11px;
   color: #bbb;
 }
@@ -299,11 +305,46 @@
 }
 
 .existing {
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .vertical-space {
   margin-bottom: 15px;
+}
+
+.delete-highlight {
+  margin-top: 5px;
+  font-size: 11px;
+  color: #bbb;
+}
+
+.delete-highlight:hover {
+  cursor: pointer;
+  color: #696969;
+}
+
+.btn {
+  margin-top: 10px;
+  background-color: #fff;
+  padding: 8px 15px;
+  border-radius: 500px;
+  color: #00cc89;
+  text-align: center;
+  border: 2px solid #00cc89;
+  transition: background-color 0.3s ease-in;
+}
+
+.btn:hover {
+  background-color: #00cc89;
+  color: #fff;
+  cursor: pointer;
+}
+
+.delete-tag-btn {
+  position: absolute;
+  left: 110px;
+  display: none;
+  cursor: pointer;
 }
 /*
 #add-highlight-button.changed::after {
