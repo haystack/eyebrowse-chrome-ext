@@ -260,7 +260,7 @@ function highlighting(user, baseUrl) {
                 $("#add-highlight-button").animate({
                   'left': parentLeft,
                   'top': parentTop,
-                }, 250).animate({
+                }, 200).animate({
                   'top': parentTop - 3,
                 }, 30).animate({
                   'top': parentTop,
