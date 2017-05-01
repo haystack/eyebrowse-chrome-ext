@@ -593,7 +593,7 @@ a:hover {
 
 .value_tab_nav {
     position: relative;
-    width: 220px;
+    width: 260px;
     text-align: center;
     margin: 0 auto;
     text-transform: uppercase;
@@ -605,7 +605,7 @@ a:hover {
 
 .value_tab_nav li {
     list-style-type: none;
-    width: 100px;
+    width: 120px;
     display: inline-block;
     margin: 0 5px;
     color: #bbb;

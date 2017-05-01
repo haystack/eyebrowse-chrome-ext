@@ -687,6 +687,26 @@ function highlighting(user, baseUrl) {
         }
       });
 
+      $('body').on('mouseenter', '#add-highlight-button', function(e) {
+        var obj = $(this);
+        tooltipDelay = setTimeout(function() {
+          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
+          $(tooltip).html("Highlight this text");
+          obj.append(tooltip);
+          $(tooltip).css({
+            "top": $(e.target).offset().top - $(window).scrollTop() - 33,
+            "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 + 7,
+          });
+        }, 300);
+      });
+
+      $('body').on('mouseleave', '#add-highlight-button', function(e) {
+        clearTimeout(tooltipDelay);
+        if ($(".icon-name-tooltip").is(":visible")) {
+          $(".icon-name-tooltip").remove();
+        }
+      });
+
       $('body').on('click', '.delete-highlight', function(e) {
         $('.annote-text').animate({
           height: '50px',

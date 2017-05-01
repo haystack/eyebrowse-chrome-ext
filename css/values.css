@@ -269,7 +269,7 @@
   background-color: #2a2f36;
   color: #fff;
   position: fixed;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .icon-name-tooltip::after {
@@ -344,6 +344,7 @@
   position: absolute;
   left: 110px;
   display: none;
+  cursor: pointer;
 }
 /*
 #add-highlight-button.changed::after {
