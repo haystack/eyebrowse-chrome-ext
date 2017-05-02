@@ -84,6 +84,7 @@ function highlighting(user, baseUrl) {
           var parent = $('.temp-highlight').parent();
           $('.temp-highlight').contents().unwrap()
           parent.get(0).normalize();
+          removeAddHighlightButton();
         }
       }
 
@@ -225,34 +226,55 @@ function highlighting(user, baseUrl) {
           if (window.getSelection) {
             var selection = window.getSelection();
             var selection_text = selection.toString();
+            var should_highlight = true;
 
             // Ensure empty string not selected
             if (!selection_text 
               || selection.isCollapsed) {
-              removeAddHighlightButton();
-              return;
+              should_highlight = false;
             } 
 
             // Ensure not trying to highlight on annotation
             if ($.contains($('.annotation').get(0), e.target)) {
-              return;
+              should_highlight = false;
             }
 
             // Ensure only trying to highlight in a text block
             if (!$(e.target).is("p") && !$(e.target).is("div")) {
-              removeAddHighlightButton();
-              return;
+              should_highlight = false;
             }
+
+            $.each($("textarea").get(), function(i) {
+              if ($.contains($("textarea").get(i), e.target)) {
+                should_highlight = false;
+              }
+            });
+
+            $.each($("input").get(), function(i) {
+              if ($.contains($("input").get(i), e.target)) {
+                should_highlight = false;
+              }
+            });
+
+            $.each($("div[contenteditable=true]").get(), function(i) {
+              if ($.contains($("div[contenteditable=true]").get(i), e.target)) {
+                should_highlight = false;
+              }
+            });
 
             // If already highlighted, don't do anything
             if (e.target.classList.contains('highlight-annote') || 
               e.target.classList.contains('temp-highlight')) {
-              return;
+              should_highlight = false;
             }
 
-            getSentenceAndHighlight();
+            if (should_highlight) {
+              getSentenceAndHighlight();
+            } else {
+              removeAddHighlightButton();
+            }
 
-            if ($('.temp-highlight').is(':visible')) {
+            if ($('.temp-highlight').is(':visible') && should_highlight) {
               var parentTop = $('.temp-highlight').offset().top - $(window).scrollTop() - 48;
               var parentLeft = $('.temp-highlight').offset().left - $(window).scrollLeft() + $('.temp-highlight').width() / 2;
 
