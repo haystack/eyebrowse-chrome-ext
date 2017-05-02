@@ -12,6 +12,7 @@ function highlighting(user, baseUrl) {
       var vote_counts = {}; // Keeps track of client-side vote changes
       highlighting_enabled = user.highlighting; // Pulls user state from extension
       var user_pic_url = baseUrl + '/ext/profilepic';
+      var annotationDelay;
 
       // Global tags
       var tags_to_save = {}; 
@@ -85,6 +86,7 @@ function highlighting(user, baseUrl) {
           $('.temp-highlight').contents().unwrap()
           parent.get(0).normalize();
           removeAddHighlightButton();
+          clearTimeout(annotationDelay);
         }
       }
 
@@ -275,37 +277,40 @@ function highlighting(user, baseUrl) {
             }
 
             if ($('.temp-highlight').is(':visible') && should_highlight) {
-              var parentTop = $('.temp-highlight').offset().top - $(window).scrollTop() - 48;
-              var parentLeft = $('.temp-highlight').offset().left - $(window).scrollLeft() + $('.temp-highlight').width() / 2;
 
-              if ($("#add-highlight-button").is(":visible")) {
-                $("#add-highlight-button").animate({
-                  'left': parentLeft,
-                  'top': parentTop,
-                }, 200).animate({
-                  'top': parentTop - 3,
-                }, 30).animate({
-                  'top': parentTop,
-                });
-              } else {
-                $("#add-highlight-button").css({
-                  'left': parentLeft,
-                  'top': parentTop,
-                });
-                // $("#add-highlight-button").fadeIn("fast");
-                $("#add-highlight-button").animate({
-                  'left': parentLeft,
-                  'top': parentTop - 4,
-                  'opacity': "show",
-                }, 200).animate({
-                  'top': parentTop,
-                }, 70);
-              }
+              annotationDelay = setTimeout(function() {
+                var parentTop = $('.temp-highlight').offset().top - $(window).scrollTop() - 48;
+                var parentLeft = $('.temp-highlight').offset().left - $(window).scrollLeft() + $('.temp-highlight').width() / 2;
 
-              annote_position.left = parentLeft;
-              annote_position.top = parentTop;
-              annote_position.anchor_top = $(window).scrollTop();
-              annote_position.anchor_left = $(window).scrollLeft();
+                if ($("#add-highlight-button").is(":visible")) {
+                  $("#add-highlight-button").animate({
+                    'left': parentLeft,
+                    'top': parentTop,
+                  }, 200).animate({
+                    'top': parentTop - 3,
+                  }, 30).animate({
+                    'top': parentTop,
+                  });
+                } else {
+                  $("#add-highlight-button").css({
+                    'left': parentLeft,
+                    'top': parentTop,
+                  });
+                  // $("#add-highlight-button").fadeIn("fast");
+                  $("#add-highlight-button").animate({
+                    'left': parentLeft,
+                    'top': parentTop - 4,
+                    'opacity': "show",
+                  }, 200).animate({
+                    'top': parentTop,
+                  }, 70);
+                }
+
+                annote_position.left = parentLeft;
+                annote_position.top = parentTop;
+                annote_position.anchor_top = $(window).scrollTop();
+                annote_position.anchor_left = $(window).scrollLeft();
+              }, 700);
             }
           } 
         }
@@ -769,7 +774,6 @@ function highlighting(user, baseUrl) {
         });
       });
 
-      var annotationDelay;
       // Pop up annotation box on hover with delay
       $('body').on('mouseenter', '.highlight-annote', function(e) {
         var obj = $(this);
@@ -960,6 +964,9 @@ function disable_highlighting() {
       "background-color": "#fff",
     });
   });
+
+  sheet.deleteRule(0);
+  sheet.deleteRule(0);
 }
 
 function reenable_highlighting() {
@@ -975,7 +982,17 @@ function reenable_highlighting() {
   if (!highlight_exists) {
     getHighlights(url);
   }
+
+  sheet.insertRule("::selection { background: #f3f3f3; }");
+  sheet.insertRule(".temp-highlight { background-color: #f3f3f3; border-bottom: 2px solid #a5cbe7; } ");
 }
+
+var sheet = (function() {
+  var style = document.createElement("style");
+  style.appendChild(document.createTextNode(""));
+  document.head.appendChild(style);
+  return style.sheet;
+})();
 
 // Trigger highlighting 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
