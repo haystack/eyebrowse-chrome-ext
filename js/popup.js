@@ -552,6 +552,12 @@ var ValueCompView = Backbone.View.extend({
                 "csrfmiddlewaretoken": user.csrf,
             }).done(function(res) {
                 var valuetags = res.tags
+                var hl_text = "0 highlights";
+                if (res.highlights === 1) {
+                    hl_text = "1 highlight";
+                } else if (res.highlights > 1) {
+                    hl_text = res.highlights.toString() + " highlights";
+                }
                 var template = _.template($("#relatedstories_template").html(), {
                     id: id,
                     link: story.link,

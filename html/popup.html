@@ -272,9 +272,9 @@
             <div class="value_summary_text" contenteditable=true maxlength=500>
               <%= summary %>
             </div>
-            <div class="value_summary_editinfo subtext">Last edited by <span id="edited_user"><%= editor %></span> at <span id="edited_time"><%= time %></span>
+            <div class="value_summary_editinfo subtext-dark">Last edited by <span id="edited_user"><%= editor %></span> at <span id="edited_time"><%= time %></span>
             </div>
-            <div class="value_summary_counter subtext"><span id="count"><%= count %></span> characters remaining</div>
+            <div class="value_summary_counter subtext-light"><span id="count"><%= count %></span> characters remaining</div>
           </div>
         </script>
 
@@ -295,6 +295,7 @@
                 <div class="story_tag <%= id %>" style="background-color: <%= tag.color %>"><%= tag.name %></div>
               <% }); %>
             </div>
+            <div class="story_hl_count <%= id %> subtext-light"> <%= highlights %></div>
           </div>
         </script> 
 
