@@ -589,9 +589,13 @@ var ValueSummaryView = Backbone.View.extend({
         $.get(baseUrl + "/tags/page/summary", {
             "url": this.url,
         }).done(function(res) {
-            var summary = '<p>No summary yet... start writing one here!</p><p>Summarize the perspective of the article here.</p>';
+            var summary = '<p class="default-message">No summary yet... start writing one here! </p><p>Summarize the perspective of the article here.</p>';
             if (res.data.summary.summary !== "") {
                 summary = res.data.summary.summary;
+
+                $(".value_summary_text").on("click", function(){
+                    $(this).html("");
+                });
             }
             var value_summary_template = _.template($("#value_summary_template").html(), {
                 'summary': summary,
@@ -607,6 +611,14 @@ var ValueSummaryView = Backbone.View.extend({
     events: {
         "keypress .value_summary_text": "postSummary",
         "input .value_summary_text": "updateCounter",
+        "click .value_summary_text": "clearBox",
+        "blur .value_summary_text": "postSummary",
+    },
+
+    clearBox: function(e) {
+        if ($(".value_summary_text").children('.default-message').length > 0) {
+            $(".value_summary_text").html("");
+        }
     },
 
     updateCounter: function(e) {
@@ -633,7 +645,7 @@ var ValueSummaryView = Backbone.View.extend({
             e.preventDefault();
         }
 
-        if (e.keyCode === 13) {
+        if (e.keyCode === 13 || event.type === 'blur') {
             var summary = $(e.target).get(0).textContent;
             $.post(baseUrl + "/tags/page/summary", {
                 "url": this.url,
