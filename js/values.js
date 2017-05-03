@@ -145,7 +145,7 @@ function highlighting(user, baseUrl) {
         var highlight_add_valuetag = $("<div>", {"class": "highlight-add-valuetag"});
         var add_valuetag_tags = $("<div>", {"class": "highlight-add-valuetag-tags"});
         var add_valuetag_submit = $("<div>", {"class": "highlight-add-valuetag-submit"});
-        add_valuetag_submit.addClass("btn");
+        add_valuetag_submit.addClass("custom-btn");
         var highlight_error = $("<div>", {"class": "highlight-error"});
         var add_custom_tag = $("<div>", {"class": "highlight-add-custom-tag"});
         var add_custom_tag_tags = $("<div>", {"class": "highlight-add-custom-tag-tags"});
@@ -622,7 +622,7 @@ function highlighting(user, baseUrl) {
 
             if (add_tag_existing_tags.children().length > 0) {
               var add_tag_existing_submit = $("<div>", {"class": "highlight-add-valuetag-submit", "highlight_id": highlight});
-              add_tag_existing_submit.addClass("btn");
+              add_tag_existing_submit.addClass("custom-btn");
               add_tag_existing_submit.html("Save");
             }
 
