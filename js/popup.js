@@ -595,18 +595,24 @@ var ValueSummaryView = Backbone.View.extend({
         $.get(baseUrl + "/tags/page/summary", {
             "url": this.url,
         }).done(function(res) {
+            var editor, time;
             var summary = '<p class="default-message">No summary yet... start writing one here! </p><p>Summarize the perspective of the article here.</p>';
             if (res.data.summary.summary !== "") {
                 summary = res.data.summary.summary;
+                editor = res.data.summary.user;
+                time = res.data.summary.date;
 
                 $(".value_summary_text").on("click", function(){
                     $(this).html("");
                 });
+            } else {
+                editor = 'no one';
+                time = 'n/a';
             }
             var value_summary_template = _.template($("#value_summary_template").html(), {
                 'summary': summary,
-                'editor': res.data.summary.user,
-                'time': res.data.summary.date,
+                'editor': editor,
+                'time': time,
                 'count': 1000 - summary.length,
                 'value_tags': pageTags,
             });

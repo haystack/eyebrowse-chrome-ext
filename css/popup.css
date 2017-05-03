@@ -508,9 +508,10 @@ a:hover {
 
 .value_desc {
     padding-top: 0px;
-    padding-left: 30px;
+    padding-left: 20px;
     width: 200px;
-    float: left;
+    text-align: right;
+    float: right;
 }
 
 .value_boxes {
@@ -520,10 +521,6 @@ a:hover {
 .value_subtext {
     padding: 20px 30px 0px 30px;
     font-weight: bold;
-}
-
-.value_box {
-    font-weight: 600;
 }
 
 .value_page_info {
