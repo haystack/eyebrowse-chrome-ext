@@ -70,6 +70,10 @@
   display: inline-block;
 }
 
+.votes-byuser {
+  display: block;
+}
+
 .plus_symbol {
   font-size: 10px;
   top: 50%;
@@ -260,6 +264,7 @@
   color: #fff;
   position: fixed;
   font-size: 11px;
+  z-index: 10;
 }
 
 .icon-name-tooltip::after {

@@ -12,7 +12,9 @@ function highlighting(user, baseUrl) {
       var vote_counts = {}; // Keeps track of client-side vote changes
       highlighting_enabled = user.highlighting; // Pulls user state from extension
       var user_pic_url = baseUrl + '/ext/profilepic';
+
       var annotationDelay;
+      var tooltipDelay;
 
       // Global tags
       var tags_to_save = {}; 
@@ -40,6 +42,10 @@ function highlighting(user, baseUrl) {
         } 
 
         $('head').append("<script type='text/javascript' src='https://use.fontawesome.com/8c63cff961.js'><script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>");
+      
+        if (highlighting_enabled) {
+          reenable_highlighting();
+        }
       }();
 
       // TODO: update domain name?
@@ -54,11 +60,6 @@ function highlighting(user, baseUrl) {
       $.get(baseUrl + "/tags/common_tags").done(function(res) {
         all_tags = res.common_tags;
       });
-
-      // Fetch highlights on page load
-      if (highlighting_enabled) {
-        getHighlights(url);
-      }
 
       // ***
       // *** FRONT-END RENDERING HELPER FUNCTIONS *** //
@@ -78,6 +79,30 @@ function highlighting(user, baseUrl) {
                   + "' aria-hidden='true'></i>";
         return btn
       }
+
+      // Helper function to remove tooltip
+      var removeTooltip = function() {
+        clearTimeout(tooltipDelay);
+        if ($(".icon-name-tooltip").is(":visible")) {
+          $(".icon-name-tooltip").remove();
+        }
+      }
+
+      var addTooltip = function(e, obj, label, x_offset=0, y_offset=0, delay=300) {
+        tooltipDelay = setTimeout(function() {
+          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
+          $(tooltip).html(label);
+          obj.append(tooltip);
+          $(tooltip).css({
+            "top": $(e.target).offset().top - $(window).scrollTop() - $(tooltip).height() - 20 + x_offset,
+            "left": $(e.target).offset().left - $(tooltip).width() / 2 + $(e.target).width() / 2 - $(window).scrollLeft() + y_offset,
+          });
+        }, delay);
+      }
+
+      $("body").on("mouseover", function(e) {
+        console.log(e.clientX);
+      })
 
       // Helper function to remove temporary highlighting from front end
       var removeTemporaryHighlight = function() {
@@ -188,6 +213,8 @@ function highlighting(user, baseUrl) {
             'left': left,
           });
         }
+
+        removeTooltip();
       });
 
       // Close annotation box if click outside of:
@@ -474,31 +501,6 @@ function highlighting(user, baseUrl) {
         }
       });
 
-      var tooltipDelay;
-      // Display valuetag description above tag
-      $("body").on("mouseenter", ".add-valuetag-tag", function(e) {
-        var obj = $(this);
-        if (all_tags[obj.attr("name")].description != "") {
-          tooltipDelay = setTimeout(function() {
-            var tooltip = $("<span>", {"class": "icon-name-tooltip"});
-            $(tooltip).html(all_tags[obj.attr("name")].description);
-            obj.append(tooltip);
-            $(tooltip).css({
-              "top": $(e.target).offset().top - $(window).scrollTop() - 33,
-              "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 + obj.width() / 2 + 10,
-            });
-          }, 700);
-        }
-      });
-
-      // Remove valuetag description tooltip upon leaving hover
-      $("body").on("mouseleave", ".add-valuetag-tag", function() {
-        clearTimeout(tooltipDelay);
-        if ($(".icon-name-tooltip").is(":visible")) {
-          $(".icon-name-tooltip").remove();
-        }
-      });
-
       // ***
       // *** HIGHLIGHT ANNOTATION INTERFACE LISTENERS *** //
       // ***
@@ -678,66 +680,6 @@ function highlighting(user, baseUrl) {
         $('.delete-tag-btn[tag=' + tag + ']').hide();
       });
 
-      $('body').on('mouseenter', '.delete-tag-btn', function(e) {
-        var obj = $(this);
-        tooltipDelay = setTimeout(function() {
-          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
-          $(tooltip).html("Delete this tag");
-          obj.append(tooltip);
-          $(tooltip).css({
-            "top": $(e.target).offset().top - $(window).scrollTop() - 33,
-            "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 - 8,
-          });
-        }, 300);
-      });
-
-      $('body').on('mouseleave', '.delete-tag-btn', function(e) {
-        clearTimeout(tooltipDelay);
-        if ($(".icon-name-tooltip").is(":visible")) {
-          $(".icon-name-tooltip").remove();
-        }
-      });
-
-      $('body').on('mouseenter', '.annote-votebutton', function(e) {
-        var obj = $(this);
-        tooltipDelay = setTimeout(function() {
-          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
-          $(tooltip).html("Upvote this tag");
-          obj.append(tooltip);
-          $(tooltip).css({
-            "top": $(e.target).offset().top - $(window).scrollTop() - 33,
-            "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 - 4,
-          });
-        }, 300);
-      });
-
-      $('body').on('mouseleave', '.annote-votebutton', function(e) {
-        clearTimeout(tooltipDelay);
-        if ($(".icon-name-tooltip").is(":visible")) {
-          $(".icon-name-tooltip").remove();
-        }
-      });
-
-      $('body').on('mouseenter', '#add-highlight-button', function(e) {
-        var obj = $(this);
-        tooltipDelay = setTimeout(function() {
-          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
-          $(tooltip).html("Highlight this text");
-          obj.append(tooltip);
-          $(tooltip).css({
-            "top": $(e.target).offset().top - $(window).scrollTop() - 33,
-            "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 + 7,
-          });
-        }, 300);
-      });
-
-      $('body').on('mouseleave', '#add-highlight-button', function(e) {
-        clearTimeout(tooltipDelay);
-        if ($(".icon-name-tooltip").is(":visible")) {
-          $(".icon-name-tooltip").remove();
-        }
-      });
-
       $('body').on('click', '.delete-highlight', function(e) {
         $('.annote-text').animate({
           height: '50px',
@@ -790,22 +732,6 @@ function highlighting(user, baseUrl) {
       // Cancel annotation box appearance delay
       $('body').on('mouseleave', '.highlight-annote', function(e) {
         clearTimeout(annotationDelay);
-      });
-
-      // Display username upon hover on user icon
-      $("body").on("mouseenter", ".votes-byuser", function(e) {
-        var tooltip = $("<span>", {"class": "icon-name-tooltip"});
-        $(tooltip).html($(this).attr("id"));
-        $(tooltip).css({
-          "top": $(e.target).offset().top - $(window).scrollTop() - 38,
-          "left": $(e.target).offset().left - $(window).scrollLeft() - $(e.target).width() / 2 + 2,
-        });
-        $(this).append(tooltip);
-      });
-
-      // Remove username tooltip upon leaving hover
-      $("body").on("mouseleave", ".votes-byuser", function() {
-        $(".icon-name-tooltip").remove();
       });
 
 
@@ -883,6 +809,28 @@ function highlighting(user, baseUrl) {
           });
         }
       });
+
+      // ****
+      // TOOLTIP LISTENERS
+      // ****
+
+      // Add remove tooltip listener to elements 
+      $("body").on("mouseleave", ".votes-byuser, #add-highlight-button, .annote-votebutton, .delete-tag-btn, .add-valuetag-tag", function() { 
+        removeTooltip(); 
+      });
+
+      // Display username upon hover on user icon
+      $("body").on("mouseenter", ".votes-byuser", function(e) { addTooltip(e, $(this), $(this).attr("id"), 0, -10); });
+      $("body").on("mouseenter", ".delete-tag-btn", function(e) { addTooltip(e, $(this), "Delete this tag", 0, -12); });
+      $("body").on("mouseenter", ".annote-votebutton", function(e) { addTooltip(e, $(this), "Upvote this tag", 5, -11); });
+      $("body").on("mouseenter", "#add-highlight-button", function(e) { addTooltip(e, $(this), "Highlight this text", 0, -11); });
+      $("body").on("mouseenter", ".add-valuetag-tag", function(e) {
+        var desc = all_tags[$(this).attr("name")].description;
+        if (desc !== "") {
+          addTooltip(e, $(this), desc, 0, 8, 700);
+        }
+      });
+
     });
   }
 }
