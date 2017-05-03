@@ -100,10 +100,6 @@ function highlighting(user, baseUrl) {
         }, delay);
       }
 
-      $("body").on("mouseover", function(e) {
-        console.log(e.clientX);
-      })
-
       // Helper function to remove temporary highlighting from front end
       var removeTemporaryHighlight = function() {
         if ($('.temp-highlight').is(':visible')) {
