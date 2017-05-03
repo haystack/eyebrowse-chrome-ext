@@ -13,6 +13,9 @@ function highlighting(user, baseUrl) {
       highlighting_enabled = user.highlighting; // Pulls user state from extension
       var user_pic_url = baseUrl + '/ext/profilepic';
 
+      var annotationDelay;
+      var tooltipDelay;
+
       // Global tags
       var tags_to_save = {}; 
 
@@ -39,6 +42,10 @@ function highlighting(user, baseUrl) {
         } 
 
         $('head').append("<script type='text/javascript' src='https://use.fontawesome.com/8c63cff961.js'><script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>");
+      
+        if (highlighting_enabled) {
+          reenable_highlighting();
+        }
       }();
 
       // TODO: update domain name?
@@ -53,11 +60,6 @@ function highlighting(user, baseUrl) {
       $.get(baseUrl + "/tags/common_tags").done(function(res) {
         all_tags = res.common_tags;
       });
-
-      // Fetch highlights on page load
-      if (highlighting_enabled) {
-        getHighlights(url);
-      }
 
       // ***
       // *** FRONT-END RENDERING HELPER FUNCTIONS *** //
@@ -78,12 +80,38 @@ function highlighting(user, baseUrl) {
         return btn
       }
 
+      // Helper function to remove tooltip
+      var removeTooltip = function() {
+        clearTimeout(tooltipDelay);
+        if ($(".icon-name-tooltip").is(":visible")) {
+          $(".icon-name-tooltip").remove();
+        }
+      }
+
+      var addTooltip = function(e, obj, label, x_offset=0, y_offset=0, delay=300) {
+        tooltipDelay = setTimeout(function() {
+          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
+          $(tooltip).html(label);
+          obj.append(tooltip);
+          $(tooltip).css({
+            "top": $(e.target).offset().top - $(window).scrollTop() - $(tooltip).height() - 20 + x_offset,
+            "left": $(e.target).offset().left - $(tooltip).width() / 2 + $(e.target).width() / 2 - $(window).scrollLeft() + y_offset,
+          });
+        }, delay);
+      }
+
+      $("body").on("mouseover", function(e) {
+        console.log(e.clientX);
+      })
+
       // Helper function to remove temporary highlighting from front end
       var removeTemporaryHighlight = function() {
         if ($('.temp-highlight').is(':visible')) {
           var parent = $('.temp-highlight').parent();
           $('.temp-highlight').contents().unwrap()
           parent.get(0).normalize();
+          removeAddHighlightButton();
+          clearTimeout(annotationDelay);
         }
       }
 
@@ -185,6 +213,8 @@ function highlighting(user, baseUrl) {
             'left': left,
           });
         }
+
+        removeTooltip();
       });
 
       // Close annotation box if click outside of:
@@ -225,65 +255,89 @@ function highlighting(user, baseUrl) {
           if (window.getSelection) {
             var selection = window.getSelection();
             var selection_text = selection.toString();
+            var should_highlight = true;
 
             // Ensure empty string not selected
             if (!selection_text 
               || selection.isCollapsed) {
-              removeAddHighlightButton();
-              return;
+              should_highlight = false;
             } 
 
             // Ensure not trying to highlight on annotation
             if ($.contains($('.annotation').get(0), e.target)) {
-              return;
+              should_highlight = false;
             }
 
             // Ensure only trying to highlight in a text block
             if (!$(e.target).is("p") && !$(e.target).is("div")) {
-              removeAddHighlightButton();
-              return;
+              should_highlight = false;
             }
+
+            $.each($("textarea").get(), function(i) {
+              if ($.contains($("textarea").get(i), e.target)) {
+                should_highlight = false;
+              }
+            });
+
+            $.each($("input").get(), function(i) {
+              if ($.contains($("input").get(i), e.target)) {
+                should_highlight = false;
+              }
+            });
+
+            $.each($("div[contenteditable=true]").get(), function(i) {
+              if ($.contains($("div[contenteditable=true]").get(i), e.target)) {
+                should_highlight = false;
+              }
+            });
 
             // If already highlighted, don't do anything
             if (e.target.classList.contains('highlight-annote') || 
               e.target.classList.contains('temp-highlight')) {
-              return;
+              should_highlight = false;
             }
 
-            getSentenceAndHighlight();
+            if (should_highlight) {
+              getSentenceAndHighlight();
+            } else {
+              removeAddHighlightButton();
+            }
 
-            if ($('.temp-highlight').is(':visible')) {
-              var parentTop = $('.temp-highlight').offset().top - $(window).scrollTop() - 48;
-              var parentLeft = $('.temp-highlight').offset().left - $(window).scrollLeft() + $('.temp-highlight').width() / 2;
+            if ($('.temp-highlight').is(':visible') && should_highlight) {
 
-              if ($("#add-highlight-button").is(":visible")) {
-                $("#add-highlight-button").animate({
-                  'left': parentLeft,
-                  'top': parentTop,
-                }, 200).animate({
-                  'top': parentTop - 3,
-                }, 30).animate({
-                  'top': parentTop,
-                });
-              } else {
-                $("#add-highlight-button").css({
-                  'left': parentLeft,
-                  'top': parentTop,
-                });
-                // $("#add-highlight-button").fadeIn("fast");
-                $("#add-highlight-button").animate({
-                  'left': parentLeft,
-                  'top': parentTop - 4,
-                  'opacity': "show",
-                }, 200).animate({
-                  'top': parentTop,
-                }, 70);
-              }
+              annotationDelay = setTimeout(function() {
+                var parentTop = $('.temp-highlight').offset().top - $(window).scrollTop() - 48;
+                var parentLeft = $('.temp-highlight').offset().left - $(window).scrollLeft() + $('.temp-highlight').width() / 2;
 
-              annote_position.left = parentLeft;
-              annote_position.top = parentTop;
-              annote_position.anchor_top = $(window).scrollTop();
-              annote_position.anchor_left = $(window).scrollLeft();
+                if ($("#add-highlight-button").is(":visible")) {
+                  $("#add-highlight-button").animate({
+                    'left': parentLeft,
+                    'top': parentTop,
+                  }, 200).animate({
+                    'top': parentTop - 3,
+                  }, 30).animate({
+                    'top': parentTop,
+                  });
+                } else {
+                  $("#add-highlight-button").css({
+                    'left': parentLeft,
+                    'top': parentTop,
+                  });
+                  // $("#add-highlight-button").fadeIn("fast");
+                  $("#add-highlight-button").animate({
+                    'left': parentLeft,
+                    'top': parentTop - 4,
+                    'opacity': "show",
+                  }, 200).animate({
+                    'top': parentTop,
+                  }, 70);
+                }
+
+                annote_position.left = parentLeft;
+                annote_position.top = parentTop;
+                annote_position.anchor_top = $(window).scrollTop();
+                annote_position.anchor_left = $(window).scrollLeft();
+              }, 700);
             }
           } 
         }
@@ -447,31 +501,6 @@ function highlighting(user, baseUrl) {
         }
       });
 
-      var tooltipDelay;
-      // Display valuetag description above tag
-      $("body").on("mouseenter", ".add-valuetag-tag", function(e) {
-        var obj = $(this);
-        if (all_tags[obj.attr("name")].description != "") {
-          tooltipDelay = setTimeout(function() {
-            var tooltip = $("<span>", {"class": "icon-name-tooltip"});
-            $(tooltip).html(all_tags[obj.attr("name")].description);
-            obj.append(tooltip);
-            $(tooltip).css({
-              "top": $(e.target).offset().top - $(window).scrollTop() - 33,
-              "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 + obj.width() / 2 + 10,
-            });
-          }, 700);
-        }
-      });
-
-      // Remove valuetag description tooltip upon leaving hover
-      $("body").on("mouseleave", ".add-valuetag-tag", function() {
-        clearTimeout(tooltipDelay);
-        if ($(".icon-name-tooltip").is(":visible")) {
-          $(".icon-name-tooltip").remove();
-        }
-      });
-
       // ***
       // *** HIGHLIGHT ANNOTATION INTERFACE LISTENERS *** //
       // ***
@@ -516,10 +545,14 @@ function highlighting(user, baseUrl) {
               var annote_voters = $("<div>", {"class": "annote-voters", "id": tag_attrs.name});
               var annote_valuetag_desc = $("<div>", {"class": "annote-valuetag-desc", "id": tag_attrs.name});
 
-              annote_valuetag.html(tag_attrs.name + "<span class='delete-tag-btn' tag=" + tag_attrs.name + "><i class='fa fa-trash' aria-hidden='true'></i></span>");
+              annote_valuetag.html(tag_attrs.name);
               annote_valuetag.css({
                 'background-color': tag_attrs.color,
               });
+
+              if (tag_attrs.is_owner) {
+                annote_valuetag.append("<span class='delete-tag-btn' tag=" + tag_attrs.name + "><i class='fa fa-trash' aria-hidden='true'></i></span>")
+              }
 
               var vote_count = 0
               var extra_votes = null;
@@ -534,7 +567,7 @@ function highlighting(user, baseUrl) {
                   var pic_url = tag_attrs.votes[vote].pic;
 
                   annote_voters.append(
-                    '<span class="votes-byuser" name="' + tag_attrs.name + '" id="' + tag_attrs.votes[vote].name + '"><img class="votes-icon" src=' + pic_url + '></span>'
+                    '<span class="votes-byuser" name="' + tag_attrs.name + '" id="' + tag_attrs.votes[vote].name + '"><a target="_blank" href="' + baseUrl + "/users/" + tag_attrs.votes[vote].name + '"><img class="votes-icon" src=' + pic_url + '/></a></span>'
                   );
                 }
               }
@@ -600,7 +633,7 @@ function highlighting(user, baseUrl) {
             text = $(e.target).attr("highlight");
             $('.annote-text').append(add_tag_existing);
 
-            if ($(obj).attr('is_owner')) {
+            if ($(obj).attr('is_owner') === 'true') {
               var hl_error = $("<div>", {"class": "highlight-error"});
               var delete_highlight = $("<div>", {"class": "delete-highlight"});
               delete_highlight.html("Delete this highlight");            
@@ -647,66 +680,6 @@ function highlighting(user, baseUrl) {
         $('.delete-tag-btn[tag=' + tag + ']').hide();
       });
 
-      $('body').on('mouseenter', '.delete-tag-btn', function(e) {
-        var obj = $(this);
-        tooltipDelay = setTimeout(function() {
-          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
-          $(tooltip).html("Delete this tag");
-          obj.append(tooltip);
-          $(tooltip).css({
-            "top": $(e.target).offset().top - $(window).scrollTop() - 33,
-            "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 - 8,
-          });
-        }, 300);
-      });
-
-      $('body').on('mouseleave', '.delete-tag-btn', function(e) {
-        clearTimeout(tooltipDelay);
-        if ($(".icon-name-tooltip").is(":visible")) {
-          $(".icon-name-tooltip").remove();
-        }
-      });
-
-      $('body').on('mouseenter', '.annote-votebutton', function(e) {
-        var obj = $(this);
-        tooltipDelay = setTimeout(function() {
-          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
-          $(tooltip).html("Upvote this tag");
-          obj.append(tooltip);
-          $(tooltip).css({
-            "top": $(e.target).offset().top - $(window).scrollTop() - 33,
-            "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 - 4,
-          });
-        }, 300);
-      });
-
-      $('body').on('mouseleave', '.annote-votebutton', function(e) {
-        clearTimeout(tooltipDelay);
-        if ($(".icon-name-tooltip").is(":visible")) {
-          $(".icon-name-tooltip").remove();
-        }
-      });
-
-      $('body').on('mouseenter', '#add-highlight-button', function(e) {
-        var obj = $(this);
-        tooltipDelay = setTimeout(function() {
-          var tooltip = $("<span>", {"class": "icon-name-tooltip"});
-          $(tooltip).html("Highlight this text");
-          obj.append(tooltip);
-          $(tooltip).css({
-            "top": $(e.target).offset().top - $(window).scrollTop() - 33,
-            "left": $(e.target).offset().left - $(window).scrollLeft() - $(tooltip).width() / 2 + 7,
-          });
-        }, 300);
-      });
-
-      $('body').on('mouseleave', '#add-highlight-button', function(e) {
-        clearTimeout(tooltipDelay);
-        if ($(".icon-name-tooltip").is(":visible")) {
-          $(".icon-name-tooltip").remove();
-        }
-      });
-
       $('body').on('click', '.delete-highlight', function(e) {
         $('.annote-text').animate({
           height: '50px',
@@ -743,7 +716,6 @@ function highlighting(user, baseUrl) {
         });
       });
 
-      var annotationDelay;
       // Pop up annotation box on hover with delay
       $('body').on('mouseenter', '.highlight-annote', function(e) {
         var obj = $(this);
@@ -760,22 +732,6 @@ function highlighting(user, baseUrl) {
       // Cancel annotation box appearance delay
       $('body').on('mouseleave', '.highlight-annote', function(e) {
         clearTimeout(annotationDelay);
-      });
-
-      // Display username upon hover on user icon
-      $("body").on("mouseenter", ".votes-byuser", function(e) {
-        var tooltip = $("<span>", {"class": "icon-name-tooltip"});
-        $(tooltip).html($(this).attr("id"));
-        $(tooltip).css({
-          "top": $(e.target).offset().top - $(window).scrollTop() - 38,
-          "left": $(e.target).offset().left - $(window).scrollLeft() - $(e.target).width() / 2,
-        });
-        $(this).append(tooltip);
-      });
-
-      // Remove username tooltip upon leaving hover
-      $("body").on("mouseleave", ".votes-byuser", function() {
-        $(".icon-name-tooltip").remove();
       });
 
 
@@ -815,9 +771,9 @@ function highlighting(user, baseUrl) {
                 + tagName 
                 + '" id="' 
                 + user.username
-                + '"><img class="votes-icon" src="' 
+                + '"><a target="_blank" href="' + baseUrl + "/users/" + user.username + '"><img class="votes-icon" src="' 
                 + user_pic_url 
-                + '"></span>');
+                + '"></a></span>');
             }
           });
         } else if ($(this).hasClass("valuetag_rmvote")) {
@@ -853,6 +809,28 @@ function highlighting(user, baseUrl) {
           });
         }
       });
+
+      // ****
+      // TOOLTIP LISTENERS
+      // ****
+
+      // Add remove tooltip listener to elements 
+      $("body").on("mouseleave", ".votes-byuser, #add-highlight-button, .annote-votebutton, .delete-tag-btn, .add-valuetag-tag", function() { 
+        removeTooltip(); 
+      });
+
+      // Display username upon hover on user icon
+      $("body").on("mouseenter", ".votes-byuser", function(e) { addTooltip(e, $(this), $(this).attr("id"), 0, -10); });
+      $("body").on("mouseenter", ".delete-tag-btn", function(e) { addTooltip(e, $(this), "Delete this tag", 0, -12); });
+      $("body").on("mouseenter", ".annote-votebutton", function(e) { addTooltip(e, $(this), "Upvote this tag", 5, -11); });
+      $("body").on("mouseenter", "#add-highlight-button", function(e) { addTooltip(e, $(this), "Highlight this text", 0, -11); });
+      $("body").on("mouseenter", ".add-valuetag-tag", function(e) {
+        var desc = all_tags[$(this).attr("name")].description;
+        if (desc !== "") {
+          addTooltip(e, $(this), desc, 0, 8, 700);
+        }
+      });
+
     });
   }
 }
@@ -934,6 +912,9 @@ function disable_highlighting() {
       "background-color": "#fff",
     });
   });
+
+  sheet.deleteRule(0);
+  sheet.deleteRule(0);
 }
 
 function reenable_highlighting() {
@@ -949,7 +930,17 @@ function reenable_highlighting() {
   if (!highlight_exists) {
     getHighlights(url);
   }
+
+  sheet.insertRule("::selection { background: #f3f3f3; }", 0);
+  sheet.insertRule(".temp-highlight { background-color: #f3f3f3; border-bottom: 2px solid #a5cbe7; } ", 0);
 }
+
+var sheet = (function() {
+  var style = document.createElement("style");
+  style.appendChild(document.createTextNode(""));
+  document.head.appendChild(style);
+  return style.sheet;
+})();
 
 // Trigger highlighting 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
@@ -959,6 +950,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
   if (request.type === "toggleHighlight") {
     highlighting_enabled = request.user.highlighting;
+    highlighting(request.user, request.baseUrl);
 
     if (!highlighting_enabled) {
       disable_highlighting();

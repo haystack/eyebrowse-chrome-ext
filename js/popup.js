@@ -476,6 +476,9 @@ var ValueDisplayView = Backbone.View.extend({
                                 }
 
                                 if (!--count) {
+                                    if (_.size(user_tags) === 0) {
+                                        $('.usergenerated_values').html('');
+                                    } 
                                     for (var val in user_tags) {
                                         var tag_info = user_tags[val];
                                         tag_info.name = tag_info.name[0].toUpperCase() + tag_info.name.substring(1, tag_info.name.length)
@@ -1187,6 +1190,7 @@ $(document).ready(function() {
           chrome.tabs.sendMessage(tabs[0].id, {
             "type": "toggleHighlight",
             "user": user,
+            "baseUrl": baseUrl,
           });
         });
 

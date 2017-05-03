@@ -3,16 +3,6 @@
     margin: 5px auto;
 }
 
-::selection {
-  background: #f3f3f3;
-}
-
-.temp-highlight {
-  background-color: #f3f3f3;
-  display: inline;
-  border-bottom: 2px solid #a5cbe7;
-}
-
 .annotation {
   display: none;
   background-color: #fff;
@@ -78,6 +68,10 @@
   vertical-align: top;
   position: relative;
   display: inline-block;
+}
+
+.votes-byuser {
+  display: block;
 }
 
 .plus_symbol {
@@ -270,6 +264,7 @@
   color: #fff;
   position: fixed;
   font-size: 11px;
+  z-index: 10;
 }
 
 .icon-name-tooltip::after {
