@@ -565,7 +565,7 @@ function highlighting(user, baseUrl) {
                   var pic_url = tag_attrs.votes[vote].pic;
 
                   annote_voters.append(
-                    '<span class="votes-byuser" name="' + tag_attrs.name + '" id="' + tag_attrs.votes[vote].name + '"><img class="votes-icon" src=' + pic_url + '></span>'
+                    '<span class="votes-byuser" name="' + tag_attrs.name + '" id="' + tag_attrs.votes[vote].name + '"><a target="_blank" href="' + baseUrl + "/users/" + tag_attrs.votes[vote].name + '"><img class="votes-icon" src=' + pic_url + '/></a></span>'
                   );
                 }
               }
@@ -798,7 +798,7 @@ function highlighting(user, baseUrl) {
         $(tooltip).html($(this).attr("id"));
         $(tooltip).css({
           "top": $(e.target).offset().top - $(window).scrollTop() - 38,
-          "left": $(e.target).offset().left - $(window).scrollLeft() - $(e.target).width() / 2,
+          "left": $(e.target).offset().left - $(window).scrollLeft() - $(e.target).width() / 2 + 2,
         });
         $(this).append(tooltip);
       });
@@ -845,9 +845,9 @@ function highlighting(user, baseUrl) {
                 + tagName 
                 + '" id="' 
                 + user.username
-                + '"><img class="votes-icon" src="' 
+                + '"><a target="_blank" href="' + baseUrl + "/users/" + user.username + '"><img class="votes-icon" src="' 
                 + user_pic_url 
-                + '"></span>');
+                + '"></a></span>');
             }
           });
         } else if ($(this).hasClass("valuetag_rmvote")) {
@@ -983,8 +983,8 @@ function reenable_highlighting() {
     getHighlights(url);
   }
 
-  sheet.insertRule("::selection { background: #f3f3f3; }");
-  sheet.insertRule(".temp-highlight { background-color: #f3f3f3; border-bottom: 2px solid #a5cbe7; } ");
+  sheet.insertRule("::selection { background: #f3f3f3; }", 0);
+  sheet.insertRule(".temp-highlight { background-color: #f3f3f3; border-bottom: 2px solid #a5cbe7; } ", 0);
 }
 
 var sheet = (function() {
