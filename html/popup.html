@@ -262,12 +262,14 @@
           </div>
           <div class="value_summary_box">
             <div class="value_summary_header">Article Summary</div>
-            <div class="value_summary_subtitle subtitle">Tags in this article</div>
-            <div class="value_summary_tags">
-              <% _.each(value_tags, function(tag){ %>
-                <div class="story_tag" style="background-color: <%= tag.color %>"><%= tag.name %></div>
-              <% }); %>
-            </div>
+            <% if (value_tags.length > 0) { %>
+              <div class="value_summary_subtitle subtitle">Tags in this article</div>
+              <div class="value_summary_tags">
+                <% _.each(value_tags, function(tag){ %>
+                  <div class="story_tag" style="background-color: <%= tag.color %>"><%= tag.name %></div>
+                <% }); %>
+              </div>
+            <% } %>
             <div class="value_summary_helpertext"></div>
             <div class="value_summary_text" contenteditable=true maxlength=500>
               <%= summary %>
