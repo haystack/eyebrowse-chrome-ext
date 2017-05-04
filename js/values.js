@@ -314,7 +314,7 @@ function highlighting(user, baseUrl) {
               removeAddHighlightButton();
             }
 
-            if ($('.temp-highlight').is(':visible') && should_highlight) {
+            if ($('.temp-highlight').parent() && should_highlight) {
               annotationDelay = setTimeout(function() {
                 var parentTop = $('.temp-highlight').offset().top - $(window).scrollTop() - 48;
                 var parentLeft = $('.temp-highlight').offset().left - $(window).scrollLeft() + $('.temp-highlight').width() / 2;
@@ -369,6 +369,8 @@ function highlighting(user, baseUrl) {
             var selection = window.getSelection();
             selection.removeAllRanges();
             selection.addRange(range);
+          } else {
+            $('.temp-highlight').remove();
           }
         }
       }

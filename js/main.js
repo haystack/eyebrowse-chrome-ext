@@ -405,7 +405,9 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         bubbleInfo(tabId, url);
     }, 3000);
 
-    highlight();
+    if (!(highlightBlacklist.has(getHostName(url)))) {
+        highlight();
+    }
 
     if (user.getIncognito() === false) {
 
