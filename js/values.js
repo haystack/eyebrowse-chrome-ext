@@ -83,7 +83,7 @@ function highlighting(user, baseUrl) {
       // Helper function to remove tooltip
       var removeTooltip = function() {
         clearTimeout(tooltipDelay);
-        if ($(".icon-name-tooltip").is(":visible")) {
+        if ($(".icon-name-tooltip").length !== 0) {
           $(".icon-name-tooltip").remove();
         }
       }
@@ -100,13 +100,9 @@ function highlighting(user, baseUrl) {
         }, delay);
       }
 
-      $("body").on("mouseover", function(e) {
-        console.log(e.clientX);
-      })
-
       // Helper function to remove temporary highlighting from front end
       var removeTemporaryHighlight = function() {
-        if ($('.temp-highlight').is(':visible')) {
+        if ($('.temp-highlight').length !== 0) {
           var parent = $('.temp-highlight').parent();
           $('.temp-highlight').contents().unwrap()
           parent.get(0).normalize();
@@ -117,8 +113,9 @@ function highlighting(user, baseUrl) {
 
       // Helper function to remove add highlight button from front end
       var removeAddHighlightButton = function() {
-        if ($("#add-highlight-button").is(":visible")) {
+        if ($("#add-highlight-button").length !== 0) {
           $("#add-highlight-button").hide();
+          removeTooltip();
         }
       }
       
@@ -149,7 +146,7 @@ function highlighting(user, baseUrl) {
         var highlight_add_valuetag = $("<div>", {"class": "highlight-add-valuetag"});
         var add_valuetag_tags = $("<div>", {"class": "highlight-add-valuetag-tags"});
         var add_valuetag_submit = $("<div>", {"class": "highlight-add-valuetag-submit"});
-        add_valuetag_submit.addClass("btn");
+        add_valuetag_submit.addClass("custom-btn");
         var highlight_error = $("<div>", {"class": "highlight-error"});
         var add_custom_tag = $("<div>", {"class": "highlight-add-custom-tag"});
         var add_custom_tag_tags = $("<div>", {"class": "highlight-add-custom-tag-tags"});
@@ -221,7 +218,9 @@ function highlighting(user, baseUrl) {
       //  - annotation box
       //  - temporary highlight
       //  - permanent highlight
-      $('body').on('click', function(e) {
+      $("body").on("click", function(e) {
+        removeTooltip();
+
         if ($(e.target).attr("id") != ("add-highlight-button") 
           && $(e.target).attr("id") != ("add-symbol")) {
           if ($('.annotation').is(":visible")) {
@@ -270,7 +269,13 @@ function highlighting(user, baseUrl) {
 
             // Ensure only trying to highlight in a text block
             if (!$(e.target).is("p") && !$(e.target).is("div")) {
-              should_highlight = false;
+              if ($(e.target).is("em, strong, li, ul, ol, b")) {
+                if (!$(e.target).parent().is("p, div")) {
+                  should_highlight = false;
+                }
+              } else {
+                should_highlight = false;
+              }
             }
 
             $.each($("textarea").get(), function(i) {
@@ -291,6 +296,12 @@ function highlighting(user, baseUrl) {
               }
             });
 
+            // Ensure not trying to overlap existing highlight
+            var range = selection.getRangeAt(0)
+            if (range.cloneContents().querySelector('.highlight-annote')) {
+              should_highlight = false;
+            }
+
             // If already highlighted, don't do anything
             if (e.target.classList.contains('highlight-annote') || 
               e.target.classList.contains('temp-highlight')) {
@@ -303,8 +314,7 @@ function highlighting(user, baseUrl) {
               removeAddHighlightButton();
             }
 
-            if ($('.temp-highlight').is(':visible') && should_highlight) {
-
+            if ($('.temp-highlight').parent() && should_highlight) {
               annotationDelay = setTimeout(function() {
                 var parentTop = $('.temp-highlight').offset().top - $(window).scrollTop() - 48;
                 var parentLeft = $('.temp-highlight').offset().left - $(window).scrollLeft() + $('.temp-highlight').width() / 2;
@@ -359,6 +369,8 @@ function highlighting(user, baseUrl) {
             var selection = window.getSelection();
             selection.removeAllRanges();
             selection.addRange(range);
+          } else {
+            $('.temp-highlight').remove();
           }
         }
       }
@@ -626,7 +638,7 @@ function highlighting(user, baseUrl) {
 
             if (add_tag_existing_tags.children().length > 0) {
               var add_tag_existing_submit = $("<div>", {"class": "highlight-add-valuetag-submit", "highlight_id": highlight});
-              add_tag_existing_submit.addClass("btn");
+              add_tag_existing_submit.addClass("custom-btn");
               add_tag_existing_submit.html("Save");
             }
 

@@ -176,3 +176,39 @@ function muteColor(colorString) {
   
   return rgbString;
 }
+
+function getHostName(url) {
+    var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+    if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+        return match[2];
+    }
+    else {
+        return null;
+    }
+}
+
+// Pulled from Alexa 100
+var highlightBlacklist = new Set([
+    "facebook.com",
+    "twitter.com",
+    "medium.com",
+    "gmail.com",
+    "google.com",
+    "stackoverflow.com",
+    "youtube.com",
+    "baidu.com",
+    "reddit.com",
+    "amazon.com",
+    "instagram.com",
+    "live.com",
+    "linkedin.com",
+    "netflix.com",
+    "imgur.com",
+    "ebay.com",
+    "bing.com",
+    "pinterest.com",
+    "github.com",
+    "dropbox.com",
+    "craigslist.com",
+    "soundcloud.com",
+]);

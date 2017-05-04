@@ -1,6 +1,7 @@
 "use strict";
 
-var user, baseUrl, logged_in, navView, loginView, homeView, valueView, vdView, vcView, htView;
+var user, baseUrl, logged_in, navView, loginView, homeView, valueView, vdView, vcView, vsView, htView;
+var pageTags = {};
 
 ////// MODELS //////////
 var ChatUser = Backbone.Model.extend({
@@ -344,6 +345,7 @@ var ValueView = Backbone.View.extend({
     initialize: function() {
         htView = new HighlightToggleView();
         this.render();
+        pageTags = {};
     },
 
     render: function() {
@@ -387,6 +389,7 @@ var ValueView = Backbone.View.extend({
 
                 vdView = new ValueDisplayView(url, loggedIn);
                 vcView = new ValueCompView(url, loggedIn);
+                vsView = new ValueSummaryView(url, loggedIn);
             });
         });
     }
@@ -441,6 +444,7 @@ var ValueDisplayView = Backbone.View.extend({
             for (var val in valueTags) {
                 var tag_info = valueTags[val]
                 auto_tags[tag_info.name] = true;
+                pageTags[tag_info.name] = tag_info;
                 tag_info.name = tag_info.name[0].toUpperCase() + tag_info.name.substring(1, tag_info.name.length)
 
                 var template = _.template($("#value_template").html(), {
@@ -472,6 +476,7 @@ var ValueDisplayView = Backbone.View.extend({
                                 for (var tag in res.tags) {
                                     if (!(res.tags[tag].name in auto_tags)) {
                                         user_tags[res.tags[tag].name] = res.tags[tag];
+                                        pageTags[res.tags[tag].name] = res.tags[tag];
                                     }
                                 }
 
@@ -547,6 +552,12 @@ var ValueCompView = Backbone.View.extend({
                 "csrfmiddlewaretoken": user.csrf,
             }).done(function(res) {
                 var valuetags = res.tags
+                var hl_text = "0 highlights";
+                if (res.highlights === 1) {
+                    hl_text = "1 highlight";
+                } else if (res.highlights > 1) {
+                    hl_text = res.highlights.toString() + " highlights";
+                }
                 var template = _.template($("#relatedstories_template").html(), {
                     id: id,
                     link: story.link,
@@ -562,6 +573,118 @@ var ValueCompView = Backbone.View.extend({
         });
     }
 });
+
+var ValueSummaryView = Backbone.View.extend({
+    "el": $(".content-container"),
+    "url": "",
+    "maxLen": 1000,
+
+    initialize: function(url, loggedIn) {
+        this.url = url;
+        this.render(url, loggedIn);
+        this.maxLen = 1000;
+    },
+
+    render: function() {
+        var container = $(this.el);
+
+        if (!user.isLoggedIn()) {
+            return;
+        }
+
+        $.get(baseUrl + "/tags/page/summary", {
+            "url": this.url,
+        }).done(function(res) {
+            var editor, time;
+            var summary = '<p class="default-message">No summary yet... start writing one here! </p><p>Summarize the perspective of the article here.</p>';
+            if (res.data.summary.summary !== "") {
+                summary = res.data.summary.summary;
+                editor = res.data.summary.user;
+                time = res.data.summary.date;
+
+                $(".value_summary_text").on("click", function(){
+                    $(this).html("");
+                });
+            } else {
+                editor = 'no one';
+                time = 'n/a';
+            }
+            var value_summary_template = _.template($("#value_summary_template").html(), {
+                'summary': summary,
+                'editor': editor,
+                'time': time,
+                'count': 1000 - summary.length,
+                'value_tags': pageTags,
+            });
+            $(".value_content").html(value_summary_template);
+        });
+    },
+
+    events: {
+        "keypress .value_summary_text": "postSummary",
+        "input .value_summary_text": "updateCounter",
+        "click .value_summary_text": "clearBox",
+    },
+
+    clearBox: function(e) {
+        if ($(".value_summary_text").children('.default-message').length > 0) {
+            $(".value_summary_text").html("");
+        }
+    },
+
+    updateCounter: function(e) {
+        var text = $('.value_summary_text').get(0).textContent
+        var count = this.maxLen - text.length;
+
+        if (count <= 0) {
+            $('.value_summary_text').html(text.substring(0, this.maxLen));
+        }
+
+        if (count < 50) {
+            $('.value_summary_counter').addClass("danger");
+        } else {
+            $('.value_summary_counter').removeClass("danger");
+        }
+
+        $('.value_summary_counter #count').html((count).toString());
+    },
+
+    postSummary: function(e) {
+        var count = this.maxLen - $('.value_summary_text').get(0).textContent.length;
+        $('.value_summary_helpertext').html("Unsaved changes");
+        $('.value_summary_helpertext').css({
+            opacity: 1,
+        });
+
+        if (count <= 0) {
+            e.preventDefault();
+        }
+
+        if (e.keyCode === 13) {
+            var summary = $(e.target).get(0).textContent;
+            $('.value_summary_helpertext').html('<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>');
+            $.post(baseUrl + "/tags/page/summary", {
+                "url": this.url,
+                "summary": summary,
+                "csrfmiddlewaretoken": user.csrf,
+            }).done(function(res) {
+                window.getSelection().removeAllRanges();
+                $('.value_summary_text').blur();
+                $('#edited_user').html(res.data.summary.user);
+                $('#edited_time').html(res.data.summary.date);
+                $('.value_summary_helpertext').html("Success - summary saved! 🎉");
+                $('.value_summary_helpertext').animate({
+                    opacity: 1,
+                }, 300);
+                setTimeout(function() {
+                    $('.value_summary_helpertext').animate({
+                        opacity: 0,
+                    }, 300);
+                }, 2000);
+            });
+        }
+    }
+})
 
 var HighlightToggleView = Backbone.View.extend({
     initialize: function() {
@@ -1179,12 +1302,17 @@ $(document).ready(function() {
             if (vdView != undefined) {
                 vdView.render();
             }
+        } else if ($(this).hasClass("value_summary")) {
+            if (vsView != undefined) {
+                vsView.render();
+            }
         }
     });
 
     $("body").on("click", ".highlighting_toggle", function() {
         var state = !user.getHighlighting();
         user.setHighlighting(state);
+        user.saveState();
 
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
           chrome.tabs.sendMessage(tabs[0].id, {
