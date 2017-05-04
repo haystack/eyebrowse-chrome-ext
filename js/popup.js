@@ -624,7 +624,6 @@ var ValueSummaryView = Backbone.View.extend({
         "keypress .value_summary_text": "postSummary",
         "input .value_summary_text": "updateCounter",
         "click .value_summary_text": "clearBox",
-        "blur .value_summary_text": "postSummary",
     },
 
     clearBox: function(e) {
@@ -652,13 +651,18 @@ var ValueSummaryView = Backbone.View.extend({
 
     postSummary: function(e) {
         var count = this.maxLen - $('.value_summary_text').get(0).textContent.length;
+        $('.value_summary_helpertext').html("Unsaved changes");
+        $('.value_summary_helpertext').css({
+            opacity: 1,
+        });
 
         if (count <= 0) {
             e.preventDefault();
         }
 
-        if (e.keyCode === 13 || event.type === 'blur') {
+        if (e.keyCode === 13) {
             var summary = $(e.target).get(0).textContent;
+            $('.value_summary_helpertext').html('<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>');
             $.post(baseUrl + "/tags/page/summary", {
                 "url": this.url,
                 "summary": summary,
@@ -666,7 +670,6 @@ var ValueSummaryView = Backbone.View.extend({
             }).done(function(res) {
                 window.getSelection().removeAllRanges();
                 $('.value_summary_text').blur();
-                console.log(res.data);
                 $('#edited_user').html(res.data.summary.user);
                 $('#edited_time').html(res.data.summary.date);
                 $('.value_summary_helpertext').html("Success - summary saved! 🎉");
