@@ -666,6 +666,7 @@ var ValueSummaryView = Backbone.View.extend({
             }).done(function(res) {
                 window.getSelection().removeAllRanges();
                 $('.value_summary_text').blur();
+                console.log(res.data);
                 $('#edited_user').html(res.data.summary.user);
                 $('#edited_time').html(res.data.summary.date);
                 $('.value_summary_helpertext').html("Success - summary saved! 🎉");
