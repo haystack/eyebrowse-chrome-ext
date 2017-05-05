@@ -6,7 +6,7 @@ var url = window.location.href;
 var generated_tags = {}
 
 function highlighting(user, baseUrl) {
-  if (!run_once) {
+  if (!run_once && highlighting_enabled) {
     $(document).ready(function() {      
       run_once = true;
       var vote_counts = {}; // Keeps track of client-side vote changes

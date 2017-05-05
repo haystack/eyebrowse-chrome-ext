@@ -382,19 +382,19 @@ var ValueView = Backbone.View.extend({
                         },
                     },
                 });
-                container.append(value_title_template);
+                container.html(value_title_template);
 
                 vdView = new ValueDisplayView(url, loggedIn);
                 vcView = new ValueCompView(url, loggedIn);
                 vsView = new ValueSummaryView(url, loggedIn);
-                vsView.render();
+                vdView.render();
 
                 var tags_by_page_url = sprintf("%s/tags/tags/page", baseUrl);
                 $.get(tags_by_page_url, {
                   "url": page_url,
                 }).done(function(res) {
-                    if (Object.keys(res.tags).length > 0) {
-                        vdView.render();
+                    if (Object.keys(res.tags).length === 0) {
+                        vsView.render();
                     }
                 });
             });
@@ -496,7 +496,7 @@ var ValueDisplayView = Backbone.View.extend({
                                         var template = _.template($("#value_template").html(), {
                                             loggedIn: this.loggedIn,
                                             value: tag_info,
-                                            color: muteColor(tag_info.color),
+                                            color: tag_info.color,
                                         });
                                         $(".usergenerated_values").append(template);
                                     }
@@ -639,7 +639,7 @@ var ValueSummaryView = Backbone.View.extend({
                                 for (var t in res.tags) {
                                     page_tags[res.tags[t].name] = res.tags[t];
                                 }
-                                
+
                                 var value_summary_template = _.template($("#value_summary_template").html(), {
                                     'summary': summary,
                                     'editor': editor,
@@ -650,6 +650,15 @@ var ValueSummaryView = Backbone.View.extend({
                                 $(".value_content").html(value_summary_template);
                             });
                         });
+
+                        var value_summary_template = _.template($("#value_summary_template").html(), {
+                            'summary': summary,
+                            'editor': editor,
+                            'time': time,
+                            'count': 1000 - summary.length,
+                            'value_tags': page_tags,
+                        });
+                        $(".value_content").html(value_summary_template);
                     }
                 });
             });
@@ -698,26 +707,32 @@ var ValueSummaryView = Backbone.View.extend({
 
         if (e.keyCode === 13) {
             var summary = $(e.target).get(0).textContent;
-            $('.value_summary_helpertext').html('<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>');
-            $.post(baseUrl + "/tags/page/summary", {
-                "url": this.url,
-                "summary": summary,
-                "csrfmiddlewaretoken": user.csrf,
-            }).done(function(res) {
-                window.getSelection().removeAllRanges();
-                $('.value_summary_text').blur();
-                $('#edited_user').html(res.data.summary.user);
-                $('#edited_time').html(res.data.summary.date);
-                $('.value_summary_helpertext').html("Success - summary saved! 🎉");
-                $('.value_summary_helpertext').animate({
-                    opacity: 1,
-                }, 300);
-                setTimeout(function() {
+
+            if (summary === '') {
+                $('.value_summary_helpertext').html("<span class='danger'>Summary cannot be blank</span>");
+            } else {
+                $('.value_summary_helpertext').html('<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>');
+                $.post(baseUrl + "/tags/page/summary", {
+                    "url": this.url,
+                    "summary": summary,
+                    "csrfmiddlewaretoken": user.csrf,
+                }).done(function(res) {
+                    window.getSelection().removeAllRanges();
+                    $('.value_summary_text').blur();
+                    $('#edited_user').html(res.data.summary.user);
+                    $('#edited_time').html(res.data.summary.date);
+                    $('.value_summary_helpertext').html("Success - summary saved! 🎉");
                     $('.value_summary_helpertext').animate({
-                        opacity: 0,
+                        opacity: 1,
                     }, 300);
-                }, 2000);
-            });
+                    setTimeout(function() {
+                        $('.value_summary_helpertext').animate({
+                            opacity: 0,
+                        }, 300);
+                    }, 2000);
+                });
+            }
+            
         }
     }
 })

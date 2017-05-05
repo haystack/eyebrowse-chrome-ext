@@ -681,11 +681,15 @@ a:hover {
 
 .value_summary_header {
     font-weight: bold;
-    margin-bottom: 5px;
 }
 
 .value_summary_subtitle {
     margin-bottom: 3px;
+    margin-top: 5px;
+}
+
+.value_summary_tags {
+    margin-bottom: 5px;
 }
 
 .subtext-dark {
@@ -704,7 +708,6 @@ a:hover {
     height: 12px;
     color: #aaa;
     padding-bottom: 10px;
-    margin-top: 3px;
 }
 
 .danger {
