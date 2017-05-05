@@ -84,7 +84,7 @@ var User = Backbone.Model.extend({
         "resourceURI": "/api/v1/user/",
         "ignoreLoginPrompt": false,
         "csrf": "",
-        "highlighting": false,
+        "highlighting": true,
     },
 
     initialize: function() {
