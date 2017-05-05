@@ -611,37 +611,57 @@ function highlighting(user, baseUrl) {
               annote_left_box.append(annote_valuetag);
               annote_left_box.append(annote_vote);
 
-              var comment_hider = $("<div>", {"class": "comment-hider comment-hidden", "tag_name": tag_attrs.name});
-              comment_hider.html("+ Add comment ");
+              var add_comment_hider = $("<div>", {"class": "add-comment-hider comment-hidden", "tag_name": tag_attrs.name});
+              add_comment_hider.html("+ Add comment ");
 
-              var comment_wrapper = $("<div>", {"class": "comment-wrapper"});
+              var comment_wrapper = $("<div>", {"class": "comment-wrapper", "tag_name": tag_attrs.name});
               var comments_wrapper = $("<div>", {"class": "comments-wrapper", "tag_name": tag_attrs.name});
               var add_comment_wrapper = $("<div>", {"class": "add-comment-wrapper", "tag_name": tag_attrs.name});
               var add_comment_box = $("<textarea>", {"class": "add-comment-box", "tag_name": tag_attrs.name, "placeholder": "Write a comment...", "maxlength": 500});
               var add_comment_submit = $("<div>", {"class": "add-comment-submit", "tag_name": tag_attrs.name, "highlight": highlight});
               add_comment_submit.html("Comment");
 
+              var comment_hider = $("<div>", {"class": "comment-hider comment-hidden", "tag_name": tag_attrs.name});
+
               $.get(baseUrl + "/tags/comments", {
                 'url': url,
                 'highlight': highlight,
                 'tag_name': tag_attrs.name,
               }).done(function(res) {
+                var count = 0;
                 $.each(res.data.comments, function(i) {
                   var comment = res.data.comments[i];
                   var comment_box = createComment(comment);
                   comments_wrapper.append(comment_box);
+                  count += 1;
                 });
+
+                var comment_text = " comments";
+                if (count === 1) {
+                  comment_text = " comment";
+                }
+                comment_hider.attr("count", count);
+                comment_hider.html("Show " + count + comment_text);
 
                 add_comment_wrapper.append(add_comment_box);
                 add_comment_wrapper.append(add_comment_submit);
                 comment_wrapper.append(comments_wrapper);
-                comment_wrapper.append(add_comment_wrapper);
 
                 annote_text_wrapper.append(annote_left_box);
                 annote_text_wrapper.append(annote_voters);
                 annote_text_wrapper.append(annote_valuetag_desc);
-                annote_text_wrapper.append(comment_wrapper);
                 annote_text_wrapper.append(comment_hider);
+                annote_text_wrapper.append(comment_wrapper);
+
+                if (count === 0) {
+                  $(comment_hider).html("")
+                  annote_text_wrapper.append(add_comment_wrapper);
+                  annote_text_wrapper.append(add_comment_hider);
+                } else {
+                  comment_wrapper.append(add_comment_wrapper);
+                  comment_wrapper.append(add_comment_hider);
+                }
+                
                 tag_area.append(annote_text_wrapper);
               });              
             });
@@ -700,7 +720,7 @@ function highlighting(user, baseUrl) {
         }
       }
 
-      $("body").on("click", ".comment-hider", function() {
+      $("body").on("click", ".add-comment-hider", function() {
         var name = $(this).attr("tag_name");
         if ($(this).hasClass("comment-hidden")) {
           $(".add-comment-wrapper[tag_name=" + name + "]").show();
@@ -709,6 +729,24 @@ function highlighting(user, baseUrl) {
         } else {
           $(".add-comment-wrapper[tag_name=" + name + "]").hide();
           $(this).html("+ Add comment");
+          $(this).addClass("comment-hidden").removeClass("comment-display");
+        }        
+      });
+
+      $("body").on("click", ".comment-hider", function() {
+        var name = $(this).attr("tag_name");
+        var count = $(this).attr("count");
+        var comment = " comments";
+        if (parseInt(count) === 1) {
+          comment = " comment";
+        }
+        if ($(this).hasClass("comment-hidden")) {
+          $(".comment-wrapper[tag_name=" + name + "]").show();
+          $(this).html("Hide " + count + comment);
+          $(this).removeClass("comment-hidden").addClass("comment-display");
+        } else {
+          $(".comment-wrapper[tag_name=" + name + "]").hide();
+          $(this).html("Show " + count + comment);
           $(this).addClass("comment-hidden").removeClass("comment-display");
         }        
       });
@@ -738,6 +776,14 @@ function highlighting(user, baseUrl) {
         }).done(function(res) {
           if (res.success) {
             var new_comment = createComment(res.comment);
+            var new_count = parseInt($('.comment-hider[tag_name=' + tag_name + ']').attr("count")) + 1;
+            $('.comment-hider[tag_name=' + tag_name + ']').attr("count", new_count);
+            $('.comment-wrapper[tag_name=' + tag_name + ']').show();
+            var comment = " comments";
+            if (new_count === 1) {
+              comment = " comment";
+            }
+            $('.comment-hider[tag_name=' + tag_name + ']').html("Hide " + new_count + comment);
             $('.comments-wrapper[tag_name=' + tag_name + ']').append(new_comment);
             $('.add-comment-box[tag_name=' + tag_name + ']').val('');
           }

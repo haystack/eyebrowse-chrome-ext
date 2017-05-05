@@ -412,9 +412,13 @@
 }
 
 .comments-wrapper {
-  margin-top: 10px;
+  margin-top: 5px;
   padding-top: 5px;
   border-top: 1px solid #eee;
+}
+
+.comment-wrapper {
+  display: none;
 }
 
 .update-comment-box {
@@ -422,8 +426,8 @@
   font-size: 11px;
 }
 
-.comment-hider {
-  margin-top: 5px;
+.add-comment-hider, .comment-hider {
+  margin-top: 3px;
   font-size: 11px;
   color: #bbb;
 }
