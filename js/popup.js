@@ -344,7 +344,6 @@ var ValueView = Backbone.View.extend({
 
     initialize: function() {
         htView = new HighlightToggleView();
-        this.render();
         pageTags = {};
     },
 
@@ -1263,6 +1262,7 @@ $(document).ready(function() {
     baseUrl = backpage.baseUrl;
     navView = new NavView();
     loginView = new LoginView(); // (presumably) calls initialization
+    valueView = new ValueView();
 
     /////setup funcs///////
     chrome.cookies.get({
@@ -1273,7 +1273,6 @@ $(document).ready(function() {
     });
 
     if (logged_in) {
-        valueView = new ValueView();
         homeView = new HomeView();
     }
     $("#home_tab").click(function() {
