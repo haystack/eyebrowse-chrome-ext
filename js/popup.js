@@ -389,6 +389,16 @@ var ValueView = Backbone.View.extend({
                 vdView = new ValueDisplayView(url, loggedIn);
                 vcView = new ValueCompView(url, loggedIn);
                 vsView = new ValueSummaryView(url, loggedIn);
+                vsView.render();
+
+                var tags_by_page_url = sprintf("%s/tags/tags/page", baseUrl);
+                $.get(tags_by_page_url, {
+                  "url": page_url,
+                }).done(function(res) {
+                    if (Object.keys(res.tags).length > 0) {
+                        vdView.render();
+                    }
+                });
             });
         });
     }
@@ -402,7 +412,7 @@ var ValueDisplayView = Backbone.View.extend({
     initialize: function(url, loggedIn) {
         this.url = url;
         this.loggedIn = loggedIn;
-        this.render(url, loggedIn);
+        // this.render(url, loggedIn);
     },
 
     render: function() {
@@ -512,7 +522,7 @@ var ValueCompView = Backbone.View.extend({
 
     initialize: function(url, loggedIn) {
         this.url = url;
-        this.render(url, loggedIn);
+        // this.render(url, loggedIn);
     },
 
     render: function() {
@@ -580,7 +590,7 @@ var ValueSummaryView = Backbone.View.extend({
 
     initialize: function(url, loggedIn) {
         this.url = url;
-        this.render(url, loggedIn);
+        // this.render(url, loggedIn);
         this.maxLen = 1000;
     },
 
