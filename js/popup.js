@@ -1,7 +1,6 @@
 "use strict";
 
 var user, baseUrl, logged_in, navView, loginView, homeView, valueView, vdView, vcView, vsView, htView;
-var pageTags = {};
 
 ////// MODELS //////////
 var ChatUser = Backbone.Model.extend({
@@ -344,7 +343,6 @@ var ValueView = Backbone.View.extend({
 
     initialize: function() {
         htView = new HighlightToggleView();
-        pageTags = {};
     },
 
     render: function() {
@@ -453,7 +451,6 @@ var ValueDisplayView = Backbone.View.extend({
             for (var val in valueTags) {
                 var tag_info = valueTags[val]
                 auto_tags[tag_info.name] = true;
-                pageTags[tag_info.name] = tag_info;
                 tag_info.name = tag_info.name[0].toUpperCase() + tag_info.name.substring(1, tag_info.name.length)
 
                 var template = _.template($("#value_template").html(), {
@@ -485,7 +482,6 @@ var ValueDisplayView = Backbone.View.extend({
                                 for (var tag in res.tags) {
                                     if (!(res.tags[tag].name in auto_tags)) {
                                         user_tags[res.tags[tag].name] = res.tags[tag];
-                                        pageTags[res.tags[tag].name] = res.tags[tag];
                                     }
                                 }
 
@@ -601,6 +597,7 @@ var ValueSummaryView = Backbone.View.extend({
             return;
         }
 
+        var page_url = this.url;
         $.get(baseUrl + "/tags/page/summary", {
             "url": this.url,
         }).done(function(res) {
@@ -618,14 +615,44 @@ var ValueSummaryView = Backbone.View.extend({
                 editor = 'no one';
                 time = 'n/a';
             }
-            var value_summary_template = _.template($("#value_summary_template").html(), {
-                'summary': summary,
-                'editor': editor,
-                'time': time,
-                'count': 1000 - summary.length,
-                'value_tags': pageTags,
+
+            var page_tags = {}
+            var tags_by_page_url = sprintf("%s/tags/tags/page", baseUrl);
+            $.get(tags_by_page_url, {
+              "url": page_url,
+            }).done(function(res) {
+                for (var t in res.tags) {
+                    page_tags[t] = res.tags[t];
+                }
+
+                var highlights_by_page = sprintf("%s/tags/highlights", baseUrl);
+                var tags_by_highlight = sprintf("%s/tags/tags/highlight", baseUrl);
+                $.get(highlights_by_page, {
+                    "url": page_url,
+                }).done(function(res) {
+                    if (res.success) {
+                        $.each(res.highlights, function(hl, hl_info) {
+                            $.get(tags_by_highlight, {
+                                url: page_url,
+                                highlight: hl_info.id,
+                            }).done(function(res) {
+                                for (var t in res.tags) {
+                                    page_tags[res.tags[t].name] = res.tags[t];
+                                }
+                                
+                                var value_summary_template = _.template($("#value_summary_template").html(), {
+                                    'summary': summary,
+                                    'editor': editor,
+                                    'time': time,
+                                    'count': 1000 - summary.length,
+                                    'value_tags': page_tags,
+                                });
+                                $(".value_content").html(value_summary_template);
+                            });
+                        });
+                    }
+                });
             });
-            $(".value_content").html(value_summary_template);
         });
     },
 

@@ -262,7 +262,7 @@
           </div>
           <div class="value_summary_box">
             <div class="value_summary_header">Article Summary</div>
-            <% if (value_tags.length > 0) { %>
+            <% if (Object.keys(value_tags).length > 0) { %>
               <div class="value_summary_subtitle subtitle">Tags in this article</div>
               <div class="value_summary_tags">
                 <% _.each(value_tags, function(tag){ %>
