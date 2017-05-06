@@ -934,7 +934,7 @@ function highlighting(user, baseUrl) {
 
       $('body').on('click', '.delete-highlight', function(e) {
         $('.annote-text').animate({
-          height: '50px',
+          height: '60px',
         });
         $('.annote-header').html("Are you sure you want to delete this highlight?");
         $('.annote-text').html("<div class='delete-highlight-btn custom-btn'>Delete</div>")
