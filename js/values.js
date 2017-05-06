@@ -6,7 +6,7 @@ var url = window.location.href;
 var generated_tags = {}
 
 function highlighting(user, baseUrl) {
-  if (!run_once) {
+  if (!run_once && user.highlighting) {
     $(document).ready(function() {      
       run_once = true;
       var vote_counts = {}; // Keeps track of client-side vote changes
@@ -258,7 +258,7 @@ function highlighting(user, baseUrl) {
 
             // Ensure empty string not selected
             if (!selection_text 
-              || selection.isCollapsed) {
+              || selection.isCollapsed || selection_text.length < 5 || !/\S/.test(selection_text)) {
               should_highlight = false;
             } 
 
@@ -548,8 +548,14 @@ function highlighting(user, baseUrl) {
               $('.annote-text').append(empty_message);
             }
 
+            var tag_area = $("<div>", {"class": "tag_area"});
+            var add_tag_area = $("<div>", {"class": "add_tag_area"});
+
+            $('.annote-text').append(tag_area);
+            $('.annote-text').append(add_tag_area);
+
             // Add value tags to DOM
-            for (var item in vts) {
+            $.each(vts, function(item) {
               var tag_attrs = vts[item];
               var annote_text_wrapper = $("<div>", {"class": "annote-text-wrapper", "id": tag_attrs.name});
               var annote_valuetag = $("<div>", {"class": "annote-valuetag", "id": tag_attrs.name});
@@ -570,7 +576,7 @@ function highlighting(user, baseUrl) {
               var extra_votes = null;
 
               // Add voter icons
-              for (var vote in tag_attrs.votes) {
+              $.each(tag_attrs.votes, function(vote) {
                 vote_count += 1;
 
                 if (vote_count > 2) {
@@ -582,7 +588,7 @@ function highlighting(user, baseUrl) {
                     '<span class="votes-byuser" name="' + tag_attrs.name + '" id="' + tag_attrs.votes[vote].name + '"><a target="_blank" href="' + baseUrl + "/users/" + tag_attrs.votes[vote].name + '"><img class="votes-icon" src=' + pic_url + '/></a></span>'
                   );
                 }
-              }
+              });
 
               if (extra_votes) {
                 annote_voters.append(extra_votes);
@@ -605,11 +611,60 @@ function highlighting(user, baseUrl) {
               annote_left_box.append(annote_valuetag);
               annote_left_box.append(annote_vote);
 
-              annote_text_wrapper.append(annote_left_box);
-              annote_text_wrapper.append(annote_voters);
-              annote_text_wrapper.append(annote_valuetag_desc);
-              $('.annote-text').append(annote_text_wrapper);
-            }  
+              var add_comment_hider = $("<div>", {"class": "add-comment-hider comment-hidden", "tag_name": tag_attrs.name});
+              add_comment_hider.html("+ Add comment ");
+
+              var comment_wrapper = $("<div>", {"class": "comment-wrapper", "tag_name": tag_attrs.name});
+              var comments_wrapper = $("<div>", {"class": "comments-wrapper", "tag_name": tag_attrs.name});
+              var add_comment_wrapper = $("<div>", {"class": "add-comment-wrapper", "tag_name": tag_attrs.name});
+              var add_comment_box = $("<textarea>", {"class": "add-comment-box", "tag_name": tag_attrs.name, "placeholder": "Write a comment...", "maxlength": 500});
+              var add_comment_submit = $("<div>", {"class": "add-comment-submit", "tag_name": tag_attrs.name, "highlight": highlight});
+              add_comment_submit.html("Comment");
+
+              var comment_hider = $("<div>", {"class": "comment-hider comment-hidden", "tag_name": tag_attrs.name});
+
+              $.get(baseUrl + "/tags/comments", {
+                'url': url,
+                'highlight': highlight,
+                'tag_name': tag_attrs.name,
+              }).done(function(res) {
+                var count = 0;
+                $.each(res.data.comments, function(i) {
+                  var comment = res.data.comments[i];
+                  var comment_box = createComment(comment);
+                  comments_wrapper.append(comment_box);
+                  count += 1;
+                });
+
+                var comment_text = " comments";
+                if (count === 1) {
+                  comment_text = " comment";
+                }
+                comment_hider.attr("count", count);
+                comment_hider.html("Show " + count + comment_text);
+
+                add_comment_wrapper.append(add_comment_box);
+                add_comment_wrapper.append(add_comment_submit);
+                comment_wrapper.append(comments_wrapper);
+
+                annote_text_wrapper.append(annote_left_box);
+                annote_text_wrapper.append(annote_voters);
+                annote_text_wrapper.append(annote_valuetag_desc);
+                annote_text_wrapper.append(comment_hider);
+                annote_text_wrapper.append(comment_wrapper);
+
+                if (count === 0) {
+                  $(comment_hider).html("")
+                  annote_text_wrapper.append(add_comment_wrapper);
+                  annote_text_wrapper.append(add_comment_hider);
+                } else {
+                  comment_wrapper.append(add_comment_wrapper);
+                  comment_wrapper.append(add_comment_hider);
+                }
+                
+                tag_area.append(annote_text_wrapper);
+              });              
+            });
 
             var add_tag_existing = $("<div>", {"class": "highlight-add-custom-tag existing"});
             var add_tag_existing_tags = $("<div>", {"class": "highlight-add-custom-tag-tags"});
@@ -664,6 +719,130 @@ function highlighting(user, baseUrl) {
           showAnnotationBox([left, top]);
         }
       }
+
+      $("body").on("click", ".add-comment-hider", function() {
+        var name = $(this).attr("tag_name");
+        if ($(this).hasClass("comment-hidden")) {
+          $(".add-comment-wrapper[tag_name=" + name + "]").show();
+          $(this).html("- Add comment");
+          $(this).removeClass("comment-hidden").addClass("comment-display");
+        } else {
+          $(".add-comment-wrapper[tag_name=" + name + "]").hide();
+          $(this).html("+ Add comment");
+          $(this).addClass("comment-hidden").removeClass("comment-display");
+        }        
+      });
+
+      $("body").on("click", ".comment-hider", function() {
+        var name = $(this).attr("tag_name");
+        var count = $(this).attr("count");
+        var comment = " comments";
+        if (parseInt(count) === 1) {
+          comment = " comment";
+        }
+        if ($(this).hasClass("comment-hidden")) {
+          $(".comment-wrapper[tag_name=" + name + "]").show();
+          $(this).html("Hide " + count + comment);
+          $(this).removeClass("comment-hidden").addClass("comment-display");
+        } else {
+          $(".comment-wrapper[tag_name=" + name + "]").hide();
+          $(this).html("Show " + count + comment);
+          $(this).addClass("comment-hidden").removeClass("comment-display");
+        }        
+      });
+
+      function createComment(comment) {
+        var comment_box = $("<div>", {"class": "comment-box", "comment_id": comment.id});
+        comment_box.html(
+          "<div class='comment-left'><img class='comment-user-pic' src=" + comment.prof_pic + "/></div>" 
+          + "<div class='comment-right'><span class='comment-user-name'>" + comment.user + "</span><span class='comment-text'>" + comment.comment + "</span>"
+          + "<div class='comment-date'>" + comment.date + "</div></div>"
+        );
+
+        if (comment.user === user.username) {
+          comment_box.append("<div class='comment-modify'><i class='fa fa-pencil comment-edit' aria-hidden='true'></i></div>");
+        }
+
+        return comment_box;
+      }
+
+      function addComment(url, tag_name, comment, highlight) {
+        $.post(baseUrl + "/tags/comment/add", {
+          'url': url,
+          'comment': comment,
+          'tag_name': tag_name,
+          'highlight': highlight,
+          "csrfmiddlewaretoken": user.csrf,
+        }).done(function(res) {
+          if (res.success) {
+            var new_comment = createComment(res.comment);
+            var new_count = parseInt($('.comment-hider[tag_name=' + tag_name + ']').attr("count")) + 1;
+            $('.comment-hider[tag_name=' + tag_name + ']').attr("count", new_count);
+            $('.comment-wrapper[tag_name=' + tag_name + ']').show();
+            var comment = " comments";
+            if (new_count === 1) {
+              comment = " comment";
+            }
+            $('.comment-hider[tag_name=' + tag_name + ']').html("Hide " + new_count + comment);
+            $('.comments-wrapper[tag_name=' + tag_name + ']').append(new_comment);
+            $('.add-comment-box[tag_name=' + tag_name + ']').val('');
+          }
+        });
+      }
+
+      $('body').on('mouseenter', '.comment-box', function(e) {
+        var comment_id = $(e.target).attr('comment_id')
+        if (!$('.update-comment-box[comment_id=' + comment_id + ']').is(':visible')) {
+          $(this).children('.comment-modify').show();
+          $(this).css('background-color', '#f9f9f9');
+        }
+      });
+
+      $('body').on('mouseleave', '.comment-box', function(e) {
+        $(this).children('.comment-modify').hide();
+        $(this).css('background-color', '#fff');
+      });
+
+      $('body').on('click', '.comment-edit', function(e) {
+        $(this).parent().hide();
+        $(this).parent().parent().css('background-color', '#fff');
+        var comment_id = $(e.target).attr('comment_id');
+        var current_comment = $(e.target).parent().parent().children('.comment-right').children('.comment-text')
+        var add_comment_box = $("<textarea>", {"class": "update-comment-box", "maxlength": 500, "comment_id": comment_id});
+        add_comment_box.val(current_comment.html());
+        current_comment.html(add_comment_box);
+      });
+
+      $('body').on('click', '.add-comment-submit', function(e) {
+        e.preventDefault();
+        var tag_name = $(this).attr('tag_name')
+        var comment = $('.add-comment-box[tag_name=' + tag_name + ']').val();
+        var highlight = $(this).attr('highlight');
+        addComment(url, tag_name, comment, highlight);
+      });
+
+      $('body').on('keydown', function(e) {
+        if (e.keyCode === 13 && $('.add-comment-box').is(':focus')) {
+          var tag_name = $(e.target).attr('tag_name')
+          var comment = $(e.target).val();
+          var highlight = $('.add-comment-submit[tag_name=' + tag_name + ']').attr('highlight');
+          addComment(url, tag_name, comment, highlight);
+        }
+
+        if (e.keyCode === 13 && $('.update-comment-box').is(':focus')) {
+          var comment_id = $(e.target).parent().parent().parent().attr('comment_id');
+          var new_comment = $(e.target).val();
+          var text_box = $(e.target).parent();
+
+          $.post(baseUrl + '/tags/comment/edit', {
+            'comment_id': comment_id,
+            'new_comment': new_comment,
+            "csrfmiddlewaretoken": user.csrf,
+          }).done(function(res) {
+            text_box.html(new_comment);
+          });
+        }
+      });
 
       $('body').on('click', '.delete-tag-btn', function(e) {
         var tag_name = $(this).attr('tag');
