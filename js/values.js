@@ -258,7 +258,7 @@ function highlighting(user, baseUrl) {
 
             // Ensure empty string not selected
             if (!selection_text 
-              || selection.isCollapsed) {
+              || selection.isCollapsed || selection_text.length < 3 || !/\S/.test(selection_text)) {
               should_highlight = false;
             } 
 
