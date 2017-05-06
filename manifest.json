@@ -9,6 +9,9 @@
     }, 
     "content_scripts": [
         {
+            "css": [
+                "css/values.css"
+            ], 
             "js": [
                 "libs/jquery-1.8.2.min.js", 
                 "libs/mustache.min.js", 
@@ -16,7 +19,8 @@
                 "libs/jquery.idle.js", 
                 "js/common.js", 
                 "js/prompt.js", 
-                "js/idle-detection.js"
+                "js/idle-detection.js", 
+                "js/values.js"
             ], 
             "matches": [
                 "<all_urls>"
@@ -34,12 +38,12 @@
     "name": "Eyebrowse", 
     "permissions": [
         "http://eyebrowse-staging.csail.mit.edu/*", 
-        "http://eyebrowse.csail.mit.edu/*", 
+        "https://eyebrowse.csail.mit.edu/*", 
         "http://localhost:8000/*", 
         "cookies", 
         "tabs"
     ], 
-    "version": "0.0.82", 
+    "version": "0.0.94", 
     "web_accessible_resources": [
         "css/prompt.css", 
         "html/prompt.html"

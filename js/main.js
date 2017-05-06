@@ -405,7 +405,9 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         bubbleInfo(tabId, url);
     }, 3000);
 
-    highlight();
+    if (!isInHighlightBlacklist(url)) {
+        highlight();
+    }
 
     if (user.getIncognito() === false) {
 
@@ -711,6 +713,16 @@ function sendInitialData(tabId) {
                         },
                         success: function(data, textStatus, jqXHR) {},
                     });
+
+                    var hl_url = sprintf("%s/tags/initialize_page", baseUrl);
+                    $.post(hl_url, {
+                        url: activeItem.url,
+                        favIconUrl: activeItem.favIconUrl,
+                        title: activeItem.title,
+                        add_usertags: true,
+                        domain_name: null,
+                        csrfmiddlewaretoken: user.getCSRF(),
+                    }).done(function(res) {});
                 }
             }
         }
@@ -747,6 +759,16 @@ function dumpData() {
                 local_history.splice(index, 1); //remove item from history on success
             },
         });
+
+        var hl_url = sprintf("%s/tags/initialize_page", baseUrl);
+        $.post(hl_url, {
+            url: item.url,
+            favIconUrl: item.favIconUrl,
+            title: item.title,
+            add_usertags: true,
+            domain_name: null,
+            csrfmiddlewaretoken: user.getCSRF(),
+        }).done(function(res) {});
     });
 }
 
