@@ -776,7 +776,7 @@ function highlighting(user, baseUrl) {
       function createComment(comment) {
         var comment_box = $("<div>", {"class": "comment-box", "comment_id": comment.id});
         comment_box.html(
-          "<div class='comment-left'><img class='comment-user-pic' src=" + comment.prof_pic + "/></div>" 
+          "<div class='comment-left'><img class='comment-user-pic' src='" + comment.prof_pic + "'/></div>" 
           + "<div class='comment-right'><span class='comment-user-name'>" + comment.user + "</span><span class='comment-text'>" + comment.comment + "</span>"
           + "<div class='comment-date'>" + comment.date + "</div></div>"
         );
