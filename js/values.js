@@ -607,7 +607,7 @@ function highlighting(user, baseUrl) {
                   var pic_url = tag_attrs.votes[vote].pic;
 
                   annote_voters.append(
-                    '<span class="votes-byuser" name="' + tag_attrs.name + '" id="' + tag_attrs.votes[vote].name + '"><a target="_blank" href="' + baseUrl + "/users/" + tag_attrs.votes[vote].name + '"><img class="votes-icon" src=' + pic_url + '/></a></span>'
+                    '<span class="votes-byuser" name="' + tag_attrs.name + '" id="' + tag_attrs.votes[vote].name + '"><a target="_blank" href="' + baseUrl + "/users/" + tag_attrs.votes[vote].name + '"><img class="votes-icon" src="' + pic_url + '"/></a></span>'
                   );
                 }
               });
