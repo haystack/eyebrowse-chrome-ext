@@ -187,28 +187,40 @@ function getHostName(url) {
     }
 }
 
+function isInHighlightBlacklist(url) {
+    for (let site of highlightBlacklist) {
+        var re = new RegExp("(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+" + site + "\.[^\s]{2,}|www\." + site + "\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))" + site + "\.[^\s]{2,}|www\." + site + "]\.[^\s]{2,})|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+\." + site + "\.[^\s]{2,}");
+        if (re.test(url)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Pulled from Alexa 100
 var highlightBlacklist = new Set([
-    "facebook.com",
-    "twitter.com",
-    "medium.com",
-    "gmail.com",
-    "google.com",
-    "stackoverflow.com",
-    "youtube.com",
-    "baidu.com",
-    "reddit.com",
-    "amazon.com",
-    "instagram.com",
-    "live.com",
-    "linkedin.com",
-    "netflix.com",
-    "imgur.com",
-    "ebay.com",
-    "bing.com",
-    "pinterest.com",
-    "github.com",
-    "dropbox.com",
-    "craigslist.com",
-    "soundcloud.com",
+    "facebook",
+    "twitter",
+    "medium",
+    "gmail",
+    "google",
+    "messenger",
+    "stackoverflow",
+    "youtube",
+    "baidu",
+    "reddit",
+    "amazon",
+    "instagram",
+    "live",
+    "linkedin",
+    "netflix",
+    "imgur",
+    "ebay",
+    "bing",
+    "pinterest",
+    "github",
+    "dropbox",
+    "craigslist",
+    "soundcloud",
+    "spotify",
 ]);
