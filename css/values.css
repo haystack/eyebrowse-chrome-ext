@@ -147,7 +147,7 @@
 .annote-text-wrapper {
   padding-bottom: 10px;
   padding-top: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #ccc;
 }
 
 .empty-valuetags {
@@ -443,7 +443,7 @@
   color: #bbb;
 }
 
-.fa:hover {
+.comment-box .fa:hover {
   color: #a5cbe7;
 }
 

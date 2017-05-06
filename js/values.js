@@ -910,10 +910,11 @@ function highlighting(user, baseUrl) {
           "csrfmiddlewaretoken": user.csrf,
         }).done(function(res) {
           if (res.res === 'success') {
-            $('.annote-text-wrapper #' + tag_name).animate({
+            var removal = $(e.target).parent().parent().parent().parent();
+            removal.animate({
               'height': 0,
             }, 300, "linear", function(){
-              $('.annote-text-wrapper #' + tag_name).remove();
+              removal.remove();
             });
           }
         });
