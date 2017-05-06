@@ -391,7 +391,7 @@ var ValueView = Backbone.View.extend({
 
                 var tags_by_page_url = sprintf("%s/tags/tags/page", baseUrl);
                 $.get(tags_by_page_url, {
-                  "url": page_url,
+                  "url": url,
                 }).done(function(res) {
                     if (Object.keys(res.tags).length === 0) {
                         vsView.render();
