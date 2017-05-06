@@ -330,7 +330,7 @@
   transition: background-color 0.3s ease-in;
 }
 
-.btn:hover {
+.custom-btn:hover {
   background-color: #00cc89;
   color: #fff;
   cursor: pointer;
