@@ -160,9 +160,9 @@ function getTemplate(templateId, templateArgs, templatePage, templateCache) {
 function hexToRgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? {
-      r: Math.min(parseInt(result[1], 16) + 35, 255),
-      g: Math.min(parseInt(result[2], 16) + 35, 255),
-      b: Math.min(parseInt(result[3], 16) + 35, 255)
+      r: Math.min(parseInt(result[1], 16) + 30, 255),
+      g: Math.min(parseInt(result[2], 16) + 30, 255),
+      b: Math.min(parseInt(result[3], 16) + 30, 255)
   } : null;
 }
 
