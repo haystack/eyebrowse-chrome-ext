@@ -361,7 +361,7 @@ function highlighting(user, baseUrl) {
                   annote_position.anchor_top = $(window).scrollTop();
                   annote_position.anchor_left = $(window).scrollLeft();
                 }
-              }, 1100)
+              }, 1000);
             } else {
               removeAddHighlightButton();
             }
@@ -410,11 +410,11 @@ function highlighting(user, baseUrl) {
       // ***
 
       $("body").on("click", ".highlight-add-custom-tag", function() {
-        var less_message = "- Show less tags";
-        var more_message = "+ Show more tags"
+        var less_message = "Show less tags";
+        var more_message = "Show more tags"
         if ($(this).hasClass('existing')) {
-          less_message = "- Hide additional tags";
-          more_message = "+ Add additional tags";
+          less_message = "Hide additional tags";
+          more_message = "Add additional tags";
         }
         if ($('.highlight-add-custom-tag-tags').attr("tag-status") === "less") {
           $('.highlight-add-custom-tag-tags').attr("tag-status", "more");
@@ -493,6 +493,8 @@ function highlighting(user, baseUrl) {
                       $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr({
                         "highlight": hl_id,
                         "is_owner": true,
+                      }).css({
+                        "border": "none",
                       });
                       // removeTemporaryHighlight();
                       $('.annote-text').animate({
@@ -689,7 +691,7 @@ function highlighting(user, baseUrl) {
             var add_tag_existing = $("<div>", {"class": "highlight-add-custom-tag existing"});
             var add_tag_existing_tags = $("<div>", {"class": "highlight-add-custom-tag-tags"});
             var vertical_space = $("<div>", {"class": "vertical-space"});
-            add_tag_existing.html("+ Add additional tags");
+            add_tag_existing.html("Add additional tags");
 
             for (var t in all_tags) {
               var already_exists = false;
@@ -744,7 +746,7 @@ function highlighting(user, baseUrl) {
         var name = $(this).attr("tag_name");
         if ($(this).hasClass("comment-hidden")) {
           $(".add-comment-wrapper[tag_name=" + name + "]").show();
-          $(this).html("- Add comment");
+          $(this).html("- Hide add comment");
           $(this).removeClass("comment-hidden").addClass("comment-display");
         } else {
           $(".add-comment-wrapper[tag_name=" + name + "]").hide();

@@ -309,7 +309,7 @@
 }
 
 .delete-highlight {
-  margin-top: 5px;
+  margin-top: 2px;
   font-size: 11px;
   color: #bbb;
 }
@@ -328,6 +328,7 @@
   text-align: center;
   border: 2px solid #00cc89;
   transition: background-color 0.3s ease-in;
+  margin-bottom: 5px;
 }
 
 .custom-btn:hover {
