@@ -228,9 +228,11 @@ function highlighting(user, baseUrl) {
               && !$(e.target).hasClass('temp-highlight') 
               && !$(e.target).hasClass('highlight-annote')) {
               if (!$(e.target).hasClass('delete-highlight')) {
-                $('.annotation').fadeOut("fast");
-                removeAddHighlightButton();
-                tags_to_save = {};
+                if (!$(e.target).hasClass('delete-box')) {
+                  $('.annotation').fadeOut("fast");
+                  removeAddHighlightButton();
+                  tags_to_save = {};
+                }
               }
             }
           }
@@ -240,6 +242,17 @@ function highlighting(user, baseUrl) {
           && $(e.target).attr("id") != "add-symbol"
           && !$.contains($('.annotation').get(0), e.target)) {
           removeTemporaryHighlight();   
+        }
+
+        // if click outside of:
+        // comment-delete btn
+        // delete-confirm box,
+        // then remove
+        if (!$(e.target).hasClass('delete-confirm')
+          && $('.delete-confirm').is(":visible") 
+          && !$.contains($('.delete-confirm').get(0), e.target) 
+          && !$(e.target).hasClass('comment-delete')) {
+          $('.delete-confirm').remove();
         }
       });
 
@@ -767,7 +780,7 @@ function highlighting(user, baseUrl) {
         );
 
         if (comment.user === user.username) {
-          comment_box.append("<div class='comment-modify'><i class='fa fa-pencil comment-edit' aria-hidden='true'></i></div>");
+          comment_box.append("<div class='comment-icons'><i class='fa fa-pencil comment-edit' aria-hidden='true' style='display: none'></i><i class='fa fa-trash comment-delete' aria-hidden='true' style='display: none'></i></div>");
         }
 
         return comment_box;
@@ -798,16 +811,53 @@ function highlighting(user, baseUrl) {
       }
 
       $('body').on('mouseenter', '.comment-box', function(e) {
-        var comment_id = $(e.target).attr('comment_id')
+        var comment_id = $(e.target).attr('comment_id');
         if (!$('.update-comment-box[comment_id=' + comment_id + ']').is(':visible')) {
-          $(this).children('.comment-modify').show();
+          $(this).find('.comment-edit').show();
+          $(this).find('.comment-delete').show();
           $(this).css('background-color', '#f9f9f9');
         }
       });
 
       $('body').on('mouseleave', '.comment-box', function(e) {
-        $(this).children('.comment-modify').hide();
+        $(this).find('.comment-edit').hide();
+        $(this).find('.comment-delete').hide();
         $(this).css('background-color', '#fff');
+      });
+
+      $('body').on('click', '.comment-delete', function(e) {
+        var delete_confirm = $("<div>", {"class": "delete-confirm"});
+        var top = $(this).offset().top - $('.annotation').offset().top
+        var left = $(this).offset().left - $('.annotation').offset().left
+        delete_confirm.html("Are you sure you want to delete this comment?");
+        delete_confirm.append("<p><span class='delete-box delete-cancel'>Cancel</span><span class='delete-box delete-comment'>Delete</span></p>")
+        delete_confirm.css({
+          "position": "absolute",
+          "top": top + 25,
+          "left": left - 80,
+        });
+        $(e.target).parent().parent().append(delete_confirm);
+      });
+
+      $('body').on('click', '.delete-cancel', function(e) {
+        $('.delete-confirm').remove();
+      });
+
+      $('body').on('click', '.delete-comment', function(e) {
+        var comment_id = $(this).parent().parent().parent().attr("comment_id");
+        $.post(baseUrl + "/tags/comment/remove", {
+          "comment_id": comment_id,
+          "csrfmiddlewaretoken": user.csrf,
+        }).done(function(res) {
+          if (res.success) {
+            $('.delete-confirm').remove();
+            $('.comment-box[comment_id=' + comment_id + ']').html('<i style="padding: 7px 0" class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>')
+            $('.comment-box[comment_id=' + comment_id + ']').css('text-align', 'center');
+            setTimeout(function() {
+              $('.comment-box[comment_id=' + comment_id + ']').remove();
+            }, 500);
+          }
+        });
       });
 
       $('body').on('click', '.comment-edit', function(e) {
@@ -846,6 +896,7 @@ function highlighting(user, baseUrl) {
             'new_comment': new_comment,
             "csrfmiddlewaretoken": user.csrf,
           }).done(function(res) {
+            text_box.parent().parent().children('.comment-icons').show();
             text_box.html(new_comment);
           });
         }
