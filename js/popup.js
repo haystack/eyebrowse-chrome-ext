@@ -708,7 +708,7 @@ var ValueSummaryView = Backbone.View.extend({
         if (e.keyCode === 13) {
             var summary = $(e.target).get(0).textContent;
 
-            if (summary === '') {
+            if (!/\S/.test(summary)) {
                 $('.value_summary_helpertext').html("<span class='danger'>Summary cannot be blank</span>");
             } else {
                 $('.value_summary_helpertext').html('<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>');
