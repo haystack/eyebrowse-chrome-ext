@@ -56,6 +56,22 @@ var Stats = Backbone.Model.extend({
     }
 });
 
+window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '288578304935252',
+      xfbml      : true,
+      version    : 'v2.9'
+    });
+    FB.AppEvents.logPageView();
+};
+
+(function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 
 /////// VIEWS /////////////
 
@@ -367,12 +383,6 @@ var ValueView = Backbone.View.extend({
                     name = url.substring(0, 45) + "...";
                 }
 
-                if (page_info) {
-                    if (page_info.domain) {
-                        name = page_info.domain.name;
-                    }
-                }
-
                 var value_title_template = _.template($("#value_title_template").html(), {
                     page: {
                         "title": tabs[0].title,
@@ -546,6 +556,10 @@ var ValueCompView = Backbone.View.extend({
         }).done(function(res) {
           var related_stories = res.data;
           $(".value_comps").html("");
+
+          if (Object.keys(related_stories).length === 0) {
+            $(".value_comps").html("<div style='margin: 15px 0'>No recommended articles to display</div>");
+          }
 
           $.each(related_stories, function(id, story) {
             var summary = story.summary;
@@ -872,6 +886,22 @@ function setupMessageBox() {
         postMessage(text, window.g_url);
     });
 
+    $("#facebookshare").click(function(e) {
+        chrome.tabs.query({
+            currentWindow: true,
+            active: true
+        }, function(tabs) {
+            var url = tabs[0].url;
+            var text = $("#upperarea .mentions").text();
+
+            FB.ui({
+                method: 'share',
+                display: 'popup',
+                href: url,
+                quote: text,
+            }, function(response){});
+        });
+    })
 }
 
 function populateSubNav() {
