@@ -413,7 +413,7 @@ a:focus {
 #pagefeed {
     width: 368px;
     display: block;
-    height: 115px;
+    height: 100px;
     overflow-y: auto;
     font-size: 0.8em;
     padding: 5px 5px 5px 5px;
