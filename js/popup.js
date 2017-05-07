@@ -56,6 +56,22 @@ var Stats = Backbone.Model.extend({
     }
 });
 
+window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '288578304935252',
+      xfbml      : true,
+      version    : 'v2.9'
+    });
+    FB.AppEvents.logPageView();
+};
+
+(function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 
 /////// VIEWS /////////////
 
@@ -870,6 +886,22 @@ function setupMessageBox() {
         postMessage(text, window.g_url);
     });
 
+    $("#facebookshare").click(function(e) {
+        chrome.tabs.query({
+            currentWindow: true,
+            active: true
+        }, function(tabs) {
+            var url = tabs[0].url;
+            var text = $("#upperarea .mentions").text();
+
+            FB.ui({
+                method: 'share',
+                display: 'popup',
+                href: url,
+                quote: text,
+            }, function(response){});
+        });
+    })
 }
 
 function populateSubNav() {

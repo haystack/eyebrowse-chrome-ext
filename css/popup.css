@@ -295,7 +295,7 @@ a:focus {
     position: relative;
     top: 10px;
     float: right;
-    border: 1px solid #d3d3d3s;
+    border: 1px solid #d3d3d3;
     background-color: #ffffff;
     padding: 0px;
     outline: 0;
@@ -304,20 +304,24 @@ a:focus {
     width: 224px;
 }
 
+.mentions-input-box {
+    float: left;
+}
+
 #messagebox {
-    border: 1px solid #d3d3d3s;
-    padding: 0px;
+    border: 1px solid #d3d3d3;
+    padding: 3px 6px;
+    height: 60px;
     margin-bottom: 10px;
     margin-top: 10px;
     outline: 0;
     font-size: 0.8em;
     line-height: 15px;
-    height: 40px;
     width: 308px;
     resize: none;
 }
 
-#submitmessage {
+#submitmessage, #facebookshare {
     display: block;
     float: right;
     font-size: .8em;
@@ -326,6 +330,7 @@ a:focus {
     margin-top: 10px;
     width: 60px;
     height: 23px;
+    float: right;
 }
 
 .chatuser_pic {
