@@ -386,8 +386,12 @@ var ValueView = Backbone.View.extend({
                 var page_info = res.page;
                 var name = url;
 
-                if (url.length > 45) {
-                    name = url.substring(0, 45) + "...";
+                if (url.length > 50) {
+                    name = url.substring(0, 50) + "...";
+                } 
+
+                if (page_info.domain.name !== "") {
+                    name = page_info.domain.name;
                 }
 
                 var value_title_template = _.template($("#value_title_template").html(), {
