@@ -875,6 +875,21 @@ function setupMessageBox() {
         if (e.which === 13) {
             var text = $("#upperarea .mentions").text();
             postMessage(text, window.g_url);
+            if ($(".fb-checkbox").is(":checked")) {
+                chrome.tabs.query({
+                    currentWindow: true,
+                    active: true
+                }, function(tabs) {
+                    var url = tabs[0].url;
+
+                    FB.ui({
+                        method: 'share',
+                        display: 'popup',
+                        href: url,
+                        quote: text,
+                    }, function(response){});
+                });
+            }
         }
     });
 
@@ -884,24 +899,22 @@ function setupMessageBox() {
             text = null;
         }
         postMessage(text, window.g_url);
+        if ($(".fb-checkbox").is(":checked")) {
+            chrome.tabs.query({
+                currentWindow: true,
+                active: true
+            }, function(tabs) {
+                var url = tabs[0].url;
+
+                FB.ui({
+                    method: 'share',
+                    display: 'popup',
+                    href: url,
+                    quote: text,
+                }, function(response){});
+            });
+        }
     });
-
-    $("#facebookshare").click(function(e) {
-        chrome.tabs.query({
-            currentWindow: true,
-            active: true
-        }, function(tabs) {
-            var url = tabs[0].url;
-            var text = $("#upperarea .mentions").text();
-
-            FB.ui({
-                method: 'share',
-                display: 'popup',
-                href: url,
-                quote: text,
-            }, function(response){});
-        });
-    })
 }
 
 function populateSubNav() {
