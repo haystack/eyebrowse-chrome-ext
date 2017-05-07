@@ -1148,7 +1148,7 @@ function getActiveUsers(url) {
 	                collection: user_coll
 	            });
 	            var c = user_view.render().el;
-	            page = $("<div class='chattitle'>On this page:</div>").append(c);
+	            page = $("<div class='chattitle'><span class='chatheader'>On this page</span></div>").append(c);
 	        } else {
 	            page = "";
 	        }
