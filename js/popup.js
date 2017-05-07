@@ -315,8 +315,15 @@ var LoginView = Backbone.View.extend({
         $.get(getLogoutUrl());
         user.logout();
         backpage.clearLocalStorage("user");
-        this.render();
-        navView.render("home_tab");
+        $(".content-container").html('<div class="logout-intermediate">'
+            +'<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>'
+            +'<div class="logout-text">Logging you out...</div>'
+            +'</div>');
+        var this_func = this;
+        setTimeout(function() {
+            this_func.render();
+            navView.render("home_tab");
+        }, 1000);
     },
 
     displayErrors: function(errorMsg) {
@@ -1381,9 +1388,11 @@ $(document).ready(function() {
     $("#home_tab").click(function() {
         if (homeView !== undefined) {
             $(document.html).css({
-                "height": "550px"
+                "height": "580px"
             });
             homeView.render();
+            $("#home_tab").addClass("active");
+            $("#values_tab").removeClass("active");
         }
     });
 

@@ -14,6 +14,7 @@
         <link rel="stylesheet" href="../css/jquery.mentionsInput.css" />
         <link rel="stylesheet" href="../css/popup.css" />
         <link rel="stylesheet" href="../css/font-awesome.min.css" />
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
     </head>
 
     <body>
@@ -38,7 +39,7 @@
                             <a>Home</a>
                         </li>
                         <li id="values_tab" class="nav-tab">
-                            <div class="link">Tags</div>
+                            <a>Tags</a>
                         </li>
                         <li id="settings">
                         	<a href="<%= baseUrl %>/accounts/profile/edit" target="_blank">Settings</a>
@@ -61,7 +62,8 @@
         <script type="text/template" id="login_template">
 
             <div class="row">
-                <div id="login_container" class="offset2 span4 well">
+                <div id="login_container" class="offset2 span4">
+                    <div class="eyebrowse-logo">eyebrowse</div>
                     <div id="errors" class="alert alert-error"></div>
                     <p>
                         <input id="id_username" type="text" placeholder="Username" name="username" maxlength="30" />
@@ -70,7 +72,7 @@
                         <input type="password" placeholder="Password" name="password" id="id_password" />
                     </p>
 
-                    <input class="btn btn-primary btn-small" data-loading-text="Loading..." id="login" type="submit" value="Login" />
+                    <input class="btn btn-primary" data-loading-text="Loading..." id="login" type="submit" value="Login" />
                     <a class="login-text" href="<%= baseUrl %>/accounts/password/reset/">Forgot Password?</a>
                     <a href="<%= baseUrl %>/accounts/register/" class="login-text">Create Account </a>
                     <input type="hidden" name="next" value="" />
