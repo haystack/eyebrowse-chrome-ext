@@ -20,7 +20,7 @@
                 "js/common.js", 
                 "js/prompt.js", 
                 "js/idle-detection.js", 
-                "js/values.js",
+                "js/values.js", 
                 "js/sdk.js"
             ], 
             "matches": [
@@ -44,7 +44,7 @@
         "cookies", 
         "tabs"
     ], 
-    "version": "0.0.99", 
+    "version": "0.0.100", 
     "web_accessible_resources": [
         "css/prompt.css", 
         "html/prompt.html"
