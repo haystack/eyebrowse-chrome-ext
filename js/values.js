@@ -178,6 +178,18 @@ function highlighting(user, baseUrl) {
 
         highlight_add_valuetag.prepend("Suggested tags:");
         add_custom_tag.html("+ See more tags");
+
+        if (Object.keys(generated_tags).length === 0) {
+          add_valuetag_tags.html("No suggested tags to show.");
+          add_valuetag_tags.css({
+            "color": "#999",
+            "font-size": "11px",
+            "text-align": "center",
+          });
+          add_custom_tag_tags.css("display", "block");
+          add_custom_tag.html("Show less tags");
+          add_custom_tag_tags.attr("tag-status", "less");
+        }
         
         add_valuetag_submit.html("Save");
         highlight_add_valuetag.append(add_valuetag_tags);
