@@ -69,7 +69,7 @@ window.fbAsyncInit = function() {
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id)) {return;}
     js = d.createElement(s); js.id = id;
-    js.src = "https://connect.facebook.net/en_US/sdk.js";
+    js.src = "../js/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
@@ -390,8 +390,10 @@ var ValueView = Backbone.View.extend({
                     name = url.substring(0, 50) + "...";
                 } 
 
-                if (page_info.domain.name !== "") {
-                    name = page_info.domain.name;
+                if (page_info.domain) {
+                    if (page_info.domain.name !== "") {
+                        name = page_info.domain.name;
+                    }
                 }
 
                 var value_title_template = _.template($("#value_title_template").html(), {
@@ -1401,7 +1403,10 @@ $(document).ready(function() {
     });
 
     $("#values_tab").click(function() {
+        console.log("CLICKING");
+
         if (valueView !== undefined) {
+            console.log("HERE")
             valueView.render();
             $("#values_tab").addClass("active");
             $("#home_tab").removeClass("active");
@@ -1443,7 +1448,20 @@ $(document).ready(function() {
     $("body").on("click", ".story_container", function() {
         var link = $(this).attr("link");
 
-        chrome.tabs.create({ url: link });
+        // Log recommended story click
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            var url = tabs[0].url;
+            console.log("Trying to log")
+            $.post(baseUrl + "/stats/click_item", {
+                url_click: link,
+                url_refer: url,
+                csrfmiddlewaretoken: user.getCSRF(),
+                recommendation: true,
+            }).done(function(res) {
+                console.log("Successfully logged!")
+                chrome.tabs.create({ url: link });
+            });
+        });
     });
 
     $("a").click(clickHandle);
