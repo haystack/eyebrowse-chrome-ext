@@ -38,16 +38,16 @@
     "manifest_version": 2, 
     "name": "Eyebrowse", 
     "permissions": [
-        "*://*/*",
+        "*://*/*", 
         "http://eyebrowse-staging.csail.mit.edu/*", 
-        "http://eyebrowse.csail.mit.edu/*",
+        "http://eyebrowse.csail.mit.edu/*", 
         "https://eyebrowse.csail.mit.edu/*", 
         "http://localhost:8000/*", 
         "cookies", 
-        "tabs",
+        "tabs", 
         "webNavigation"
     ], 
-    "version": "0.0.100", 
+    "version": "0.0.101", 
     "web_accessible_resources": [
         "css/prompt.css", 
         "html/prompt.html"
