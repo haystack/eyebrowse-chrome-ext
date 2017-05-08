@@ -63,26 +63,47 @@ body {
 }
 
 .green {
-    color: green;
+    color: #00cc89;
     font-weight: bold;
 }
 
 .red {
-    color: red;
+    color: #ee7b7b;
     font-weight: bold;
 }
 
 #login_container {
-    margin-bottom: 0px;
+    padding: 55px 35px 75px 35px;
+    background: #fcfcfc;
+}
+
+#login {
+    width: 100%;
+    padding: 5px 0;
+    height: auto;
+    margin-bottom: 5px;
+}
+
+#login:hover {
+}
+
+.eyebrowse-logo {
+    font-family: Lato, Helvetica, Arial, Sans-Serif;
+    text-align:center;
+    font-weight: 300;
+    font-size: 1.4em;
+    margin-bottom: 20px
+}
+
+#id_username, #id_password {
+    border-radius: 0;
+    padding: 5px 8px;
+    margin-bottom: 7px
 }
 
 li {
     height: 30px;
     margin-top: -2px;
-}
-
-.nav-bg {
-    background-color: #f5f5f5;
 }
 
 .nav-container,
@@ -97,13 +118,11 @@ li {
     height: 30px;
 }
 
-.nav>li>a, .link {
-    margin-top: 8px;
+.nav>li>a {
     margin-left: 5px;
     height: 24px;
     font-size: .9em;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding: 8px 7px 0 7px;
     cursor: pointer;
 }
 
@@ -122,11 +141,12 @@ a:focus {
 }
 
 .navbar-inner {
-    padding: 0px;
+    background: #f9f9f9;
+    background-image: none;
 }
 
 .login-text {
-    font-size: 13px;
+    font-size: 11px;
 }
 
 .nav {
@@ -136,12 +156,12 @@ a:focus {
 .navbar {
     margin-top: -5px;
     margin-bottom: 0px;
-    padding: 0px
+    padding: 2px 0;
 }
 
 .container2 {
     margin-top: 0px;
-    padding: 0px;
+    padding: 5px 0 0 0;
 }
 
 .content-container {
@@ -152,6 +172,12 @@ a:focus {
 @media (max-width: 767px) {
     .content-container {
         margin-top: 0px;
+    }
+}
+
+@media (max-width: 979px) {
+    .navbar .brand {
+        padding-left: 0;
     }
 }
 
@@ -166,6 +192,10 @@ a:focus {
     margin-top: 3px;
     width: 27px;
     height: 27px;
+}
+
+.btn {
+
 }
 
 .nav-prof-img {
@@ -189,7 +219,7 @@ a:focus {
     float: left;
     display: block;
     width: 130px;
-    height: 216px;
+    height: 195px;
     color: #d3d3d3;
     font-size: 0.75em;
     overflow-y: auto;
@@ -207,8 +237,8 @@ a:focus {
     position: relative;
     top: 10px;
     width: 204px;
-    height: 160px;
-    background-color: #f5f5f5;
+    height: 134px;
+    background-color: #f9f9f9;
     overflow-y: auto;
     padding-left: 8px;
     padding-right: 12px;
@@ -222,6 +252,11 @@ a:focus {
 
 .chattitle {
     color: #000000;
+}
+
+.chatheader {
+    font-weight: bold;
+    color: #5a595c;
 }
 
 .name {
@@ -256,6 +291,7 @@ a:focus {
     height: 40px;
     width: 380px;
     border-bottom: 1px solid #a9a9a9;
+    padding: 5px 0;
 }
 
 #navlinks .link {
@@ -300,8 +336,9 @@ a:focus {
     padding: 0px;
     outline: 0;
     font-size: 0.75em;
-    height: 20px;
+    height: 30px;
     width: 224px;
+    padding: 3px 6px;
 }
 
 .mentions-input-box {
@@ -311,26 +348,64 @@ a:focus {
 #messagebox {
     border: 1px solid #d3d3d3;
     padding: 3px 6px;
-    height: 60px;
+    height: 50px;
     margin-bottom: 10px;
     margin-top: 10px;
     outline: 0;
-    font-size: 0.8em;
+    font-size: 0.75em;
     line-height: 15px;
-    width: 308px;
+    width: 280px;
     resize: none;
+    border-radius: 0;
 }
 
-#submitmessage, #facebookshare {
+.btn {
     display: block;
     float: right;
-    font-size: .8em;
+    font-size: 11px;
     padding: 1px;
     margin: 1px;
     margin-top: 10px;
-    width: 60px;
-    height: 23px;
+    width: 80px;
+    height: 28px;
     float: right;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 50px;
+    color: #aaa;
+    transition: background 0.3s ease-in-out;
+    text-shadow: none;
+}
+
+/*#submitmessage {
+    display: block;
+    float: right;
+    font-size: 11px;
+    padding: 1px;
+    margin: 1px;
+    margin-top: 10px;
+    width: 80px;
+    height: 28px;
+    float: right;
+    border: 1px solid #999;
+    background-color: #fff;
+    border-radius: 50px;
+    color: #666;
+    transition: background-color 0.3s ease-in;
+}*/
+
+.btn:hover {
+    background: #ccc;
+    color: #fff;
+}
+
+.fb-label {
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+input[type="checkbox"] {
+    margin: 3px 5px 0 20px;
 }
 
 .chatuser_pic {
@@ -391,6 +466,10 @@ a:focus {
     margin: 5px 5px 5px 5px;
 }
 
+.pagefeed_item:hover {
+    background-color: #f0f4f9;
+}
+
 .pagefeed_item2 {
     display: block;
     line-height: 12px;
@@ -416,8 +495,8 @@ a:focus {
     height: 115px;
     overflow-y: auto;
     font-size: 0.8em;
-    padding: 5px 5px 5px 5px;
-    background-color: #f5f5f5;
+    padding: 1px;
+    background-color: #f9f9f9;
     border: 1px solid #e3e3e3;
     border-radius: 4px;
 }
@@ -427,12 +506,11 @@ a:focus {
     display: block;
     height: 45px;
     font-size: 0.8em;
-    margin-bottom: 25px;
+    margin-bottom: 16px;
     line-height: 1.1em;
 }
 
 #btitle {
-    padding-top: 4px;
     padding-bottom: 0px;
     font-size: .8em;
     font-weight: bold;
@@ -440,7 +518,6 @@ a:focus {
 }
 
 #btitle2 {
-    padding-top: 4px;
     padding-bottom: 0px;
     font-size: .8em;
     font-weight: bold;
@@ -507,7 +584,7 @@ a:hover {
     border-radius: 50px;
     padding: 8px 20px;
     box-shadow: 0 0 2px #eee;
-    transition: opacity 0.2s ease-in;
+    transition: opacity 0.2s ease-in-out;
     float: left;
 }
 
@@ -572,7 +649,7 @@ a:hover {
 .turn_off {
     background-color: #ddd;
     color: #2b2a2d;
-    transition: background-color 0.3s ease-in;
+    transition: background-color 0.3s ease-in-out;
 }
 
 .turn_off:hover {
@@ -582,7 +659,7 @@ a:hover {
 .turn_on {
     background-color: #bef4c1;
     color: #2b2a2d;
-    transition: background-color 0.3s ease-in;
+    transition: background-color 0.3s ease-in-out;
 }
 
 .turn_on:hover {
@@ -717,4 +794,15 @@ a:hover {
 
 .danger {
     color: #ee7b7b;
+}
+
+.logout-intermediate {
+    text-align: center;
+    margin-top: 50px;
+    color: #aaa;
+}
+
+.logout-text {
+    margin-top: 15px;
+    font-size: 0.8em;
 }

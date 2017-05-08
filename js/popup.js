@@ -69,7 +69,7 @@ window.fbAsyncInit = function() {
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id)) {return;}
     js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/sdk.js";
+    js.src = "https://connect.facebook.net/en_US/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
@@ -315,8 +315,15 @@ var LoginView = Backbone.View.extend({
         $.get(getLogoutUrl());
         user.logout();
         backpage.clearLocalStorage("user");
-        this.render();
-        navView.render("home_tab");
+        $(".content-container").html('<div class="logout-intermediate">'
+            +'<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>'
+            +'<div class="logout-text">Logging you out...</div>'
+            +'</div>');
+        var this_func = this;
+        setTimeout(function() {
+            this_func.render();
+            navView.render("home_tab");
+        }, 1000);
     },
 
     displayErrors: function(errorMsg) {
@@ -379,8 +386,12 @@ var ValueView = Backbone.View.extend({
                 var page_info = res.page;
                 var name = url;
 
-                if (url.length > 45) {
-                    name = url.substring(0, 45) + "...";
+                if (url.length > 50) {
+                    name = url.substring(0, 50) + "...";
+                } 
+
+                if (page_info.domain.name !== "") {
+                    name = page_info.domain.name;
                 }
 
                 var value_title_template = _.template($("#value_title_template").html(), {
@@ -875,6 +886,21 @@ function setupMessageBox() {
         if (e.which === 13) {
             var text = $("#upperarea .mentions").text();
             postMessage(text, window.g_url);
+            if ($(".fb-checkbox").is(":checked")) {
+                chrome.tabs.query({
+                    currentWindow: true,
+                    active: true
+                }, function(tabs) {
+                    var url = tabs[0].url;
+
+                    FB.ui({
+                        method: 'share',
+                        display: 'popup',
+                        href: url,
+                        quote: text,
+                    }, function(response){});
+                });
+            }
         }
     });
 
@@ -884,24 +910,22 @@ function setupMessageBox() {
             text = null;
         }
         postMessage(text, window.g_url);
+        if ($(".fb-checkbox").is(":checked")) {
+            chrome.tabs.query({
+                currentWindow: true,
+                active: true
+            }, function(tabs) {
+                var url = tabs[0].url;
+
+                FB.ui({
+                    method: 'share',
+                    display: 'popup',
+                    href: url,
+                    quote: text,
+                }, function(response){});
+            });
+        }
     });
-
-    $("#facebookshare").click(function(e) {
-        chrome.tabs.query({
-            currentWindow: true,
-            active: true
-        }, function(tabs) {
-            var url = tabs[0].url;
-            var text = $("#upperarea .mentions").text();
-
-            FB.ui({
-                method: 'share',
-                display: 'popup',
-                href: url,
-                quote: text,
-            }, function(response){});
-        });
-    })
 }
 
 function populateSubNav() {
@@ -1135,7 +1159,7 @@ function getActiveUsers(url) {
 	                collection: user_coll
 	            });
 	            var c = user_view.render().el;
-	            page = $("<div class='chattitle'>On this page:</div>").append(c);
+	            page = $("<div class='chattitle'><span class='chatheader'>On this page</span></div>").append(c);
 	        } else {
 	            page = "";
 	        }
@@ -1368,9 +1392,11 @@ $(document).ready(function() {
     $("#home_tab").click(function() {
         if (homeView !== undefined) {
             $(document.html).css({
-                "height": "550px"
+                "height": "580px"
             });
             homeView.render();
+            $("#home_tab").addClass("active");
+            $("#values_tab").removeClass("active");
         }
     });
 
