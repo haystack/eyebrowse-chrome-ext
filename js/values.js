@@ -178,6 +178,18 @@ function highlighting(user, baseUrl) {
 
         highlight_add_valuetag.prepend("Suggested tags:");
         add_custom_tag.html("+ See more tags");
+
+        if (Object.keys(generated_tags).length === 0) {
+          add_valuetag_tags.html("No suggested tags to show.");
+          add_valuetag_tags.css({
+            "color": "#999",
+            "font-size": "11px",
+            "text-align": "center",
+          });
+          add_custom_tag_tags.css("display", "block");
+          add_custom_tag.html("Show less tags");
+          add_custom_tag_tags.attr("tag-status", "less");
+        }
         
         add_valuetag_submit.html("Save");
         highlight_add_valuetag.append(add_valuetag_tags);
@@ -285,7 +297,7 @@ function highlighting(user, baseUrl) {
 
             // Ensure only trying to highlight in a text block
             if (!$(e.target).is("p") && !$(e.target).is("div")) {
-              if ($(e.target).is("em, strong, li, ul, ol, b")) {
+              if ($(e.target).is("em, strong, li, ul, ol, b, span")) {
                 if (!$(e.target).parent().is("p, div")) {
                   should_highlight = false;
                 }
@@ -361,7 +373,7 @@ function highlighting(user, baseUrl) {
                   annote_position.anchor_top = $(window).scrollTop();
                   annote_position.anchor_left = $(window).scrollLeft();
                 }
-              }, 1000);
+              }, 800);
             } else {
               removeAddHighlightButton();
             }
@@ -1131,9 +1143,7 @@ function getHighlights(url) {
 
         $(".highlight-annote").attr("is_owner", is_owner);
       }
-    } else {
-      console.log(res.errors['get_highlights']);
-    }
+    } 
   });
 }
 

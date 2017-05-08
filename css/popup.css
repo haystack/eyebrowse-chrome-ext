@@ -77,6 +77,10 @@ body {
     background: #fcfcfc;
 }
 
+#errors {
+    font-size: 11px;
+}
+
 #login {
     width: 100%;
     padding: 5px 0;
