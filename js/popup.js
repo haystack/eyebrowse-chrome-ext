@@ -56,23 +56,6 @@ var Stats = Backbone.Model.extend({
     }
 });
 
-window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '288578304935252',
-      xfbml      : true,
-      version    : 'v2.9'
-    });
-    FB.AppEvents.logPageView();
-};
-
-(function(d, s, id){
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) {return;}
-    js = d.createElement(s); js.id = id;
-    js.src = "../js/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
-
 /////// VIEWS /////////////
 
 var PageFeedItemView = Backbone.View.extend({
@@ -286,29 +269,20 @@ var LoginView = Backbone.View.extend({
     postLogin: function(csrfmiddlewaretoken, username, password) {
         var self = this;
         // now call the server and login
-        $.ajax({
-            url: getLoginUrl(),
-            type: "POST",
-            data: {
-                "username": username,
-                "password": password,
-                "csrfmiddlewaretoken": csrfmiddlewaretoken,
-                "remember_me": "on", // for convenience
-            },
-            dataType: "html",
-            success: function(data) {
+
+        user.doLogin(getLoginUrl(), username, password, function(data, success) {
+            if (success) {
                 var match = data.match(CSRF_REGEX);
                 if (match) { // we didn"t log in successfully
                     self.displayErrors("Invalid username or password");
                 } else {
                     completeLogin(username);
                 }
-            },
-            error: function(data) {
+            } else {
                 console.log(JSON.stringify(data));
                 self.displayErrors("Unable to connect, try again later.");
             }
-        });
+        })
     },
 
     logout: function() {
@@ -895,12 +869,7 @@ function setupMessageBox() {
                 }, function(tabs) {
                     var url = tabs[0].url;
 
-                    FB.ui({
-                        method: 'share',
-                        display: 'popup',
-                        href: url,
-                        quote: text,
-                    }, function(response){});
+                    user.shareToFB(url, text);
                 });
             }
         }
@@ -919,12 +888,7 @@ function setupMessageBox() {
             }, function(tabs) {
                 var url = tabs[0].url;
 
-                FB.ui({
-                    method: 'share',
-                    display: 'popup',
-                    href: url,
-                    quote: text,
-                }, function(response){});
+                user.shareToFB(url, text);
             });
         }
     });

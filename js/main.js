@@ -91,6 +91,23 @@ var User = Backbone.Model.extend({
         // allow access to 'this' in callbacks with "this" meaning the object
         // not the context of the callback
         _.bindAll(this);
+
+        window.fbAsyncInit = function() {
+            FB.init({
+              appId      : '288578304935252',
+              xfbml      : true,
+              version    : 'v2.9'
+            }); 
+            FB.AppEvents.logPageView();
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "../js/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
     },
 
     getIncognito: function() {
@@ -136,6 +153,26 @@ var User = Backbone.Model.extend({
         if (csrf !== null) {
             this.setCSRF(csrf);
         }
+    },
+
+    doLogin: function(login_url, username, password, callback) {
+        $.ajax({
+            url: login_url,
+            type: "POST",
+            data: {
+                "username": username,
+                "password": password,
+                "csrfmiddlewaretoken": this.getCSRF(),
+                "remember_me": "on", // for convenience
+            },
+            dataType: "html",
+            success: function(data) {
+                callback(data, true);
+            },
+            error: function(data) {
+                callback(data, false);
+            }
+        });
     },
 
     attemptLogin: function(callback) {
@@ -247,6 +284,15 @@ var User = Backbone.Model.extend({
         this.set({
             "highlighting": bool
         });
+    },
+
+    shareToFB: function(url, text) {
+        FB.ui({
+            method: 'share',
+            display: 'popup',
+            href: url,
+            quote: text,
+        }, function(response){});
     },
 
     // check if a url is in the blacklist
