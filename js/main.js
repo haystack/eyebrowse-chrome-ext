@@ -451,10 +451,6 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
         bubbleInfo(tabId, url);
     }, 3000);
 
-    if (!isInHighlightBlacklist(url)) {
-        highlight();
-    }
-
     if (user.getIncognito() === false) {
 
         // close previous activeItem

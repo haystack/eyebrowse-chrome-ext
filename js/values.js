@@ -285,7 +285,7 @@ function highlighting(user, baseUrl) {
 
             // Ensure only trying to highlight in a text block
             if (!$(e.target).is("p") && !$(e.target).is("div")) {
-              if ($(e.target).is("em, strong, li, ul, ol, b")) {
+              if ($(e.target).is("em, strong, li, ul, ol, b, span")) {
                 if (!$(e.target).parent().is("p, div")) {
                   should_highlight = false;
                 }
@@ -361,7 +361,7 @@ function highlighting(user, baseUrl) {
                   annote_position.anchor_top = $(window).scrollTop();
                   annote_position.anchor_left = $(window).scrollLeft();
                 }
-              }, 1000);
+              }, 800);
             } else {
               removeAddHighlightButton();
             }

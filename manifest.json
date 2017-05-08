@@ -44,7 +44,8 @@
         "https://eyebrowse.csail.mit.edu/*", 
         "http://localhost:8000/*", 
         "cookies", 
-        "tabs"
+        "tabs",
+        "webNavigation"
     ], 
     "version": "0.0.95", 
     "web_accessible_resources": [

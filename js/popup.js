@@ -1367,10 +1367,7 @@ $(document).ready(function() {
     });
 
     $("#values_tab").click(function() {
-        console.log("CLICKING");
-
         if (valueView !== undefined) {
-            console.log("HERE")
             valueView.render();
             $("#values_tab").addClass("active");
             $("#home_tab").removeClass("active");
@@ -1415,14 +1412,12 @@ $(document).ready(function() {
         // Log recommended story click
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             var url = tabs[0].url;
-            console.log("Trying to log")
             $.post(baseUrl + "/stats/click_item", {
                 url_click: link,
                 url_refer: url,
                 csrfmiddlewaretoken: user.getCSRF(),
                 recommendation: true,
             }).done(function(res) {
-                console.log("Successfully logged!")
                 chrome.tabs.create({ url: link });
             });
         });
