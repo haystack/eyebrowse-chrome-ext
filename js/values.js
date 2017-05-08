@@ -1143,9 +1143,7 @@ function getHighlights(url) {
 
         $(".highlight-annote").attr("is_owner", is_owner);
       }
-    } else {
-      console.log(res.errors['get_highlights']);
-    }
+    } 
   });
 }
 
