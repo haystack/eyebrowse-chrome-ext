@@ -446,7 +446,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     }
     var timeCheck = checkTimeDelta();
 
-    if (!isInHighlightBlacklist(details.url)) {
+    if (!isInHighlightBlacklist(url)) {
         highlight();
     }
 
