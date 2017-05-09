@@ -178,14 +178,14 @@ var User = Backbone.Model.extend({
     attemptLogin: function(callback) {
         if (callback !== undefined) {
             var this_user = this;
-            $.get(getLoginUrl(), function(data) {
+            $.get(getCSRFLoginUrl(), function(data) {
                 this_user.attemptSetCSRF(data);
                 callback(parseUsername(data));
             });
         } else {
             var data = $.ajax({
                 type: "GET",
-                url: getLoginUrl(),
+                url: getCSRFLoginUrl(),
                 async: false
             }).responseText;
             var isLoggedIn = parseUsername(data) !== null ? true : false;
@@ -914,7 +914,7 @@ function getLocalStorageUser() {
     if (storedUser === undefined || storedUser === "null") {
         user = new User();
 
-        $.get(getLoginUrl(), function(data) {
+        $.get(getCSRFLoginUrl(), function(data) {
             var csrf = parseCSRFToken(data);
             if (csrf) {
                 user.setCSRF(csrf);
