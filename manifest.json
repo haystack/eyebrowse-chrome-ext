@@ -47,7 +47,7 @@
         "tabs", 
         "webNavigation"
     ], 
-    "version": "0.0.101", 
+    "version": "0.0.102", 
     "web_accessible_resources": [
         "css/prompt.css", 
         "html/prompt.html"
