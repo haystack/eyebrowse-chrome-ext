@@ -240,6 +240,7 @@
   height: 40px;
   position: fixed;
   display: none;
+  z-index: 99;
 }
 
 #add-symbol {

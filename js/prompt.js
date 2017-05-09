@@ -180,6 +180,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     var action = request.action;
 
     if (action === "prompt") {
-        setup(request.baseUrl, request.type, request.user, url, protocol);
+        // disable notifications
+        // setup(request.baseUrl, request.type, request.user, url, protocol);
     }
 });

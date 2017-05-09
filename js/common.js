@@ -11,12 +11,16 @@ var baseUrl = "http://localhost:8000";
 var PROMPT_TEMPLATE_CACHE = {};
 
 ///////////////////URL BUILDERS///////////////////
-function getLoginUrl() {
+function getCSRFLoginUrl() {
     return baseUrl + "/accounts/login/";
 }
 
+function getLoginUrl() {
+    return baseUrl + "/api/v1/auth/login/";
+}
+
 function getLogoutUrl() {
-    return baseUrl + "/accounts/logout/";
+    return baseUrl + "/api/v1/auth/logout/";
 }
 
 function getUserUrl(username) {
