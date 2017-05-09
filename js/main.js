@@ -446,6 +446,10 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     }
     var timeCheck = checkTimeDelta();
 
+    if (!isInHighlightBlacklist(details.url)) {
+        highlight();
+    }
+
     // if its not in the whitelist lets check that the user has it
     setTimeout(function() {
         bubbleInfo(tabId, url);
