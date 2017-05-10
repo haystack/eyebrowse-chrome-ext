@@ -12,11 +12,25 @@
   border-radius: 4px;
   margin: 5px;
   position: fixed;
-  font-family: Helvetica, Sans-Serif;
+  font-family: Helvetica, Arial, Sans-Serif;
   font-size: 13px;
   color: #5a595c;
   max-width: 400px;
   width: 400px;
+  line-height: 1.6;
+  z-index: 99;
+}
+
+.annotation p {
+    display: block;
+    -webkit-margin-before: 1em;
+    -webkit-margin-after: 1em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    font-size: 11px;
+    line-height: 1.2em;
+    font-family: Helvetica, Arial, Sans-Serif;
+    line-height: 1.6;
 }
 
 .annotation::after, .annotation::before {
@@ -226,6 +240,7 @@
   height: 40px;
   position: fixed;
   display: none;
+  z-index: 99;
 }
 
 #add-symbol {
@@ -266,6 +281,8 @@
   position: fixed;
   font-size: 11px;
   z-index: 10;
+  text-align: center;
+  font-family: Helvetica, Arial, Sans-Serif;
 }
 
 .icon-name-tooltip::after {
@@ -319,6 +336,10 @@
   color: #696969;
 }
 
+.delete-highlight-btn {
+  margin: 20px 0;
+}
+
 .custom-btn {
   margin-top: 10px;
   background-color: #fff;
@@ -351,14 +372,18 @@
 }
 
 .add-comment-box {
-  height: 23px;
+  height: 28px;
   font-size: 12px;
+  border: 1px solid #eee;
+  padding: 3px 6px;
   width: 260px;
   max-width: 240px;
+  vertical-align: middle;
+  font-family: Helvetica, Arial, Sans-Serif;
 }
 
 .add-comment-submit {
-  vertical-align: center;
+  vertical-align: middle;
   background-color: #fff;
   padding: 5px 10px;
   border-radius: 500px;
@@ -369,7 +394,6 @@
   transition: background-color 0.3s ease-in;
   display: inline-block;
   margin-left: 15px;
-  margin-top: 3px;
 }
 
 .add-comment-submit:hover {
@@ -436,6 +460,9 @@
 .update-comment-box {
   width: 80%;
   font-size: 11px;
+  border: 1px solid #eee;
+  padding: 3px 6px;
+  height: 30px;
 }
 
 .add-comment-hider, .comment-hider {

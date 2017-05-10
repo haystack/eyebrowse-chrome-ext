@@ -6,7 +6,7 @@ var url = window.location.href;
 var generated_tags = {}
 
 function highlighting(user, baseUrl) {
-  if (!run_once && user.highlighting) {
+  if (!run_once && user.highlighting && user.loggedIn) {
     $(document).ready(function() {      
       run_once = true;
       var vote_counts = {}; // Keeps track of client-side vote changes
@@ -178,6 +178,18 @@ function highlighting(user, baseUrl) {
 
         highlight_add_valuetag.prepend("Suggested tags:");
         add_custom_tag.html("+ See more tags");
+
+        if (Object.keys(generated_tags).length === 0) {
+          add_valuetag_tags.html("No suggested tags to show.");
+          add_valuetag_tags.css({
+            "color": "#999",
+            "font-size": "11px",
+            "text-align": "center",
+          });
+          add_custom_tag_tags.css("display", "block");
+          add_custom_tag.html("Show less tags");
+          add_custom_tag_tags.attr("tag-status", "less");
+        }
         
         add_valuetag_submit.html("Save");
         highlight_add_valuetag.append(add_valuetag_tags);
@@ -285,7 +297,7 @@ function highlighting(user, baseUrl) {
 
             // Ensure only trying to highlight in a text block
             if (!$(e.target).is("p") && !$(e.target).is("div")) {
-              if ($(e.target).is("em, strong, li, ul, ol, b")) {
+              if ($(e.target).is("em, strong, li, ul, ol, b, span")) {
                 if (!$(e.target).parent().is("p, div")) {
                   should_highlight = false;
                 }
@@ -361,7 +373,7 @@ function highlighting(user, baseUrl) {
                   annote_position.anchor_top = $(window).scrollTop();
                   annote_position.anchor_left = $(window).scrollLeft();
                 }
-              }, 1000);
+              }, 650);
             } else {
               removeAddHighlightButton();
             }
@@ -561,7 +573,7 @@ function highlighting(user, baseUrl) {
 
             // Clear annotation box from previous content
             $('.annote-text').html('');
-            $('.annote-header').html('This statement supports these framings:');
+            $('.annote-header').html('Framings tagged in this statement:');
 
             // If no value tags for this highlight, display helper text
             if (vts.length === 0) {
@@ -776,7 +788,7 @@ function highlighting(user, baseUrl) {
       function createComment(comment) {
         var comment_box = $("<div>", {"class": "comment-box", "comment_id": comment.id});
         comment_box.html(
-          "<div class='comment-left'><img class='comment-user-pic' src=" + comment.prof_pic + "/></div>" 
+          '<div class="comment-left"><img class="comment-user-pic" src="' + comment.prof_pic + '"/></div>' 
           + "<div class='comment-right'><span class='comment-user-name'>" + comment.user + "</span><span class='comment-text'>" + comment.comment + "</span>"
           + "<div class='comment-date'>" + comment.date + "</div></div>"
         );
@@ -934,7 +946,7 @@ function highlighting(user, baseUrl) {
 
       $('body').on('click', '.delete-highlight', function(e) {
         $('.annote-text').animate({
-          height: '50px',
+          height: '60px',
         });
         $('.annote-header').html("Are you sure you want to delete this highlight?");
         $('.annote-text').html("<div class='delete-highlight-btn custom-btn'>Delete</div>")
@@ -1131,9 +1143,7 @@ function getHighlights(url) {
 
         $(".highlight-annote").attr("is_owner", is_owner);
       }
-    } else {
-      console.log(res.errors['get_highlights']);
-    }
+    } 
   });
 }
 

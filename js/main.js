@@ -91,6 +91,23 @@ var User = Backbone.Model.extend({
         // allow access to 'this' in callbacks with "this" meaning the object
         // not the context of the callback
         _.bindAll(this);
+
+        window.fbAsyncInit = function() {
+            FB.init({
+              appId      : '288578304935252',
+              xfbml      : true,
+              version    : 'v2.9'
+            }); 
+            FB.AppEvents.logPageView();
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "../js/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
     },
 
     getIncognito: function() {
@@ -138,17 +155,37 @@ var User = Backbone.Model.extend({
         }
     },
 
+    doLogin: function(login_url, username, password, callback) {
+        $.ajax({
+            url: login_url,
+            type: "POST",
+            data: {
+                "username": username,
+                "password": password,
+                "csrfmiddlewaretoken": this.getCSRF(),
+                "remember_me": "on", // for convenience
+            },
+            dataType: "html",
+            success: function(data) {
+                callback(data, true);
+            },
+            error: function(data) {
+                callback(data, false);
+            }
+        });
+    },
+
     attemptLogin: function(callback) {
         if (callback !== undefined) {
             var this_user = this;
-            $.get(getLoginUrl(), function(data) {
+            $.get(getCSRFLoginUrl(), function(data) {
                 this_user.attemptSetCSRF(data);
                 callback(parseUsername(data));
             });
         } else {
             var data = $.ajax({
                 type: "GET",
-                url: getLoginUrl(),
+                url: getCSRFLoginUrl(),
                 async: false
             }).responseText;
             var isLoggedIn = parseUsername(data) !== null ? true : false;
@@ -192,10 +229,26 @@ var User = Backbone.Model.extend({
     login: function() {
         this.setLogin(true);
         this.setLoginPrompt(false);
+        this.setHighlighting(true);
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            "type": "toggleHighlight",
+            "user": user,
+            "baseUrl": baseUrl,
+          });
+        });
     },
 
     logout: function() {
         this.setLogin(false);
+        this.setHighlighting(false);
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            "type": "toggleHighlight",
+            "user": user,
+            "baseUrl": baseUrl,
+          });
+        });
     },
 
     setUsername: function(username) {
@@ -247,6 +300,15 @@ var User = Backbone.Model.extend({
         this.set({
             "highlighting": bool
         });
+    },
+
+    shareToFB: function(url, text) {
+        FB.ui({
+            method: 'share',
+            display: 'popup',
+            href: url,
+            quote: text,
+        }, function(response){});
     },
 
     // check if a url is in the blacklist
@@ -400,14 +462,14 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     }
     var timeCheck = checkTimeDelta();
 
+    if (!isInHighlightBlacklist(url)) {
+        highlight();
+    }
+
     // if its not in the whitelist lets check that the user has it
     setTimeout(function() {
         bubbleInfo(tabId, url);
     }, 3000);
-
-    if (!isInHighlightBlacklist(url)) {
-        highlight();
-    }
 
     if (user.getIncognito() === false) {
 
@@ -872,7 +934,7 @@ function getLocalStorageUser() {
     if (storedUser === undefined || storedUser === "null") {
         user = new User();
 
-        $.get(getLoginUrl(), function(data) {
+        $.get(getCSRFLoginUrl(), function(data) {
             var csrf = parseCSRFToken(data);
             if (csrf) {
                 user.setCSRF(csrf);
