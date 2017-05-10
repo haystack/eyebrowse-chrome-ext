@@ -952,6 +952,22 @@ function setupMessageBox() {
         if (e.which === 13) {
             var text = $("#upperarea .mentions").text();
             postMessage(text, window.g_url);
+
+            if ($(".fb-checkbox").is(":checked")) {
+                chrome.tabs.query({
+                    currentWindow: true,
+                    active: true
+                }, function(tabs) {
+                    var url = tabs[0].url;
+                    var eyebrowse_url = baseUrl + '/tags/fbshare?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text);
+
+                    chrome.tabs.create({active: false, url: eyebrowse_url}, function(tab) {
+                        setTimeout(function() {
+                            chrome.tabs.remove(tab.id);
+                        }, 1000);
+                    });
+                });
+            }
         }
     });
 
@@ -961,6 +977,22 @@ function setupMessageBox() {
             text = null;
         }
         postMessage(text, window.g_url);
+
+        if ($(".fb-checkbox").is(":checked")) {
+                chrome.tabs.query({
+                    currentWindow: true,
+                    active: true
+                }, function(tabs) {
+                    var url = tabs[0].url;
+                    var eyebrowse_url = baseUrl + '/tags/fbshare?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text);
+
+                    chrome.tabs.create({active: false, url: eyebrowse_url}, function(tab) {
+                        setTimeout(function() {
+                            chrome.tabs.remove(tab.id);
+                        }, 1000);
+                    });
+                });
+            }
     });
 }
 
