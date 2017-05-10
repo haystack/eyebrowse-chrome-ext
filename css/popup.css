@@ -352,7 +352,7 @@ a:focus {
 #messagebox {
     border: 1px solid #d3d3d3;
     padding: 3px 6px;
-    height: 50px;
+    height: 40px;
     margin-bottom: 10px;
     margin-top: 10px;
     outline: 0;
@@ -365,11 +365,9 @@ a:focus {
 
 .btn {
     display: block;
-    float: right;
     font-size: 11px;
     padding: 1px;
-    margin: 1px;
-    margin-top: 10px;
+    margin: 10px 1px 1px 1px;
     width: 80px;
     height: 28px;
     float: right;
@@ -379,24 +377,11 @@ a:focus {
     color: #aaa;
     transition: background 0.3s ease-in-out;
     text-shadow: none;
-}
+} 
 
-/*#submitmessage {
-    display: block;
-    float: right;
-    font-size: 11px;
-    padding: 1px;
-    margin: 1px;
-    margin-top: 10px;
-    width: 80px;
-    height: 28px;
-    float: right;
-    border: 1px solid #999;
-    background-color: #fff;
-    border-radius: 50px;
-    color: #666;
-    transition: background-color 0.3s ease-in;
-}*/
+#submitmessage {
+    margin-top: 15px;
+}
 
 .btn:hover {
     background: #ccc;

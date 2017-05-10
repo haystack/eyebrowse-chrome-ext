@@ -278,8 +278,12 @@ var LoginView = Backbone.View.extend({
                     completeLogin(username);
                 }
             } else {
-                console.log(JSON.stringify(data));
-                self.displayErrors("Unable to connect, try again later.");
+                if (data.status === 401) {
+                    self.displayErrors("Invalid username or password");
+                } else {
+                    self.displayErrors("Unable to connect, try again later."); 
+                }
+                
             }
         })
     },
@@ -948,16 +952,6 @@ function setupMessageBox() {
         if (e.which === 13) {
             var text = $("#upperarea .mentions").text();
             postMessage(text, window.g_url);
-            if ($(".fb-checkbox").is(":checked")) {
-                chrome.tabs.query({
-                    currentWindow: true,
-                    active: true
-                }, function(tabs) {
-                    var url = tabs[0].url;
-
-                    user.shareToFB(url, text);
-                });
-            }
         }
     });
 
@@ -967,16 +961,6 @@ function setupMessageBox() {
             text = null;
         }
         postMessage(text, window.g_url);
-        if ($(".fb-checkbox").is(":checked")) {
-            chrome.tabs.query({
-                currentWindow: true,
-                active: true
-            }, function(tabs) {
-                var url = tabs[0].url;
-
-                user.shareToFB(url, text);
-            });
-        }
     });
 }
 
