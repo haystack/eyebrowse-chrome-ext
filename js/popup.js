@@ -381,11 +381,13 @@ var ValueView = Backbone.View.extend({
                 });
                 container.html(value_title_template);
 
+                var summary = ""
                 vdView = new ValueDisplayView(url, loggedIn);
                 vcView = new ValueCompView(url, loggedIn);
-                vsView = new ValueSummaryView(url, loggedIn);
-                vdView.render();
+                vsView = new ValueSummaryView(url, loggedIn, summary);
 
+                vdView.render();
+                
                 var tags_by_page_url = sprintf("%s/tags/tags/page", baseUrl);
                 $.get(tags_by_page_url, {
                   "url": url,
@@ -592,11 +594,13 @@ var ValueSummaryView = Backbone.View.extend({
     "el": $(".content-container"),
     "url": "",
     "maxLen": 1000,
+    "lastSummary": "",
 
     initialize: function(url, loggedIn) {
         this.url = url;
         // this.render(url, loggedIn);
         this.maxLen = 1000;
+        self.lastSummary = "";
     },
 
     render: function() {
@@ -617,9 +621,7 @@ var ValueSummaryView = Backbone.View.extend({
                 editor = res.data.summary.user;
                 time = res.data.summary.date;
 
-                $(".value_summary_text").on("click", function(){
-                    $(this).html("");
-                });
+                self.lastSummary = summary;
             } else {
                 editor = 'no one';
                 time = 'n/a';
@@ -675,14 +677,78 @@ var ValueSummaryView = Backbone.View.extend({
     },
 
     events: {
-        "keypress .value_summary_text": "postSummary",
         "input .value_summary_text": "updateCounter",
-        "click .value_summary_text": "clearBox",
+        "click .fa-pencil": "editSummary",
+        "click .summary_exit_edit": "exitEditMode",
+        "click .summary_reset": "resetSummary",
+        "click .summary_submit": "postSummary",
+        "mouseenter .value_summary_wrapper": "hoverShow",
+        "mouseleave .value_summary_wrapper": "hoverHide",
+        "mouseenter .value_summary_edit": "addTooltip",
+        "mouseleave .value_summary_edit": "removeTooltip",
     },
 
-    clearBox: function(e) {
-        if ($(".value_summary_text").children('.default-message').length > 0) {
+    addTooltip: function(e) {
+        if ($(e.target).children(".fa-pencil").length > 0) {
+            var tooltip = $("<span>", {"class": "icon-name-tooltip"});
+            tooltip.html("Edit this globally viewable summary");
+            $(e.target).append(tooltip);
+            var top = $(e.target).offset().top - tooltip.height() - 18;
+            var left = $(e.target).offset().left - tooltip.width() + 6;
+            tooltip.css({
+                top: top,
+                left: left,
+            });
+        }
+    },
+
+    removeTooltip: function(e) {
+        if ($(".icon-name-tooltip").length !== 0) {
+          $(".icon-name-tooltip").remove();
+        }
+    },
+
+    hoverShow: function(e) {
+        $(".value_summary_edit").css({
+            "display": "block"
+        });
+    },
+
+    hoverHide: function(e) {
+        $(".value_summary_edit").css({
+            "display": "none",
+        });
+    },
+
+    editSummary: function(e) {
+        if ($(".value_summary_text").attr("contenteditable") !== "true" && !$(".value_summary_edit").hasClass("edit-mode")) {
+            if ($(".value_summary_text").children('.default-message').length > 0) {
             $(".value_summary_text").html("");
+        }
+
+            $(".value_summary_text").attr("contenteditable", true);
+            $(".value_summary_text").get(0).focus();
+            $(".value_summary_edit").addClass("edit-mode");
+            $(".value_summary_edit").html("<div class='summary_reset disabled'>Reset</div><div class='summary_exit_edit'>Exit edit mode</div><div class='summary_submit'>Submit this summary</div>");
+        } 
+    },
+
+    exitEditMode: function(e) {
+        if ($(".value_summary_text").attr("contenteditable") === "true") {
+            $(".value_summary_text").html(self.lastSummary);
+            $(".value_summary_text").attr("contenteditable", false);
+            $(".value_summary_text").blur();
+            $(".value_summary_edit").html('<i class="fa fa-pencil" aria-hidden="true"></i>');
+            $('.value_summary_helpertext').html("");
+            $(".value_summary_edit").removeClass("edit-mode");
+        }
+    },
+
+    resetSummary: function(e) {
+        if (!$(".summary_reset").hasClass("disabled")) {
+            $('.value_summary_helpertext').html("");
+            $(".value_summary_text").html(self.lastSummary);
+            $(".summary_reset").addClass("disabled");
         }
     },
 
@@ -690,8 +756,18 @@ var ValueSummaryView = Backbone.View.extend({
         var text = $('.value_summary_text').get(0).textContent
         var count = this.maxLen - text.length;
 
+        $(".summary_reset").removeClass("disabled");
+
+        $('.value_summary_helpertext').html("Unsubmitted changes");
+        $('.value_summary_helpertext').css({
+            opacity: 1,
+        });
+
         if (count <= 0) {
-            $('.value_summary_text').html(text.substring(0, this.maxLen));
+            $('.value_summary_helpertext').addClass("danger");
+            $('.value_summary_helpertext').html("Too many characters");
+        } else {
+            $('.value_summary_helpertext').removeClass("danger");
         }
 
         if (count < 50) {
@@ -705,17 +781,9 @@ var ValueSummaryView = Backbone.View.extend({
 
     postSummary: function(e) {
         var count = this.maxLen - $('.value_summary_text').get(0).textContent.length;
-        $('.value_summary_helpertext').html("Unsaved changes");
-        $('.value_summary_helpertext').css({
-            opacity: 1,
-        });
 
-        if (count <= 0) {
-            e.preventDefault();
-        }
-
-        if (e.keyCode === 13) {
-            var summary = $(e.target).get(0).textContent;
+        if (count >= 0) {
+            var summary = $('.value_summary_text').get(0).textContent;
 
             if (!/\S/.test(summary)) {
                 $('.value_summary_helpertext').html("<span class='danger'>Summary cannot be blank</span>");
@@ -726,19 +794,36 @@ var ValueSummaryView = Backbone.View.extend({
                     "summary": summary,
                     "csrfmiddlewaretoken": user.csrf,
                 }).done(function(res) {
-                    window.getSelection().removeAllRanges();
-                    $('.value_summary_text').blur();
-                    $('#edited_user').html(res.data.summary.user);
-                    $('#edited_time').html(res.data.summary.date);
-                    $('.value_summary_helpertext').html("Success - summary saved! 🎉");
-                    $('.value_summary_helpertext').animate({
-                        opacity: 1,
-                    }, 300);
-                    setTimeout(function() {
+                    if (res.success) {
+                        self.lastSummary = summary;
+                        window.getSelection().removeAllRanges();
+                        $('.value_summary_text').blur();
+                        $('.value_summary_text').attr('contenteditable', false);
+                        $('#edited_user').html(res.data.summary.user);
+                        $('#edited_time').html(res.data.summary.date);
+                        $(".value_summary_edit").removeClass("edit-mode");
+                        $(".value_summary_edit").html('<i class="fa fa-pencil" aria-hidden="true"></i>');
+                        $('.value_summary_helpertext').html("Success - summary saved! 🎉");
                         $('.value_summary_helpertext').animate({
-                            opacity: 0,
+                            opacity: 1,
                         }, 300);
-                    }, 2000);
+                        setTimeout(function() {
+                            $('.value_summary_helpertext').animate({
+                                opacity: 0,
+                            }, 300);
+                        }, 2000);
+                    } else {
+                        $('.value_summary_helpertext').html("Saving summary failed");
+                        $('.value_summary_helpertext').addClass("danger");
+
+                        setTimeout(function() {
+                            $('.value_summary_helpertext').animate({
+                                opacity: 0,
+                            }, 300);
+                            $('.value_summary_helpertext').removeClass("danger");
+                        }, 2000);
+                    }
+                    
                 });
             }
             

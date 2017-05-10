@@ -762,6 +762,7 @@ a:hover {
     min-height: 100px;
     padding: 10px;
     margin-bottom: 10px;
+    border: 1px solid #eee;
 }
 
 .value_summary_header {
@@ -775,6 +776,42 @@ a:hover {
 
 .value_summary_tags {
     margin-bottom: 5px;
+}
+
+.value_summary_wrapper {
+    position: relative;
+}
+
+.value_summary_edit {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 5px;
+    color: #666;
+    opacity: 0.8;
+    text-shadow: 0 0 7px #f6f6f6;
+    display: none;
+    z-index: 99;
+    background-color: #fff;
+    text-align: right;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.summary_reset:hover, .summary_exit_edit:hover, .summary_submit:hover {
+    opacity: 1;
+    text-shadow: 0 0 7px #666;
+    cursor: pointer;
+}
+
+.disabled {
+    color: #ccc;
+}
+
+.disabled:hover {
+    opacity: 0.8;
+    text-shadow: 0 0 7px #f6f6f6;
+    cursor: not-allowed;
 }
 
 .subtext-dark {
@@ -808,4 +845,29 @@ a:hover {
 .logout-text {
     margin-top: 15px;
     font-size: 0.8em;
+}
+
+.icon-name-tooltip {
+  padding: 5px 12px;
+  border-radius: 4px;
+  background-color: #2a2f36;
+  color: #fff;
+  position: fixed;
+  font-size: 11px;
+  z-index: 10;
+  text-align: center;
+  text-shadow: none;
+  width: 200px;
+}
+
+.icon-name-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 90%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-radius: 1px;
+  border-color: #2a2f36 transparent transparent transparent;
 }

@@ -274,8 +274,11 @@
               </div>
             <% } %>
             <div class="value_summary_helpertext"></div>
-            <div class="value_summary_text" contenteditable=true maxlength=500>
-              <%= summary %>
+            <div class="value_summary_wrapper">
+              <div class="value_summary_text" maxlength=500>
+                <%= summary %>
+              </div>
+              <div class="value_summary_edit"><i class="fa fa-pencil" aria-hidden="true"></i></div>
             </div>
             <div class="value_summary_editinfo subtext-dark">Last edited by <span id="edited_user"><%= editor %></span> at <span id="edited_time"><%= time %></span>
             </div>
