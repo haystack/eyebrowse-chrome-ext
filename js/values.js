@@ -373,7 +373,7 @@ function highlighting(user, baseUrl) {
                   annote_position.anchor_top = $(window).scrollTop();
                   annote_position.anchor_left = $(window).scrollLeft();
                 }
-              }, 800);
+              }, 650);
             } else {
               removeAddHighlightButton();
             }
