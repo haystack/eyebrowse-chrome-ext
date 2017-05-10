@@ -269,7 +269,6 @@ var LoginView = Backbone.View.extend({
     postLogin: function(csrfmiddlewaretoken, username, password) {
         var self = this;
         // now call the server and login
-
         user.doLogin(getLoginUrl(), username, password, function(data, success) {
             if (success) {
                 var match = data.match(CSRF_REGEX);

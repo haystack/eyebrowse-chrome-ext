@@ -6,7 +6,7 @@ var url = window.location.href;
 var generated_tags = {}
 
 function highlighting(user, baseUrl) {
-  if (!run_once && user.highlighting) {
+  if (!run_once && user.highlighting && user.loggedIn) {
     $(document).ready(function() {      
       run_once = true;
       var vote_counts = {}; // Keeps track of client-side vote changes
@@ -573,7 +573,7 @@ function highlighting(user, baseUrl) {
 
             // Clear annotation box from previous content
             $('.annote-text').html('');
-            $('.annote-header').html('This statement supports these framings:');
+            $('.annote-header').html('Framings tagged in this statement:');
 
             // If no value tags for this highlight, display helper text
             if (vts.length === 0) {
