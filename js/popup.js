@@ -431,7 +431,7 @@ var ValueDisplayView = Backbone.View.extend({
             var auto_tags = {}
 
             if (Object.keys(valueTags).length > 0) {
-                subtitle = "This article is framed under the following tags:"; 
+                subtitle = "This page is framed under the following tags:"; 
             } else {
                 subtitle = "No tags to display :(";
             }
@@ -507,6 +507,7 @@ var ValueDisplayView = Backbone.View.extend({
                                         color: tag_info.color,
                                     });
                                     $(".usergenerated_values").append(template);
+                                    $(".value_subtext").html("");
                                 }
                             }
                         });
@@ -537,7 +538,8 @@ var ValueCompView = Backbone.View.extend({
 
         var value_comp_template = _.template($("#value_comp_template").html());
         $(".value_content").html(value_comp_template);
-        $(".value_comps").html('<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>');
+        $(".value_comps").html('<i style="margin-top: 30px;" class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>' 
+            + '<div class="comp_wait_message" style="margin-top: 10px; margin-bottom: 30px; font-size: 12px;">Hang tight... fetching recommended pages</div>');
 
         var related_stories_url = sprintf("%s/tags/page/related_stories", baseUrl);
         $.get(related_stories_url, {
@@ -615,7 +617,7 @@ var ValueSummaryView = Backbone.View.extend({
             "url": this.url,
         }).done(function(res) {
             var editor, time;
-            var summary = '<p class="default-message">No summary yet... start writing one here! </p><p>Summarize the perspective of the article here.</p>';
+            var summary = '<p class="default-message">No summary yet... start writing one here! </p><p>Summarize the perspective of the page content here.</p>';
             if (res.data.summary.summary !== "") {
                 summary = res.data.summary.summary;
                 editor = res.data.summary.user;
