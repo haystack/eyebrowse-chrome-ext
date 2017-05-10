@@ -20,8 +20,7 @@
                 "js/common.js", 
                 "js/prompt.js", 
                 "js/idle-detection.js", 
-                "js/values.js",
-                "js/sdk.js"
+                "js/values.js"
             ], 
             "matches": [
                 "<all_urls>"
