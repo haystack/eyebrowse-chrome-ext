@@ -229,10 +229,26 @@ var User = Backbone.Model.extend({
     login: function() {
         this.setLogin(true);
         this.setLoginPrompt(false);
+        this.setHighlighting(true);
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            "type": "toggleHighlight",
+            "user": user,
+            "baseUrl": baseUrl,
+          });
+        });
     },
 
     logout: function() {
         this.setLogin(false);
+        this.setHighlighting(false);
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            "type": "toggleHighlight",
+            "user": user,
+            "baseUrl": baseUrl,
+          });
+        });
     },
 
     setUsername: function(username) {
@@ -446,7 +462,7 @@ function openItem(tabId, url, favIconUrl, title, event_type) {
     }
     var timeCheck = checkTimeDelta();
 
-    if (!isInHighlightBlacklist(details.url)) {
+    if (!isInHighlightBlacklist(url)) {
         highlight();
     }
 

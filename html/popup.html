@@ -39,7 +39,7 @@
                             <a>Home</a>
                         </li>
                         <li id="values_tab" class="nav-tab">
-                            <a>Tags</a>
+                            <a>This Page</a>
                         </li>
                         <li id="settings">
                         	<a href="<%= baseUrl %>/accounts/profile/edit" target="_blank">Settings</a>
@@ -264,9 +264,9 @@
             </ul>
           </div>
           <div class="value_summary_box">
-            <div class="value_summary_header">Article Summary</div>
+            <div class="value_summary_header">Page Summary</div>
             <% if (Object.keys(value_tags).length > 0) { %>
-              <div class="value_summary_subtitle subtitle">Tags in this article</div>
+              <div class="value_summary_subtitle subtitle">Tags in this page&#39;s content</div>
               <div class="value_summary_tags">
                 <% _.each(value_tags, function(tag){ %>
                   <div class="story_tag" style="background-color: <%= tag.color %>"><%= tag.name %></div>
@@ -274,8 +274,11 @@
               </div>
             <% } %>
             <div class="value_summary_helpertext"></div>
-            <div class="value_summary_text" contenteditable=true maxlength=500>
-              <%= summary %>
+            <div class="value_summary_wrapper">
+              <div class="value_summary_text" maxlength=500>
+                <%= summary %>
+              </div>
+              <div class="value_summary_edit"><i class="fa fa-pencil" aria-hidden="true"></i></div>
             </div>
             <div class="value_summary_editinfo subtext-dark">Last edited by <span id="edited_user"><%= editor %></span> at <span id="edited_time"><%= time %></span>
             </div>
