@@ -531,9 +531,12 @@ function highlighting(user, baseUrl) {
       });
 
       // Change front-end of tags upon selection/deselection in add highlight interface
-      $("body").on("click", ".add-valuetag-tag", function() {
+      $("body").on("click", ".add-valuetag-tag", function(e) {
         var valuetag = $(this).attr("name");
         $(".highlight-error").html("");
+
+        console.log("HEREEE");
+        e.stopImmediatePropagation();
 
         if ($(this).hasClass("deselected")) {
           var bgColor = $(this).attr("bgcolor");
@@ -1002,6 +1005,7 @@ function highlighting(user, baseUrl) {
       // Toggle voting
       $('body').on("click", ".valuetag_vote_btn", function(e) {
         e.preventDefault();
+        e.stopImmediatePropagation();
         var tagName = $(this).attr("name");
         var highlight = $(this).attr("highlight");
 
