@@ -7,8 +7,8 @@ var generated_tags = {}
 
 function highlighting(user, baseUrl) {
   if (!run_once && user.highlighting && user.loggedIn) {
+    run_once = true;
     $(document).ready(function() {      
-      run_once = true;
       var vote_counts = {}; // Keeps track of client-side vote changes
       highlighting_enabled = user.highlighting; // Pulls user state from extension
       var user_pic_url = baseUrl + '/ext/profilepic';
@@ -373,7 +373,7 @@ function highlighting(user, baseUrl) {
                   annote_position.anchor_top = $(window).scrollTop();
                   annote_position.anchor_left = $(window).scrollLeft();
                 }
-              }, 650);
+              }, 720);
             } else {
               removeAddHighlightButton();
             }
@@ -507,6 +507,7 @@ function highlighting(user, baseUrl) {
                         "is_owner": true,
                       }).css({
                         "border": "none",
+                        "background-color": "#ccc",
                       });
                       // removeTemporaryHighlight();
                       $('.annote-text').animate({
@@ -534,9 +535,6 @@ function highlighting(user, baseUrl) {
       $("body").on("click", ".add-valuetag-tag", function(e) {
         var valuetag = $(this).attr("name");
         $(".highlight-error").html("");
-
-        console.log("HEREEE");
-        e.stopImmediatePropagation();
 
         if ($(this).hasClass("deselected")) {
           var bgColor = $(this).attr("bgcolor");
@@ -988,7 +986,7 @@ function highlighting(user, baseUrl) {
         var obj = $(this);
         annotationDelay = setTimeout(function() {
           makeAnnotationBox(obj, e);
-        }, 700);
+        }, 800);
       });
 
       // Pop up annotation box on hover immediately
