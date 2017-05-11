@@ -302,15 +302,6 @@ var User = Backbone.Model.extend({
         });
     },
 
-    shareToFB: function(url, text) {
-        FB.ui({
-            method: 'share',
-            display: 'popup',
-            href: url,
-            quote: text,
-        }, function(response){});
-    },
-
     // check if a url is in the blacklist
     inBlackList: function(url) {
         return this.inSet("blacklist", url);
@@ -933,7 +924,6 @@ function getLocalStorageUser() {
     var storedUser = localStorage.user;
     if (storedUser === undefined || storedUser === "null") {
         user = new User();
-
         $.get(getCSRFLoginUrl(), function(data) {
             var csrf = parseCSRFToken(data);
             if (csrf) {
