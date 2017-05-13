@@ -986,10 +986,10 @@ function setupMessageBox() {
                     var url = tabs[0].url;
                     var eyebrowse_url = baseUrl + '/tags/fbshare?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text);
 
-                    chrome.tabs.create({active: false, url: eyebrowse_url}, function(tab) {
-                        setTimeout(function() {
-                            chrome.tabs.remove(tab.id);
-                        }, 1000);
+                    chrome.tabs.create({url: eyebrowse_url}, function(tab) {
+                        // setTimeout(function() {
+                        //     chrome.tabs.remove(tab.id);
+                        // }, 1000);
                     });
                 });
             }
