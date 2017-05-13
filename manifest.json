@@ -36,7 +36,6 @@
     }, 
     "manifest_version": 2, 
     "name": "Eyebrowse", 
-    "update_url": "https://eyebrowse.csail.mit.edu/static/common/assets/ext-update.xml",
     "permissions": [
         "*://*/*", 
         "http://eyebrowse-staging.csail.mit.edu/*", 
