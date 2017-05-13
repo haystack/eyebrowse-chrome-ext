@@ -1135,7 +1135,8 @@ function getHighlights(url) {
           });
           last.html(last.html().replace(hl, "<div class='highlight-annote' highlight='" + hl_id + "'>"+hl+"</div>")); 
         } else {
-          var base = $('*:contains("' + html[0].textContent + '"):last');
+          var base = $('div:contains("' + html[0].textContent + '"):last');
+          console.log(base);
           base.html(base.html().replace(hl, "<div class='highlight-annote' highlight='" + hl_id + "'>"+hl+"</div>"));
         }
 
