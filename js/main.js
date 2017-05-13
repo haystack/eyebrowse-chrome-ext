@@ -91,23 +91,6 @@ var User = Backbone.Model.extend({
         // allow access to 'this' in callbacks with "this" meaning the object
         // not the context of the callback
         _.bindAll(this);
-
-        window.fbAsyncInit = function() {
-            FB.init({
-              appId      : '288578304935252',
-              xfbml      : true,
-              version    : 'v2.9'
-            }); 
-            FB.AppEvents.logPageView();
-        };
-
-        (function(d, s, id){
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
-            js = d.createElement(s); js.id = id;
-            js.src = "../js/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
     },
 
     getIncognito: function() {
