@@ -46,7 +46,6 @@
         "tabs", 
         "webNavigation"
     ], 
-    "update_url": "https://eyebrowse.csail.mit.edu/static/common/assets/ext-update.xml", 
     "version": "0.0.109", 
     "web_accessible_resources": [
         "css/prompt.css", 
