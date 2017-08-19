@@ -22,23 +22,23 @@
 }
 
 .annotation p {
-    display: block;
-    -webkit-margin-before: 1em;
-    -webkit-margin-after: 1em;
-    -webkit-margin-start: 0px;
-    -webkit-margin-end: 0px;
-    font-size: 11px;
-    line-height: 1.2em;
-    font-family: Helvetica, Arial, Sans-Serif;
-    line-height: 1.6;
+  display: block;
+  -webkit-margin-before: 1em;
+  -webkit-margin-after: 1em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+  font-size: 11px;
+  line-height: 1.2em;
+  font-family: Helvetica, Arial, Sans-Serif;
+  line-height: 1.6;
 }
 
 .annotation::after, .annotation::before {
-    content: " ";
-    position: absolute;
-    bottom: 100%;  /* At the top of the tooltip */
-    left: 50%;
-    border-style: solid;
+  content: " ";
+  position: absolute;
+  bottom: 100%;  /* At the top of the tooltip */
+  left: 50%;
+  border-style: solid;
 }
 
 .annotation:after {
@@ -64,15 +64,17 @@
 }
 
 .annote-valuetag {
-  padding: 5px 20px;
+  padding: 3px 10px;
   display: inline-block;
   border-radius: 500px;
-  margin: 2px 8px 2px 0px;
-  min-width: 70px;
+  margin: 3px 5px 0 0;
+  min-width: 25px;
+  width: 50px;
   text-align: center;
-  font-size: 11px;
+  font-size: 10px;
   box-shadow: -1px 1px 2px #eee;
   box-sizing: content-box;
+  color: #888;
 }
 
 .votes-icon {
@@ -166,7 +168,6 @@
 .annote-text-wrapper {
   padding-bottom: 10px;
   padding-top: 10px;
-  border-bottom: 1px solid #ccc;
 }
 
 .empty-valuetags {
@@ -174,11 +175,11 @@
 }
 
 .add-valuetag-tag {
-  padding: 5px 20px;
+  padding: 5px 12px;
   display: inline-block;
   border-radius: 500px;
   margin: 2px 8px 2px 0px;
-  min-width: 70px;
+  min-width: 50px;
   text-align: center;
   font-size: 11px;
   box-sizing: content-box;
@@ -191,10 +192,26 @@
 .highlight-annote {
   background-color: #999;
   display: inline;
+  cursor: pointer;
 }
 
 .highlight-add-valuetag {
   padding: 15px 0;
+}
+
+.pano-logo {
+  height: 25px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.pano {
+  font-size: 18px;
+  font-weight: 400;
+  font-family: Montserrat;
+  color: #aaa;
+  letter-spacing: 3px;
+  vertical-align: middle;
 }
 
 /*.highlight-add-valuetag-submit {
@@ -213,6 +230,12 @@
   color: #fff;
   cursor: pointer;
 }*/
+
+.highlight-add-valuetag-submit {
+  width: 100px;
+  margin-top: 20px;
+  padding: 4px 10px;
+}
 
 .deselected {
   opacity: 0.8;
@@ -319,12 +342,12 @@
   font-size: 11px;
 }
 
-.highlight-add-custom-tag-tags {
+/*.highlight-add-custom-tag-tags {
   display: none;
-}
+}*/
 
 .existing {
-  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .vertical-space {
@@ -349,7 +372,7 @@
 .custom-btn {
   margin-top: 10px;
   background-color: #fff;
-  padding: 8px 15px;
+  padding: 5px 10px;
   border-radius: 500px;
   color: #00cc89;
   text-align: center;
@@ -371,22 +394,37 @@
   cursor: pointer;
 }
 
+.add-comment-pic {
+  display: inline-block;
+  vertical-align: middle;
+  width: 12%;
+}
+
+.add-comment-pic img {
+  width: 35px;
+  height: 35px;
+}
+
 
 .add-comment-wrapper {
   margin: 10px auto;
-  display: none;
+  margin-bottom: 100px;
+  /*display: none;*/
 }
 
 .add-comment-box {
-  height: 30px;
-  margin-bottom: 0;
-  font-size: 12px;
+  min-height: 30px;
+  max-height: 100px;
+  overflow: scroll;
+  font-size: 13px;
+  line-height: 17px;
   border: 1px solid #eee;
   padding: 3px 6px;
-  width: 260px;
-  max-width: 240px;
+  min-width: 250px;
+  width: 82%;
   vertical-align: middle;
   font-family: Helvetica, Arial, Sans-Serif;
+  display: inline-block;
 }
 
 .fa:hover {
@@ -414,13 +452,17 @@
 }
 
 .comment-user-pic {
-  width: 25px;
-  height: 25px;
+  width: 35px;
+  height: 35px;
+}
+
+.comment-text {
+  margin: 6px 0 3px 0;
 }
 
 .comment-user-name {
   font-weight: bolder;
-  margin-right: 5px;
+  margin-right: 10px;
 }
 
 .comment-box {
@@ -430,13 +472,14 @@
 
 .comment-left {
   float: left;
-  width: 9%;
+  width: 12%;
 }
 
 .comment-right {
   float: left;
-  width: 81%;
-  font-size: 12px;
+  width: 78%;
+  font-size: 14px;
+  line-height: 19px;
 }
 
 .comment-date {
@@ -460,14 +503,20 @@
 }
 
 .comments-wrapper {
-  margin-top: 5px;
-  padding-top: 5px;
-  border-top: 1px solid #eee;
+  padding: 7px 3px;
+  border-bottom: 1px solid #eee;
 }
 
-.comment-wrapper {
-  display: none;
+.comment-header {
+  font-weight: bold;
+  margin-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
 }
+
+/*.comment-wrapper {
+  display: none;
+}*/
 
 .update-comment-box {
   width: 80%;
@@ -477,19 +526,15 @@
   height: 30px;
 }
 
-.add-comment-hider, .comment-hider {
+.add-comment-hider {
   margin-top: 3px;
   font-size: 11px;
   color: #bbb;
 }
 
-.add-comment-hider:hover, .comment-hider:hover {
-  cursor: pointer;
-}
-
-.comment-box .fa:hover {
+/*.comment-box .fa:hover {
   color: #a5cbe7;
-}
+}*/
 
 .delete-confirm {
   width: 150px;
@@ -520,6 +565,111 @@
 
 .delete-comment {
   background-color: #ee7b7b;
+}
+
+.temp-highlight {
+  background-color: #f3f3f3;
+  border-bottom: 2px solid #a5cbe7;
+}
+
+.side-panel {
+  font-family: Helvetica, Arial, Sans-Serif;
+  font-size: 13px;
+  width: 450px;
+  height: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: -3px 0px 5px #eee;
+  position: fixed;
+  top: 0;
+  right: -450px;
+  line-height: 1.6;
+  color: #5a595c;
+  overflow: scroll;
+}
+
+.annotation-helper-text {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #00cc89;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 4;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 20px auto;
+  box-shadow: inset 0px 0px 0px #00cc89;
+  animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes scale {
+  0%, 100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #00cc89;
+  }
+}
+
+.tag_area {
+  margin: 20px 0 5px 0;
+}
+
+.annote-tag-header {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  display: block; /* For Firefox */
+}
+
+.highlight-add-comment-header, .highlight-add-valuetag-header {
+  font-weight: bold;
+}
+
+.highlight-add-comment-box {
+  min-width: 300px;
+  min-height: 50px;
+  max-height: 200px;
+  overflow: scroll;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  box-shadow: -1px 1px 2px #eee;
+  padding: 3px 8px;
+  margin: 8px 0 18px 0;
 }
 
 /*
