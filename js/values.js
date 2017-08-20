@@ -64,6 +64,14 @@ function highlighting(user, baseUrl) {
       all_tags = res.common_tags;
     });
 
+    $('body').on('mouseenter', '.side-panel', function() {
+      $('body').css('overflow', 'hidden');
+    });
+
+    $('body').on('mouseleave', '.side-panel', function() {
+      $('body').css('overflow', 'auto');
+    });
+
     // ***
     // *** FRONT-END RENDERING HELPER FUNCTIONS *** //
     // ***
@@ -462,52 +470,37 @@ function highlighting(user, baseUrl) {
         return;
       }
 
-      var highlight_id = null;
-
-      if ($(this).attr("highlight_id")) {
-        highlight_id = $(this).attr("highlight_id");
-      }
-
       var domain_name = $("meta[property='og:site_name']").attr("content") ? $("meta[property='og:site_name']").attr("content") : "";
       var title = $("meta[property='og:title']").attr("content") ? $("meta[property='og:title']").attr("content") : "";
-
       var comment = $(".highlight-add-comment-box").text();
-
-      console.log(comment);
 
       $.post(baseUrl + "/tags/highlight", {
         "url": url,
         "tags": JSON.stringify(tags_with_highlight),
         "highlight": encodeURIComponent(text),
-        "highlight_id": highlight_id,
         "csrfmiddlewaretoken": user.csrf,
       }).done(function(res) {
-        $.post(baseUrl + "/tags/comment/add_new", {
-          "url": url,
-          "comment": comment,
-          "tags": JSON.stringify(tags_with_highlight),
-          "csrfmiddlewaretoken": user.csrf,
-          "highlight_id": res.data.highlight_id,
-        }).done(function(res) {
-          if (res.success) {
-            setTimeout(function() {
-              $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr({
-                "highlight": highlight_id,
-                "is_owner": true,
-              }).css({
-                "border": "none",
-                "background-color": "#ccc",
-              });
-              $('.annote-text').html("<div class='annotation-helper-text'>"
-                + '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>'
-                + "Success - annotation added!</div>")
+        var callback = function(d) {
+          var highlight_id = res.data.highlight_id;
+          setTimeout(function() {
+            $(".temp-highlight").addClass("highlight-annote").removeClass("temp-highlight").attr({
+              "highlight": highlight_id,
+              "is_owner": true,
+            }).css({
+              "border": "none",
+              "background-color": "#ccc",
+            });
+            $('.annote-text').html("<div class='annotation-helper-text'>"
+              + '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>'
+              + "Success - annotation added!</div>")
 
-              setTimeout(function() {
-                hideSidePanel();
-              }, 2500);
-            }, 1000);
-          }
-        });
+            setTimeout(function() {
+              hideSidePanel();
+            }, 2500);
+          }, 700);
+        };
+        
+        addComment(url, comment, res.data.highlight_id, tags_with_highlight, callback);
       });
 
       // $.post(baseUrl + "/tags/initialize_page", {
@@ -574,7 +567,9 @@ function highlighting(user, baseUrl) {
         var bgColor = $(this).attr("bgcolor");
         $(this).removeClass("deselected").addClass("selected");
         $(this).css("background-color", bgColor);
-        tags_to_save[valuetag] = true;
+        tags_to_save[valuetag] = {
+          'color': bgColor,
+        };
       } else if ($(this).hasClass("selected")) {
         $(this).removeClass("selected").addClass("deselected");
         $(this).css("background-color", "#f7f7f7");
@@ -627,8 +622,6 @@ function highlighting(user, baseUrl) {
           comment_header.attr("count", count);
           comment_header.html(count + comment_text);
 
-          add_comment_wrapper.append(add_comment_pic);
-          add_comment_wrapper.append(add_comment_box);
           // add_comment_wrapper.append(add_comment_submit);
           comment_wrapper.append(comments_wrapper);
 
@@ -637,6 +630,26 @@ function highlighting(user, baseUrl) {
           // annote_text_wrapper.append(annote_valuetag_desc);
           annote_text_wrapper.append(comment_header);
           annote_text_wrapper.append(comment_wrapper);
+
+          var add_valuetag_tags = $("<div>", {"class": "highlight-add-valuetag-tags"});
+          var add_valuetags_header = $("<div>", {"class": "highlight-add-valuetag-header"});
+
+          for (var t in all_tags) {
+            var add_valuetag_tag = $("<div>", {
+              "class": "add-valuetag-tag deselected",
+              "name": t,
+              "bgColor": all_tags[t.toLowerCase()].color
+            });
+
+            add_valuetag_tag.html(t);
+            add_valuetag_tags.append(add_valuetag_tag);
+          }
+
+          comment_wrapper.append(add_valuetags_header);
+          add_comment_wrapper.append(add_valuetag_tags);
+
+          add_comment_wrapper.append(add_comment_pic);
+          add_comment_wrapper.append(add_comment_box);
 
           if (count === 0) {
             // $(comment_hider).html("")
@@ -825,12 +838,18 @@ function highlighting(user, baseUrl) {
 
       comment_left.html('<img class="comment-user-pic" src="' + comment.prof_pic + '"/>');
       comment_right.html("<span class='comment-user-name'>" + comment.user + "</span>");
+      var tags = comment.tags;
 
-      for (var tag in comment.tags) {
+      if (typeof comment.tags === "string") {
+        tags = JSON.parse(comment.tags);
+      }
+
+      for (var tag in tags) {
+        console.log(tags);
         var annote_valuetag = $("<div>", {"class": "annote-valuetag", "name": tag});
         annote_valuetag.html(tag);
         annote_valuetag.css({
-          'background-color': comment.tags[tag].color,
+          'background-color': tags[tag].color,
         });
         comment_tags.append(annote_valuetag);
       }
@@ -851,56 +870,42 @@ function highlighting(user, baseUrl) {
       return comment_box;
     }
 
-    function addNewComment(url, comment, highlight, tags) {
-      // $.post(baseUrl + "/tags/comment/add_new", {
-      //   'url': url,
-      //   'comment': comment,
-      //   'highlight_id': highlight,
-      //   'tags': tags,
-      //   'csrfmiddlewaretoken': user.csrf,
-      // }).done(function(res) {
-      //   if (res.success) {
-      //     console.log("Comment add successful!");
-      //   }
-      // });
-
+    function addComment(url, comment, highlight, tags, callback, parent_comment) {
       $.post(baseUrl + "/api/v1/history-data", {
         'url': url,
         'message': comment,
         'highlight': highlight,
-        'parent_comment': 0,
+        'tags': JSON.stringify(tags),
+        'parent_comment': parent_comment,
         'csrfmiddlewaretoken': user.csrf,
       }).done(function(res) {
-        console.log(res);
-        if (res.success) {
-          console.log("YAY!");
-        }
+        callback(res);
       });
     }
 
-    function addComment(url, tag_name, comment, highlight) {
-      $.post(baseUrl + "/tags/comment/add", {
-        'url': url,
-        'comment': comment,
-        'tag_name': tag_name,
-        'highlight': highlight,
-        "csrfmiddlewaretoken": user.csrf,
-      }).done(function(res) {
-        if (res.success) {
-          var new_comment = createComment(res.comment);
-          var new_count = parseInt($('.comment-hider[tag_name=' + tag_name + ']').attr("count")) + 1;
-          $('.comment-hider[tag_name=' + tag_name + ']').attr("count", new_count);
-          $('.comment-wrapper[tag_name=' + tag_name + ']').show();
-          var comment = " comments";
-          if (new_count === 1) {
-            comment = " comment";
-          }
-          $('.comment-hider[tag_name=' + tag_name + ']').html("Hide " + new_count + comment);
-          $('.comments-wrapper[tag_name=' + tag_name + ']').append(new_comment);
-          $('.add-comment-box[tag_name=' + tag_name + ']').val('');
-        }
-      });
-    }
+    // function addComment(url, tag_name, comment, highlight) {
+    //   $.post(baseUrl + "/tags/comment/add", {
+    //     'url': url,
+    //     'comment': comment,
+    //     'tag_name': tag_name,
+    //     'highlight': highlight,
+    //     "csrfmiddlewaretoken": user.csrf,
+    //   }).done(function(res) {
+    //     if (res.success) {
+    //       var new_comment = createComment(res.comment);
+    //       var new_count = parseInt($('.comment-hider[tag_name=' + tag_name + ']').attr("count")) + 1;
+    //       $('.comment-hider[tag_name=' + tag_name + ']').attr("count", new_count);
+    //       $('.comment-wrapper[tag_name=' + tag_name + ']').show();
+    //       var comment = " comments";
+    //       if (new_count === 1) {
+    //         comment = " comment";
+    //       }
+    //       $('.comment-hider[tag_name=' + tag_name + ']').html("Hide " + new_count + comment);
+    //       $('.comments-wrapper[tag_name=' + tag_name + ']').append(new_comment);
+    //       $('.add-comment-box[tag_name=' + tag_name + ']').val('');
+    //     }
+    //   });
+    // }
 
     // $('body').on('mouseenter', '.comment-box', function(e) {
     //   var comment_id = $(e.target).attr('comment_id');
@@ -995,12 +1000,20 @@ function highlighting(user, baseUrl) {
       // }
       if (e.keyCode === 13 && $(document.activeElement).hasClass('add-comment-box')) {
         var comment = $(e.target).text();
+        var parent_comment = $(e.target).attr("comment_id");
         var highlight = $(e.target).attr('highlight');
-        var tags = {}
 
-        console.log(highlight);
+        var callback = function(res) {
+          $('.add-comment-box').blur();
+          $('.add-comment-box').html('');
+          console.log(res.comment);
+          var comment = createComment(res.comment);
+          $('.comments-wrapper').append(comment);
+          tags_to_save = {};
+          $('.add-valuetag-tag').removeClass("selected").addClass("deselected").css("background-color", "#f7f7f7");
+        }
         
-        addNewComment(url, comment, highlight, JSON.stringify(tags));
+        addComment(url, comment, highlight, tags_to_save, callback, parent_comment);
       }
     });
 
@@ -1068,13 +1081,13 @@ function highlighting(user, baseUrl) {
       });
     });
 
-    // Pop up annotation box on hover with delay
-    $('body').on('mouseenter', '.highlight-annote', function(e) {
-      var obj = $(this);
-      annotationDelay = setTimeout(function() {
-        makeAnnotationBox(obj, e);
-      }, 800);
-    });
+    // // Pop up annotation box on hover with delay
+    // $('body').on('mouseenter', '.highlight-annote', function(e) {
+    //   var obj = $(this);
+    //   annotationDelay = setTimeout(function() {
+    //     makeAnnotationBox(obj, e);
+    //   }, 800);
+    // });
 
     // Pop up annotation box on hover immediately
     $('body').on('click', '.highlight-annote', function(e) {
@@ -1197,6 +1210,7 @@ function getHighlights(url) {
       for (var h in res.highlights) {
         var hl = decodeURIComponent(h);
         var hl_id = res.highlights[h].id;
+
         var max_tag = res.highlights[h].max_tag;
         var is_owner = res.highlights[h].is_owner;
         var entire_highlight_present = true;
