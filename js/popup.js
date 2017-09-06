@@ -1287,6 +1287,8 @@ function postMessage(message, url, successCallback) {
     }
     var data = JSON.stringify(active_tab);
 
+    console.log(data);
+
     $.ajax({
         type: "POST",
         url: req_url,

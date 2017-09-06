@@ -796,15 +796,15 @@ function dumpData() {
             },
         });
 
-        var hl_url = sprintf("%s/tags/initialize_page", baseUrl);
-        $.post(hl_url, {
-            url: item.url,
-            favIconUrl: item.favIconUrl,
-            title: item.title,
-            add_usertags: true,
-            domain_name: null,
-            csrfmiddlewaretoken: user.getCSRF(),
-        }).done(function(res) {});
+        // var hl_url = sprintf("%s/tags/initialize_page", baseUrl);
+        // $.post(hl_url, {
+        //     url: item.url,
+        //     favIconUrl: item.favIconUrl,
+        //     title: item.title,
+        //     add_usertags: true,
+        //     domain_name: null,
+        //     csrfmiddlewaretoken: user.getCSRF(),
+        // }).done(function(res) {});
     });
 }
 
