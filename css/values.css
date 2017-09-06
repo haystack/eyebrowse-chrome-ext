@@ -186,7 +186,7 @@
 }
 
 .highlight-add-valuetag-tags {
-  margin: 8px 0px;
+  margin: 5px 0px 9px 0px;
 }
 
 .highlight-annote {
@@ -197,6 +197,8 @@
 
 .highlight-add-valuetag {
   padding: 15px 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
 }
 
 .pano-logo {
@@ -326,8 +328,7 @@
   border-color: #2a2f36 transparent transparent transparent;
 }
 
-.highlight-add-custom-tag {
-  padding-top: 5px;
+.light {
   font-size: 11px;
   color: #bbb;
 }
@@ -338,6 +339,7 @@
 }
 
 .highlight-error {
+  margin-top: 10px;
   color: #ee7b7b;
   font-size: 11px;
 }
@@ -507,10 +509,6 @@
   border-bottom: 1px solid #eee;
 }
 
-.comment-header {
-  margin-top: 10px;
-}
-
 /*.comment-wrapper {
   display: none;
 }*/
@@ -653,10 +651,6 @@
   display: block; /* For Firefox */
 }
 
-.highlight-add-comment-header, .highlight-add-valuetag-header {
-  font-weight: bold;
-}
-
 .highlight-add-comment-box {
   min-width: 300px;
   min-height: 50px;
@@ -667,6 +661,24 @@
   box-shadow: -1px 1px 2px #eee;
   padding: 3px 8px;
   margin: 8px 0 18px 0;
+}
+
+#side-panel-button {
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+
+.highlight-header {
+  font-size: 1.2em;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.bold {
+  margin-bottom: 5px;
+  font-weight: bold;
 }
 
 /*
