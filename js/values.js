@@ -982,12 +982,12 @@ function highlighting(user, baseUrl) {
         + "<div class='comment-date'>" + comment.date + "</div></div>"
       );
 
-      // if (comment.user === user.username) {
-      //   comment_right.append("<div class='comment-icons'><i class='fa fa-pencil comment-edit' aria-hidden='true' style='display: none'></i><i class='fa fa-trash comment-delete' aria-hidden='true' style='display: none'></i></div>");
-      // }
-
       comment_box.append(comment_left);
       comment_box.append(comment_right);
+
+      if (comment.user === user.username) {
+        comment_box.append("<div class='comment-icons'><i class='fa fa-pencil comment-edit' aria-hidden='true'></i></div>");
+      }
 
       return comment_box;
     }
@@ -1052,70 +1052,70 @@ function highlighting(user, baseUrl) {
     //   });
     // }
 
-    // $('body').on('mouseenter', '.comment-box', function(e) {
-    //   var comment_id = $(e.target).attr('comment_id');
-    //   if (!$('.update-comment-box[comment_id=' + comment_id + ']').is(':visible')) {
-    //     $(this).find('.comment-edit').show();
-    //     $(this).find('.comment-delete').show();
-    //   }
-    // });
-
-    // $('body').on('mouseleave', '.comment-box', function(e) {
-    //   $(this).find('.comment-edit').hide();
-    //   $(this).find('.comment-delete').hide();
-    // });
-
-    $('body').on('click', '.comment-delete', function(e) {
-      var delete_confirm = $("<div>", {"class": "delete-confirm"});
-      var top = $(this).offset().top - $('.annotation').offset().top
-      var left = $(this).offset().left - $('.annotation').offset().left
-      delete_confirm.html("Are you sure you want to delete this comment?");
-      delete_confirm.append("<p><span class='delete-box delete-cancel'>Cancel</span><span class='delete-box delete-comment'>Delete</span></p>")
-      delete_confirm.css({
-        "position": "absolute",
-        "top": top + 25,
-        "left": left - 80,
-      });
-      $(e.target).parent().parent().append(delete_confirm);
+    $('body').on('mouseenter', '.comment-box', function(e) {
+      var comment_id = $(e.target).attr('comment_id');
+      if (!$('.update-comment-box[comment_id=' + comment_id + ']').is(':visible')) {
+        $(this).find('.comment-edit').show();
+        // $(this).find('.comment-delete').show();
+      }
     });
 
-    $('body').on('click', '.delete-cancel', function(e) {
-      $('.delete-confirm').remove();
+    $('body').on('mouseleave', '.comment-box', function(e) {
+      $(this).find('.comment-edit').hide();
+      // $(this).find('.comment-delete').hide();
     });
 
-    $('body').on('click', '.delete-comment', function(e) {
-      var comment_id = $(this).parent().parent().parent().attr("comment_id");
-      $.post(baseUrl + "/tags/comment/remove", {
-        "comment_id": comment_id,
-        "csrfmiddlewaretoken": user.csrf,
-      }).done(function(res) {
-        if (res.success) {
-          $('.delete-confirm').remove();
-          $('.comment-box[comment_id=' + comment_id + ']').html('<i style="padding: 7px 0" class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>')
-          $('.comment-box[comment_id=' + comment_id + ']').css('text-align', 'center');
-          setTimeout(function() {
-            $('.comment-box[comment_id=' + comment_id + ']').remove();
-          }, 500);
-        }
-      });
+    // $('body').on('click', '.comment-delete', function(e) {
+    //   var delete_confirm = $("<div>", {"class": "delete-confirm"});
+    //   var top = $(this).offset().top - $('.annotation').offset().top;
+    //   var left = $(this).offset().left - $('.annotation').offset().left;
+    //   delete_confirm.html("Are you sure you want to delete this comment?");
+    //   delete_confirm.append("<p><span class='delete-box delete-cancel'>Cancel</span><span class='delete-box delete-comment'>Delete</span></p>")
+    //   delete_confirm.css({
+    //     "position": "absolute",
+    //     "top": top + 25,
+    //     "left": left - 80,
+    //   });
+    //   $(e.target).parent().parent().append(delete_confirm);
+    // });
+
+    // $('body').on('click', '.delete-cancel', function(e) {
+    //   $('.delete-confirm').remove();
+    // });
+
+    // $('body').on('click', '.delete-comment', function(e) {
+    //   var comment_id = $(this).parent().parent().parent().attr("comment_id");
+    //   $.post(baseUrl + "/tags/comment/remove", {
+    //     "comment_id": comment_id,
+    //     "csrfmiddlewaretoken": user.csrf,
+    //   }).done(function(res) {
+    //     if (res.success) {
+    //       $('.delete-confirm').remove();
+    //       $('.comment-box[comment_id=' + comment_id + ']').html('<i style="padding: 7px 0" class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>')
+    //       $('.comment-box[comment_id=' + comment_id + ']').css('text-align', 'center');
+    //       setTimeout(function() {
+    //         $('.comment-box[comment_id=' + comment_id + ']').remove();
+    //       }, 500);
+    //     }
+    //   });
+    // });
+
+    $('body').on('click', '.comment-edit', function(e) {
+      $(this).parent().hide();
+      var comment_id = $(e.target).attr('comment_id');
+      var current_comment = $(e.target).parent().parent().children('.comment-right').children('.comment-text')
+      var add_comment_box = $("<textarea>", {"class": "update-comment-box", "maxlength": 500, "comment_id": comment_id});
+      add_comment_box.val(current_comment.html());
+      current_comment.html(add_comment_box);
     });
 
-    // $('body').on('click', '.comment-edit', function(e) {
-    //   $(this).parent().hide();
-    //   var comment_id = $(e.target).attr('comment_id');
-    //   var current_comment = $(e.target).parent().parent().children('.comment-right').children('.comment-text')
-    //   var add_comment_box = $("<textarea>", {"class": "update-comment-box", "maxlength": 500, "comment_id": comment_id});
-    //   add_comment_box.val(current_comment.html());
-    //   current_comment.html(add_comment_box);
-    // });
-
-    // $('body').on('click', '.add-comment-submit', function(e) {
-    //   e.preventDefault();
-    //   var tag_name = $(this).attr('tag_name')
-    //   var comment = $('.add-comment-box[tag_name=' + tag_name + ']').val();
-    //   var highlight = $(this).attr('highlight');
-    //   addComment(url, tag_name, comment, highlight);
-    // });
+    $('body').on('click', '.add-comment-submit', function(e) {
+      e.preventDefault();
+      var tag_name = $(this).attr('tag_name')
+      var comment = $('.add-comment-box[tag_name=' + tag_name + ']').val();
+      var highlight = $(this).attr('highlight');
+      addComment(url, tag_name, comment, highlight);
+    });
 
     // $('body').on('click', '.highlight-add-valuetag-submit', function(e) {
     //   e.preventDefault();
@@ -1129,20 +1129,21 @@ function highlighting(user, baseUrl) {
       //   addComment(url, tag_name, comment, highlight);
       // }
 
-      // if (e.keyCode === 13 && $('.update-comment-box').is(':focus')) {
-      //   var comment_id = $(e.target).parent().parent().parent().attr('comment_id');
-      //   var new_comment = $(e.target).val();
-      //   var text_box = $(e.target).parent();
+      if (e.keyCode === 13 && $('.update-comment-box').is(':focus')) {
+        var comment_id = $(e.target).parent().parent().parent().attr('comment_id');
+        var new_comment = $(e.target).val();
+        var text_box = $(e.target).parent();
 
-      //   $.post(baseUrl + '/tags/comment/edit', {
-      //     'comment_id': comment_id,
-      //     'new_comment': new_comment,
-      //     "csrfmiddlewaretoken": user.csrf,
-      //   }).done(function(res) {
-      //     text_box.parent().parent().children('.comment-icons').show();
-      //     text_box.html(new_comment);
-      //   });
-      // }
+        $.post(baseUrl + '/tags/comment/edit', {
+          'comment_id': comment_id,
+          'new_comment': new_comment,
+          "csrfmiddlewaretoken": user.csrf,
+        }).done(function(res) {
+          text_box.parent().parent().children('.comment-icons').show();
+          text_box.html(new_comment);
+        });
+      }
+
       if (e.keyCode === 13 && $(document.activeElement).hasClass('add-comment-box')) {
         var comment = $(e.target).text();
 
