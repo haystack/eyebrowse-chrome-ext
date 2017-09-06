@@ -20,8 +20,7 @@
                 "js/common.js", 
                 "js/prompt.js", 
                 "js/idle-detection.js", 
-                "js/values.js", 
-                "js/sdk.js"
+                "js/values.js"
             ], 
             "matches": [
                 "<all_urls>"
@@ -47,7 +46,7 @@
         "tabs", 
         "webNavigation"
     ], 
-    "version": "0.0.103", 
+    "version": "0.0.110", 
     "web_accessible_resources": [
         "css/prompt.css", 
         "html/prompt.html"

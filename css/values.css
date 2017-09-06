@@ -72,6 +72,7 @@
   text-align: center;
   font-size: 11px;
   box-shadow: -1px 1px 2px #eee;
+  box-sizing: content-box;
 }
 
 .votes-icon {
@@ -83,6 +84,10 @@
   vertical-align: top;
   position: relative;
   display: inline-block;
+}
+
+.votes-icon:hover {
+  cursor: pointer;
 }
 
 .votes-byuser {
@@ -176,6 +181,7 @@
   min-width: 70px;
   text-align: center;
   font-size: 11px;
+  box-sizing: content-box;
 }
 
 .highlight-add-valuetag-tags {
@@ -183,7 +189,7 @@
 }
 
 .highlight-annote {
-  background-color: #eee;
+  background-color: #999;
   display: inline;
 }
 
@@ -372,7 +378,8 @@
 }
 
 .add-comment-box {
-  height: 28px;
+  height: 30px;
+  margin-bottom: 0;
   font-size: 12px;
   border: 1px solid #eee;
   padding: 3px 6px;
@@ -380,6 +387,10 @@
   max-width: 240px;
   vertical-align: middle;
   font-family: Helvetica, Arial, Sans-Serif;
+}
+
+.fa:hover {
+  cursor: pointer;
 }
 
 .add-comment-submit {
@@ -399,6 +410,7 @@
 .add-comment-submit:hover {
   background-color: #00cc89;
   color: #fff;
+  cursor: pointer;
 }
 
 .comment-user-pic {
@@ -469,6 +481,10 @@
   margin-top: 3px;
   font-size: 11px;
   color: #bbb;
+}
+
+.add-comment-hider:hover, .comment-hider:hover {
+  cursor: pointer;
 }
 
 .comment-box .fa:hover {

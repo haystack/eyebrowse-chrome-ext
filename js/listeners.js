@@ -88,10 +88,13 @@ function onCompletedListener() {
 */
 function openTab(tabId, eventType) {
     chrome.tabs.get(tabId, function(tab) {
+        if (!isInHighlightBlacklist(tab.url)) {
+            highlight();
+        }
+
         if (isValidTab(tab) && tab.status === "complete") {
             openItem(tabId, tab.url, tab.favIconUrl, tab.title, eventType);
         }
-
     });
 }
 
