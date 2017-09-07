@@ -49,6 +49,7 @@
     "version": "0.0.110", 
     "web_accessible_resources": [
         "css/prompt.css", 
-        "html/prompt.html"
+        "html/prompt.html",
+        "img/pano-logo.png"
     ]
 }
