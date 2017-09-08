@@ -1379,6 +1379,7 @@ function highlighting(user, baseUrl) {
       var desc = all_tags[$(this).attr("name")].description;
       if (desc !== "") {
         $(".highlight-add-valuetag-desc").html(desc);
+        $(".highlight-add-valuetag-desc").css("height", "30px");
         // addTooltip(e, $(this), desc, 0, 8, 700);
       }
     });
