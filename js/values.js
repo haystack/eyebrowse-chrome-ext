@@ -190,7 +190,7 @@ function highlighting(user, baseUrl) {
         }
       }
 
-      highlight_add_valuetag_header.html("What frames are used in this sentence?");
+      highlight_add_valuetag_header.html("What frames are used in this highlight?");
       var highlight_add_valuetag_suggested = $("<div>", {"class": "highlight-add-valuetag-suggested light"});
       highlight_add_valuetag_suggested.html("Suggested tags");
       highlight_add_valuetag.prepend(highlight_add_valuetag_header);
