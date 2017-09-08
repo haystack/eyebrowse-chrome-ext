@@ -77,6 +77,10 @@
   color: #888;
 }
 
+.highlight-valuetag {
+  width: 85px;
+}
+
 .votes-icon {
   width: 25px;
   height: 25px;
@@ -105,28 +109,33 @@
 }
 
 .valuetag_vote_btn {
-  font-size: 1.5em;
+  margin-right: 5px;
+  margin-left: 3px;
+}
+
+.fa {
+  font-size: 1.7em;
 }
 
 .valuetag_rmvote {
-  color: #ffe8c5;
-  -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: #ffd491;
-  transition: opacity 0.1s ease-in;
+  color: #656565;
+/*  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #7e6262;*/
+  transition: color 0.1s ease-in;
 }
 
 .valuetag_rmvote:hover {
-  opacity: 0.60;
+  color: #a1a1a1;
   cursor: pointer;
 }
 
 .valuetag_vote:hover {
-  opacity: 0.60;
+  color: #a1a1a1;
   cursor: pointer;
 }
 
 .valuetag_vote {
-  transition: opacity 0.1s ease-in;
+  transition: color 0.1s ease-in;
   color: #ccc;
 }
 
@@ -186,7 +195,7 @@
 }
 
 .highlight-add-valuetag-tags {
-  margin: 5px 0px 9px 0px;
+  margin: 5px 0px;
 }
 
 .highlight-annote {
@@ -247,6 +256,7 @@
 
 .deselected:hover {
   opacity: 1;
+  background-color: #d7d7d7;
   cursor: pointer;
 }
 
@@ -344,9 +354,9 @@
   font-size: 11px;
 }
 
-/*.highlight-add-custom-tag-tags {
-  display: none;
-}*/
+.highlight-add-custom-tag-tags {
+  margin-bottom: 5px;
+}
 
 .existing {
   margin-bottom: 5px;
@@ -581,6 +591,7 @@
   line-height: 1.6;
   color: #5a595c;
   overflow: scroll;
+  z-index: 9999;
 }
 
 .annotation-helper-text {
@@ -679,6 +690,24 @@
 .bold {
   margin-bottom: 5px;
   font-weight: bold;
+}
+
+.fa-arrow-up {
+  font-size: 14px;
+  vertical-align: middle;
+  margin-bottom: 3px;
+}
+
+.highlight-add-valuetag-desc {
+  margin-bottom: 5px;
+  font-size: 10px;
+}
+
+.highlight-itself {
+  font-size: 14px;
+  margin-bottom: 10px;
+  font-style: italic;
+  display: inline-block;
 }
 
 /*
