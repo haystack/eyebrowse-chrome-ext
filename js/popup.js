@@ -476,9 +476,10 @@ var ValueDisplayView = Backbone.View.extend({
                         $('.usergenerated_values').html('');
                     } 
                     $.each(res.highlights, function(hl, hl_info) {
+                        console.log(hl_info.id);
                         $.get(tags_by_highlight, {
                             url: page_url,
-                            highlight: hl_info.id,
+                            highlight_id: hl_info.id,
                         }).done(function(res) {
                             if (res.success) {
                                 for (var tag in res.tags) {
@@ -648,9 +649,10 @@ var ValueSummaryView = Backbone.View.extend({
                 }).done(function(res) {
                     if (res.success) {
                         $.each(res.highlights, function(hl, hl_info) {
+                            console.log(hl_info.id);
                             $.get(tags_by_highlight, {
                                 url: page_url,
-                                highlight: hl_info.id,
+                                highlight_id: hl_info.id,
                             }).done(function(res) {
                                 for (var t in res.tags) {
                                     page_tags[res.tags[t].name] = res.tags[t];

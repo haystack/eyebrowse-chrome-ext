@@ -165,6 +165,10 @@ function highlighting(user, baseUrl) {
       var add_custom_tag = $("<div>", {"class": "highlight-add-custom-tag light"});
       var add_custom_tag_tags = $("<div>", {"class": "highlight-add-custom-tag-tags"});
       var add_valuetag_tag;
+      var highlight_itself_wrapper = $("<div>", {"class": "highlight-itself-wrapper"})
+      var highlight_itself = $("<div>", {"class": "highlight-itself temp"});
+      highlight_itself.html(text);
+      highlight_itself_wrapper.append(highlight_itself)
 
       for (var t in generated_tags) {
         add_valuetag_tag = $("<div>", {
@@ -193,7 +197,8 @@ function highlighting(user, baseUrl) {
       highlight_add_valuetag_header.html("What frames are used in this highlight?");
       var highlight_add_valuetag_suggested = $("<div>", {"class": "highlight-add-valuetag-suggested light"});
       highlight_add_valuetag_suggested.html("Suggested tags");
-      highlight_add_valuetag.prepend(highlight_add_valuetag_header);
+      highlight_add_valuetag.append(highlight_itself_wrapper);
+      highlight_add_valuetag.append(highlight_add_valuetag_header);
       highlight_add_valuetag.append(highlight_add_valuetag_suggested);
 
       add_custom_tag.html("Additional tags <i class='fa fa-caret-up' aria-hidden='true'></i>");
@@ -499,6 +504,7 @@ function highlighting(user, baseUrl) {
       var tags_with_comment = {};
       var highlight_tags_exist = false;
       var comment_tags_exist = false;
+      var is_additional_tag = $(this).attr("additional_tag");
 
       for (var tag in tags_to_save['highlight']) {
         if (tags_to_save['highlight'][tag]) {
@@ -565,9 +571,16 @@ function highlighting(user, baseUrl) {
               });
 
               var hl_color = $(".highlight-itself").attr("color") || "#ccc";
-              $('.annote-text').html("<div class='annotation-helper-text'>"
-                + '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>'
-                + "Success - annotation added!</div>")
+
+              if (is_additional_tag) {
+                $('.annote-text').html("<div class='annotation-helper-text'>"
+                  + '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>'
+                  + "Success - additional tag added!</div>")
+              } else {
+                $('.annote-text').html("<div class='annotation-helper-text'>"
+                  + '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>'
+                  + "Success - annotation added!</div>")
+              }
 
               setTimeout(function() {
                 // hideSidePanel();
@@ -607,10 +620,12 @@ function highlighting(user, baseUrl) {
         tags_to_save[type][valuetag] = {
           'color': bgColor,
         };
+        console.log(tags_to_save);
       } else if ($(this).hasClass("selected")) {
         $(this).removeClass("selected").addClass("deselected");
         $(this).css("background-color", "#f7f7f7");
-        tags_to_save[type][valuetag] = false;
+        delete tags_to_save[type][valuetag];
+        console.log(tags_to_save);
       }
     });
 
@@ -694,8 +709,9 @@ function highlighting(user, baseUrl) {
             var highlight_tags_header = $("<div>", {"class": "highlight-tags-header bold"});
             var highlight_tags = $("<div>", {"class": "highlight-tags"});
             var highlight_itself = $("<div>", {"class": "highlight-itself", "color": hl_color});
-            highlight_itself.html('"' + decodeURIComponent(res.highlight) + '"');
-
+            var highlight_itself_wrapper = $("<div>", {"class": "highlight-itself-wrapper"});
+            highlight_itself.html(decodeURIComponent(res.highlight));
+            highlight_itself_wrapper.append(highlight_itself);
             highlight_itself.css("background-color", hl_color);
 
             highlight_tags_header.html("Frames used in this highlight");
@@ -721,7 +737,7 @@ function highlighting(user, baseUrl) {
               highlight_tags.append(annote_valuetag);
             }
 
-            highlight_tags_wrapper.append(highlight_itself)
+            highlight_tags_wrapper.append(highlight_itself_wrapper);
             highlight_tags_wrapper.append(highlight_tags_header);
             if (res.tags.length === 0) {
               var highlight_tags_empty = $("<div>", {"class": "highlight-tags-empty light"});
@@ -731,7 +747,7 @@ function highlighting(user, baseUrl) {
             highlight_tags_wrapper.append(highlight_tags);
 
             var highlight_add_valuetag = $("<div>", {"class": "highlight-add-valuetag"});
-            var add_valuetag_submit = $("<div>", {"class": "highlight-add-valuetag-submit", "highlight_id": highlight});
+            var add_valuetag_submit = $("<div>", {"class": "highlight-add-valuetag-submit", "highlight_id": highlight, "additional_tag": true});
             add_valuetag_submit.addClass("custom-btn");
             var highlight_error = $("<div>", {"class": "highlight-error"});
             var add_custom_tag = $("<div>", {"class": "highlight-add-custom-tag light"});
