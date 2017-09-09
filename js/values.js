@@ -48,7 +48,7 @@ function highlighting(user, baseUrl) {
       console.log("Injecting setup");
       if (!$(".side-panel").length) {
         $("body").append("<div id='add-highlight-button'><div id='add-symbol'>+</div></div>"
-          + "<div class='side-panel'><div class='annote-header'><img src='http://i.imgur.com/DxyYPfZ.png' class='pano-logo'><span class='pano'>PANO</span></div><div class='annote-text'></div></div>");
+          + "<div class='side-panel'><div class='annote-header'><img src='https://i.imgur.com/DxyYPfZ.png' class='pano-logo'><span class='pano'>PANO</span></div><div class='annote-text'></div></div>");
       } 
 
       // $("body").append("<div id='side-panel-button'><img src='http://i.imgur.com/DxyYPfZ.png' class='pano-logo'></div>")
@@ -643,7 +643,7 @@ function highlighting(user, baseUrl) {
       }
     }
 
-    function makeAnnotationBox(highlight, hl_color=none) {
+    function makeAnnotationBox(highlight, hl_color="#ccc") {
       if (highlighting_enabled) {
         $('.annote-text').html("");
         $('.annotation').attr('highlight', highlight);
