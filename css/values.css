@@ -443,6 +443,10 @@
   cursor: pointer;
 }
 
+.fa.fa-info-circle {
+  cursor: default;
+}
+
 .add-comment-submit {
   vertical-align: middle;
   background-color: #fff;
@@ -705,9 +709,17 @@
 
 .highlight-itself {
   font-size: 14px;
-  margin-bottom: 10px;
   font-style: italic;
-  display: inline-block;
+  display: inline;
+  background-color: #f3f3f3;
+}
+
+.temp {
+  border-bottom: 2px solid #a5cbe7;
+}
+
+.highlight-itself-wrapper {
+  margin-bottom: 10px;
 }
 
 /*
