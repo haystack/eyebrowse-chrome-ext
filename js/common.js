@@ -193,11 +193,13 @@ function getHostName(url) {
 
 function isInHighlightBlacklist(url) {
     for (let site of highlightBlacklist) {
-        var re = new RegExp("(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+" + site + "\.[^\s]{2,}|www\." + site + "\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))" + site + "\.[^\s]{2,}|www\." + site + "]\.[^\s]{2,})|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+\." + site + "\.[^\s]{2,}");
+        var re = new RegExp("^(?:http(?:s)?:\/\/)?(?:[^\.]+\.)?" + site + "\.com(?:.*)?$");
         if (re.test(url)) {
+            console.log("BLOCKED! " + url);
             return true;
         }
     }
+
     return false;
 }
 
