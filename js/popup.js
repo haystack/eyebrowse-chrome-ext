@@ -1168,30 +1168,30 @@ function ajaxSetup(csrftoken) {
 function getFeed(url, first) {
     var encoded_url = encodeURIComponent(url);
     var req_url = sprintf("%s/ext/getMessages?url=%s", baseUrl, encoded_url);
-    return $.ajax({
-        type: "GET",
-        url: req_url,
-        dataType: "json"
-    }).done(function(parsed) {
-	    var histories = parsed.result.messages;
-	    var feed_items = [];
-	    $.each(histories, function(index, value) {
-	        feed_items.push(value);
-	    });
-	    if (feed_items.length === 0) {
-	        $("#pagefeed").empty().append("No bulletins yet.");
-	    } else {
-	        var feed_coll = new PageFeedCollection(feed_items);
-	        var feed_view = new PageFeedCollectionView({
-	            collection: feed_coll
-	        });
-	        var c = feed_view.render().el;
-	        $("#pagefeed").empty().append(c);
-	    }
-	    if (first === 0) {
-	        $("#pagefeed").scrollTop(0);
-	    }
-    });
+    // return $.ajax({
+    //     type: "GET",
+    //     url: req_url,
+    //     dataType: "json"
+    // }).done(function(parsed) {
+	   //  var histories = parsed.result.messages;
+	   //  var feed_items = [];
+	   //  $.each(histories, function(index, value) {
+	   //      feed_items.push(value);
+	   //  });
+	   //  if (feed_items.length === 0) {
+	   //      $("#pagefeed").empty().append("No bulletins yet.");
+	   //  } else {
+	   //      var feed_coll = new PageFeedCollection(feed_items);
+	   //      var feed_view = new PageFeedCollectionView({
+	   //          collection: feed_coll
+	   //      });
+	   //      var c = feed_view.render().el;
+	   //      $("#pagefeed").empty().append(c);
+	   //  }
+	   //  if (first === 0) {
+	   //      $("#pagefeed").scrollTop(0);
+	   //  }
+    // });
 }
 
 /*
