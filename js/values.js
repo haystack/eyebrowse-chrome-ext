@@ -63,10 +63,6 @@ function highlighting(user, baseUrl) {
       // showAllComments();
     }();
 
-    window.onbeforeunload = function() {
-      return "Are you sure you want to navigate away?";
-    }
-
     $.get(baseUrl + "/tags/tags/page", {
       url: url,
     }).done(function(res) {
