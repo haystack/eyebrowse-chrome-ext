@@ -5,7 +5,10 @@ var highlighting_enabled;
 var url = window.location.href;
 var generated_tags = {};
 var highlight_colors = {};
+var addCommentFlag = 0;
 
+
+//this is for creating a highlight the other one is viewing an existing highlight
 function highlighting(user, baseUrl) {
   console.log("Highlighting called");
   if (!run_once && user.highlighting && user.loggedIn) {
@@ -47,8 +50,10 @@ function highlighting(user, baseUrl) {
     var injectSetup = function() {
       console.log("Injecting setup");
       if (!$(".side-panel").length) {
+      //  $("body").append("<div id='add-highlight-button'><div id='add-symbol'>+</div></div>"
+        //  + "<div class='side-panel'><div class='annote-header'><img src='https://i.imgur.com/DxyYPfZ.png' class='pano-logo'><span class='pano'>PANO</span></div><div class='annote-text'></div></div>");
         $("body").append("<div id='add-highlight-button'><div id='add-symbol'>+</div></div>"
-          + "<div class='side-panel'><div class='annote-header'><img src='https://i.imgur.com/DxyYPfZ.png' class='pano-logo'><span class='pano'>PANO</span></div><div class='annote-text'></div></div>");
+          + "<div class='side-panel'><div class='annote-header'><span class='pano'>Margins</span></div><div class='annote-text'></div></div>");
       } 
 
       // $("body").append("<div id='side-panel-button'><img src='http://i.imgur.com/DxyYPfZ.png' class='pano-logo'></div>")
@@ -63,6 +68,7 @@ function highlighting(user, baseUrl) {
       // showAllComments();
     }();
 
+ // was commented out before when trying to remove generated tags
     $.get(baseUrl + "/tags/tags/page", {
       url: url,
     }).done(function(res) {
@@ -159,52 +165,68 @@ function highlighting(user, baseUrl) {
       var highlight_add_valuetag = $("<div>", {"class": "highlight-add-valuetag"});
       var highlight_add_valuetag_header = $("<div>", {"class": "highlight-add-valuetag-header bold"});
       var add_valuetag_tags = $("<div>", {"class": "highlight-add-valuetag-tags"});
-      var add_valuetag_submit = $("<div>", {"class": "highlight-add-valuetag-submit"});
+      var add_valuetag_submit = $("<button>", {"class": "highlight-add-valuetag-submit"});
       add_valuetag_submit.addClass("custom-btn");
       var highlight_error = $("<div>", {"class": "highlight-error"});
       var add_custom_tag = $("<div>", {"class": "highlight-add-custom-tag light"});
       var add_custom_tag_tags = $("<div>", {"class": "highlight-add-custom-tag-tags"});
       var add_valuetag_tag;
-      var highlight_itself_wrapper = $("<div>", {"class": "highlight-itself-wrapper"})
+      var highlight_itself_wrapper = $("<div>", {"class": "highlight-itself-wrapper", "style":"margin-top:5px"})
       var highlight_itself = $("<div>", {"class": "highlight-itself temp"});
+      
       highlight_itself.html(text);
       highlight_itself_wrapper.append(highlight_itself)
 
+      /* recent: the extra list of tags, don't need this, only need custom
       for (var t in generated_tags) {
-        add_valuetag_tag = $("<div>", {
+        //added this so notag doesn't show up in lists
+        if (t != "notag"){
+          add_valuetag_tag = $("<div>", {
           "class": "add-valuetag-tag deselected highlight-tag",
           "name": t,
           "bgColor": all_tags[t.toLowerCase()].color
-        });
+          });
+          add_valuetag_tag.html(t);
+          add_valuetag_tags.append(add_valuetag_tag);
+        }
 
-        add_valuetag_tag.html(t);
-        add_valuetag_tags.append(add_valuetag_tag);
       }
-
+      */
       for (var t in all_tags) {
-        if (!(t in generated_tags)) {
-          add_valuetag_tag = $("<div>", {
+        //if (!(t in generated_tags)) {
+          
+          //added this so notag doesn't show up in lists, no tag meaning when there is a tag called 'notag' that gets assigned
+          //when a user doens't select a tag when creating a highlight
+          if (t != "notag"){
+            add_valuetag_tag = $("<div>", {
             "class": "add-valuetag-tag deselected highlight-tag",
             "name": t,
             "bgColor": all_tags[t.toLowerCase()].color
-          });
+            });
+            add_valuetag_tag.html(t);
+            add_custom_tag_tags.append(add_valuetag_tag);
+          }
 
-          add_valuetag_tag.html(t);
-          add_custom_tag_tags.append(add_valuetag_tag);
-        }
+        //} recent: don't need this if i'm taking out generated
       }
 
-      highlight_add_valuetag_header.html("What frames are used in this highlight?");
-      var highlight_add_valuetag_suggested = $("<div>", {"class": "highlight-add-valuetag-suggested light"});
-      highlight_add_valuetag_suggested.html("Suggested tags");
+      //var custom_tag_plus = $("<div>",{"class":"custom-tag-plus deselected highlight-tag","title":"Add a custom tag."});
+      //custom_tag_plus.html("<i class='fa fa-plus'></i>");
+
+      //add_custom_tag_tags.append(custom_tag_plus);
+
+      highlight_add_valuetag_header.html("Would you like to tag your highlight?");
+      //var highlight_add_valuetag_suggested = $("<div>", {"class": "highlight-add-valuetag-suggested light"});
+      //highlight_add_valuetag_suggested.html("Suggested tags"); I commented this out
       highlight_add_valuetag.append(highlight_itself_wrapper);
       highlight_add_valuetag.append(highlight_add_valuetag_header);
-      highlight_add_valuetag.append(highlight_add_valuetag_suggested);
+      //highlight_add_valuetag.append(highlight_add_valuetag_suggested); I commented this out
 
-      add_custom_tag.html("Additional tags <i class='fa fa-caret-up' aria-hidden='true'></i>");
+      add_custom_tag.html("Tags");
       add_custom_tag_tags.attr("tag-status", "less");
       add_custom_tag_tags.css("display", "block");
 
+      /* I commented this out 
       if (Object.keys(generated_tags).length === 0) {
         add_valuetag_tags.html("No suggested tags to show.");
         add_valuetag_tags.css({
@@ -214,28 +236,31 @@ function highlighting(user, baseUrl) {
         });
         // add_custom_tag_tags.attr("tag-status", "less");
       }
-      
-      add_valuetag_submit.html("Save");
+       */    
+      add_valuetag_submit.html("Add Highlight");
       highlight_add_valuetag.append(add_valuetag_tags);
       highlight_add_valuetag.append(add_custom_tag);
       highlight_add_valuetag.append(add_custom_tag_tags);
 
       var add_valuetags_helper = $("<div>", {"class": "highlight-add-valuetag-helper light"});
       var add_valuetags_desc = $("<div>", {"class": "highlight-add-valuetag-desc"});
-      add_valuetags_helper.html("<i class='fa fa-info-circle' aria-hidden='true'></i> What are these tags? They are moral frames that can represent various perspectives.")
+      //add_valuetags_helper.html("<i class='fa fa-info-circle' aria-hidden='true'></i> What are these tags? They are ways for you to further classify your annotation.")
       highlight_add_valuetag.append(add_valuetags_helper);
       highlight_add_valuetag.append(add_valuetags_desc);
-
+    
       var highlight_add_comment = $("<div>", {"class": "highlight-add-comment"});
       var highlight_add_comment_header = $("<div>", {"class": "highlight-add-comment-header bold"});
-      var highlight_add_comment_box = $("<div>", {"class": "highlight-add-comment-box", "contenteditable": true, "placeholder": "Write a comment..."});
+      var highlight_add_comment_box = $("<div>", {"class": "highlight-add-comment-box", "contenteditable": true, "placeholder": "Write text here..."});
       var highlight_add_comment_tags = $("<div>", {"class": "highlight-add-comment-tags"});
       var highlight_add_comment_tags_header = $("<div>", {"class": "highlight-add-comment-tags-header light"});
       highlight_add_comment_tags_header.html("Tag your comment");
       highlight_add_comment_tags.append(highlight_add_comment_tags_header);
 
+      //comment tags
       for (var t in all_tags) {
-        add_valuetag_tag = $("<div>", {
+        //removing notag from comment tags too
+        if( t != "notag"){
+          add_valuetag_tag = $("<div>", {
           "class": "add-valuetag-tag deselected comment-tag",
           "name": t,
           "bgColor": all_tags[t.toLowerCase()].color
@@ -243,17 +268,21 @@ function highlighting(user, baseUrl) {
 
         add_valuetag_tag.html(t);
         highlight_add_comment_tags.append(add_valuetag_tag);
+        }
+
       }
-
-      highlight_add_comment_header.html("Add your own thoughts");
-
-
+    
+      highlight_add_comment_header.html("<div>If you'd like to add a comment about your highlight, use the box below.</div>");
       highlight_add_comment.append(highlight_add_comment_header);
       highlight_add_comment.append(highlight_add_comment_box);
 
-      highlight_add_comment.append(highlight_add_comment_tags);
+      //recent: this removes the comment tags
+      //highlight_add_comment.append(highlight_add_comment_tags); 
       
-      $('.annote-text').html(highlight_add_valuetag);
+      //removes tag section
+      //$('.annote-text').html(highlight_add_valuetag);
+
+      $('.annote-text').html(highlight_itself_wrapper);
       $('.annote-text').append(highlight_add_comment);
       $('.annote-text').append(highlight_error);
       $('.annote-text').append(add_valuetag_submit);
@@ -475,9 +504,10 @@ function highlighting(user, baseUrl) {
     // *** ADD HIGHLIGHT INTERFACE LISTENERS *** //
     // ***
 
+    /* 
     $("body").on("click", ".highlight-add-custom-tag", function() {
-      var less_message = "Additional tags <i class='fa fa-caret-up' aria-hidden='true'></i>";
-      var more_message = "Additional tags <i class='fa fa-caret-down' aria-hidden='true'></i>"
+      var less_message = "Tags <i class='fa fa-caret-up' aria-hidden='true'></i>";
+      var more_message = "Tags <i class='fa fa-caret-down' aria-hidden='true'></i>"
       if ($(this).hasClass('existing')) {
         less_message = "<i class='fa fa-tags' aria-hidden='true'></i>  Hide additional tags";
         more_message = "<i class='fa fa-tags' aria-hidden='true'></i>  Add additional tags";
@@ -494,7 +524,7 @@ function highlighting(user, baseUrl) {
         'height': 'toggle'
       });
     });
-
+   */
     // Create new highlight
     $("body").on("click", ".highlight-add-valuetag-submit", function() {
       // Create new highlight
@@ -512,10 +542,20 @@ function highlighting(user, baseUrl) {
           tags_with_highlight[tag] = {
             'description': all_tags[tag].description,
             'color': all_tags[tag].color,
+          }; 
+
+          //recent:combining comment tags with highlight
+          comment_tags_exist = true;
+          tags_with_comment[tag] = {
+            'description': all_tags[tag].description,
+            'color': all_tags[tag].color,
           };
+
+
         }
       }
 
+/*
       for (var tag in tags_to_save['comment']) {
         if (tags_to_save['comment'][tag]) {
           comment_tags_exist = true;
@@ -525,19 +565,41 @@ function highlighting(user, baseUrl) {
           };
         }
       }
-
+*/  
+      //i added this to have a default tag
       if (!highlight_tags_exist) {
-        $(".highlight-error").html("Error: You must tag the framing of the highlight.");
+        //$(".highlight-error").html("Error: You must tag your highlight.");
+        highlight_tags_exist = true;
+        tags_with_highlight["notag"] = {
+          'description': all_tags["notag"].description,
+          'color':all_tags["notag"].color
+        };
+
+       // $(".highlight-add-valuetag-submit").html('Save');
+        //return;
+      }
+
+      /* making commenting not required 
+      if($('.highlight-add-comment-box').text().length == 0){
+        $(".highlight-error").html("Error: You must write a comment.");
         $(".highlight-add-valuetag-submit").html('Save');
         return;
       }
+      */
 
       if (!comment_tags_exist && $('.highlight-add-comment-box').text().length > 0) {
-        $(".highlight-error").html("Error: You must tag the framing of your comment when submitting comment.");
-        $(".highlight-add-valuetag-submit").html('Save');
-        return;
-      }
+        comment_tags_exist = true;
+        tags_with_comment["notag"] = {
+          'description': all_tags["notag"].description,
+          'color':all_tags["notag"].color
+        };
 
+        
+        //$(".highlight-error").html("Error: You must tag your comment.");
+        //$(".highlight-add-valuetag-submit").html('Save');
+        //return;
+      }
+      
       var domain_name = $("meta[property='og:site_name']").attr("content") ? $("meta[property='og:site_name']").attr("content") : "";
       var title = $("meta[property='og:title']").attr("content") ? $("meta[property='og:title']").attr("content") : "";
       var comment = $(".highlight-add-comment-box").text();
@@ -579,7 +641,7 @@ function highlighting(user, baseUrl) {
               } else {
                 $('.annote-text').html("<div class='annotation-helper-text'>"
                   + '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>'
-                  + "Success - annotation added!</div>")
+                  + "Success - highlight added!</div>")
               }
 
               setTimeout(function() {
@@ -587,6 +649,7 @@ function highlighting(user, baseUrl) {
                 makeAnnotationBox(highlight_id, hl_color);
               }, 2500);
             }, 700);
+            window.location.reload();
           };
 
           if (comment.length > 0) {
@@ -629,6 +692,38 @@ function highlighting(user, baseUrl) {
       }
     });
 
+    /*
+    //function for clicking on custom tag plus
+    $("body").on("click",".custom-tag-plus", function(e){
+       console.log("clicking add custom tag");
+      //TODO 1) create a custom box with a text box 2) save or cancel buttons 3) save adds to the list of value tags and new post request
+      //TODO 3) need a way to delete a tag?
+
+      //TODO 1) or box appears and you change the text of the + box and when you click save it adds the new tag?
+
+       var add_tag_confirm = $("<div>", {"class": "tag-box"});
+       var top = $(this).offset().top - $('.annotation').top;
+       var left = $(this).offset().left - $('.annotation').left;
+       add_tag_confirm.html("<div style='margin-bottom:10px'><p>What would you like to call this tag?</p><span><input type='text' class='tag-name-field'></input></span></div>");
+       add_tag_confirm.append("<div><span class='tag-btn-prop tag-cancel'>Cancel</span><span class='tag-btn-prop tag-submit'>Submit Tag</span></div>")
+       add_tag_confirm.css({
+         "position": "absolute",
+         "top": top + 25,
+         "left": left - 80,
+       });
+       $(e.target).parent().parent().append(add_tag_confirm);
+     });
+
+
+     $('body').on('click', '.tag-cancel', function(e) {
+       $('.tag-box').remove();
+     });
+     
+     $('body').on('click','.tag-delete',function(e) {
+
+     });
+    */
+
     // ***
     // *** HIGHLIGHT ANNOTATION INTERFACE LISTENERS *** //
     // ***
@@ -658,8 +753,10 @@ function highlighting(user, baseUrl) {
       }
     }
 
-    function makeAnnotationBox(highlight, hl_color="#ccc") {
+    //this is when the highlight is already created
+    function makeAnnotationBox(highlight, hl_color="#ccc") {       
       if (highlighting_enabled) {
+        $('.annote-header').html("<span class='pano'>Margins</span>");
         $('.annote-text').html("");
         $('.annotation').attr('highlight', highlight);
         $('.annote-text').animate({"height": "auto"});
@@ -673,8 +770,8 @@ function highlighting(user, baseUrl) {
           var comments_wrapper = $("<div>", {"class": "comments-wrapper"});
           var add_comment_wrapper = $("<div>", {"class": "add-comment-wrapper"});
           var add_comment_box = $("<div>", {"class": "add-comment-box", "contenteditable": true, "placeholder": "Write a comment...", "highlight": highlight});
-          var add_comment_pic = $("<div>", {"class": "add-comment-pic"});
-          add_comment_pic.html("<img src=" + user_pic_url + ">")
+          //var add_comment_pic = $("<div>", {"class": "add-comment-pic"});
+          //add_comment_pic.html("<img src=" + user_pic_url + ">")
 
           var comment_header = $("<div>", {"class": "comment-header bold"});
           var comment_subheader = $("<div>", {"class": "comment-subheader light"});
@@ -714,41 +811,61 @@ function highlighting(user, baseUrl) {
             highlight_itself_wrapper.append(highlight_itself);
             highlight_itself.css("background-color", hl_color);
 
-            highlight_tags_header.html("Frames used in this highlight");
+            var highlight_itself_creator = $("$<div>",{"class":"highlight-creator"});
+            var highlight_owner_val = res.highlight_owner.toString();
+            highlight_owner_val = "Highlight created by: " + highlight_owner_val;
+            highlight_itself_creator.html(highlight_owner_val);
+            highlight_itself_wrapper.append(highlight_itself_creator);
+
+            highlight_tags_header.html("Tags in this highlight");
             var existing_tags = {}
 
             for (var i = 0; i < res.tags.length; i++) {
               var tag = res.tags[i].name;
               existing_tags[tag] = true;
-              var annote_valuetag = $("<div>", {"class": "annote-valuetag highlight-valuetag", "name": tag});
-              var vote_btn = getVoteButton(tag, res.tags[i].id, res.tags[i].user_voted, highlight);
-              var annote_vote_count = $("<div>", {"class": "annote-votecount", "id": res.tags[i].name});
-              annote_vote_count.html(res.tags[i].vote_count);
-              annote_valuetag.append(annote_vote_count);
-              annote_valuetag.append(vote_btn);
-              annote_valuetag.append(tag);
-              // annote_valuetag.html(tag);
-              annote_valuetag.css({
-                'background-color': res.tags[i].color,
-              });
-              
-              // highlight_tags.append(annote_vote_count);
-              // highlight_tags.append(vote_btn);
-              highlight_tags.append(annote_valuetag);
+              if(tag != "notag"){
+                
+                var annote_valuetag = $("<div>", {"class": "annote-valuetag highlight-valuetag", "name": tag});
+                var vote_btn = getVoteButton(tag, res.tags[i].id, res.tags[i].user_voted, highlight);
+                var annote_vote_count = $("<div>", {"class": "annote-votecount", "id": res.tags[i].name});
+                var annote_value_tag_creator = $("<div>", {"class":"annote-valuetag-creator"});
+                var tag_creator_val = res.tags[i].owner.toString();
+                tag_creator_val = "Added by: " + tag_creator_val;
+                annote_value_tag_creator.html(tag_creator_val);
+                annote_vote_count.html(res.tags[i].vote_count);
+                annote_valuetag.append(annote_vote_count);
+                annote_valuetag.append(vote_btn);
+                annote_valuetag.append(tag);
+                annote_valuetag.append(annote_value_tag_creator);
+                // annote_valuetag.html(tag);
+                annote_valuetag.css({
+                  'background-color': res.tags[i].color,
+                });
+                
+                // highlight_tags.append(annote_vote_count);
+                // highlight_tags.append(vote_btn);
+                highlight_tags.append(annote_valuetag);
+              } 
+  
             }
 
             highlight_tags_wrapper.append(highlight_itself_wrapper);
             highlight_tags_wrapper.append(highlight_tags_header);
             if (res.tags.length === 0) {
               var highlight_tags_empty = $("<div>", {"class": "highlight-tags-empty light"});
-              highlight_tags_empty.html("No framing tags to display");
+              highlight_tags_empty.html("No tags to display");
               highlight_tags_wrapper.append(highlight_tags_empty);
             }
             highlight_tags_wrapper.append(highlight_tags);
 
             var highlight_add_valuetag = $("<div>", {"class": "highlight-add-valuetag"});
-            var add_valuetag_submit = $("<div>", {"class": "highlight-add-valuetag-submit", "highlight_id": highlight, "additional_tag": true});
-            add_valuetag_submit.addClass("custom-btn");
+
+            //TODO: make button disabled when a tag is not selected 
+            var add_valuetag_submit = $("<button>", {"class": "highlight-add-valuetag-submit", "highlight_id": highlight, "additional_tag": true});
+            add_valuetag_submit.addClass("custom-btn-longer");
+
+            var delete_btn = $("<button>",{"class":"delete-highlight custom-btn", "highlight_id":highlight});
+            //delete_btn.addClass("custom-btn");
             var highlight_error = $("<div>", {"class": "highlight-error"});
             var add_custom_tag = $("<div>", {"class": "highlight-add-custom-tag light"});
             var add_custom_tag_tags = $("<div>", {"class": "highlight-add-custom-tag-tags"});
@@ -756,7 +873,9 @@ function highlighting(user, baseUrl) {
 
             for (var t in all_tags) {
               if (!(t in existing_tags)) {
-                add_valuetag_tag = $("<div>", {
+                //removing no tag when adding a second tag
+                if(t != "notag"){
+                  add_valuetag_tag = $("<div>", {
                   "class": "add-valuetag-tag deselected highlight-tag",
                   "name": t,
                   "bgColor": all_tags[t.toLowerCase()].color
@@ -764,11 +883,13 @@ function highlighting(user, baseUrl) {
 
                 add_valuetag_tag.html(t);
                 add_custom_tag_tags.append(add_valuetag_tag);
+                }
+
               }
             }
 
-            add_custom_tag.html("Add additional tags <i class='fa fa-caret-down' aria-hidden='true'></i>");
-            add_custom_tag_tags.attr("tag-status", "less");
+            add_custom_tag.html("Tags <i class='fa fa-caret-up' aria-hidden='false'></i>");
+            //add_custom_tag_tags.attr("tag-status", "less");
             add_custom_tag_tags.css("display", "none");
 
             // if (Object.keys(generated_tags).length === 0) {
@@ -778,35 +899,46 @@ function highlighting(user, baseUrl) {
             //     "font-size": "11px",
             //     "text-align": "center",
             //   });
-            //   // add_custom_tag_tags.attr("tag-status", "less");
+            //    add_custom_tag_tags.attr("tag-status", "less");
             // }
             
-            add_valuetag_submit.html("Save");
-            highlight_add_valuetag.append(add_valuetag_tags);
+            add_valuetag_submit.html("Add Tag to Highlight");
+            delete_btn.html("Delete Highlight");
+
+            //highlight_add_valuetag.append(add_valuetag_tags); //recent: wtf is this
             highlight_add_valuetag.append(add_custom_tag);
             add_custom_tag_tags.append(add_valuetag_submit);
             highlight_add_valuetag.append(add_custom_tag_tags);
             highlight_tags_wrapper.append(highlight_add_valuetag);
 
-            annote_text_wrapper.append(highlight_tags_wrapper);
+            //removes the tags section
+            //annote_text_wrapper.append(highlight_tags_wrapper);
 
+
+            annote_text_wrapper.append(highlight_itself_wrapper);
             annote_text_wrapper.append(comment_header);
             annote_text_wrapper.append(comment_subheader);
             annote_text_wrapper.append(comment_wrapper);
+
 
             var add_valuetag_tags = $("<div>", {"class": "highlight-add-valuetag-tags"});
             var add_valuetags_header = $("<div>", {"class": "highlight-add-valuetag-header bold"});
             var add_valuetags_subheader = $("<div>", {"class": "highlight-add-valuetag-subheader light"});
             var add_valuetags_helper = $("<div>", {"class": "highlight-add-valuetag-helper light"});
             var add_valuetags_desc = $("<div>", {"class": "highlight-add-valuetag-desc"});
-            add_valuetags_header.html("Add your own thoughts"); // This is the addtl comments one
-            add_valuetags_helper.html("<i class='fa fa-info-circle' aria-hidden='true'></i> What are these tags? They are moral frames that can represent various perspectives.")
+            add_valuetags_header.html("Add to the discussion"); // This is the addtl comments one
+            //add_valuetags_helper.html("<i class='fa fa-info-circle' aria-hidden='true'></i> What are these tags? They are moral frames that can represent various perspectives.")
             
-            if (contributed) {
-              add_valuetags_subheader.html("Tag your comment");
+           //var additional_save_comment_btn = $("<div>", {"class": "additional-save-comment-btn custom-btn"});
+           //additional_save_comment_btn.html("Add Comment");
 
+            if (contributed) {
+              add_valuetags_subheader.html("Tag Your Comment");
+
+              
               for (var t in all_tags) {
-                var add_valuetag_tag = $("<div>", {
+                if(t != "notag"){
+                  var add_valuetag_tag = $("<div>", {
                   "class": "add-valuetag-tag deselected comment-tag",
                   "name": t,
                   "bgColor": all_tags[t.toLowerCase()].color
@@ -814,17 +946,29 @@ function highlighting(user, baseUrl) {
 
                 add_valuetag_tag.html(t);
                 add_valuetag_tags.append(add_valuetag_tag);
+                }
+
               }
 
-              add_comment_wrapper.append(add_valuetags_header);
-              add_comment_wrapper.append(add_valuetags_subheader);
-              add_comment_wrapper.append(add_valuetag_tags);
+              //recent
+              //add_comment_wrapper.append(add_valuetags_header);
+              //add_comment_wrapper.append(add_valuetags_subheader);
+              //add_comment_wrapper.append(add_valuetag_tags);
 
-              add_comment_wrapper.append(add_valuetags_helper);
-              add_comment_wrapper.append(add_valuetags_desc);
+              //add_comment_wrapper.append(add_valuetags_helper);
+              //add_comment_wrapper.append(add_valuetags_desc);
 
-              add_comment_wrapper.append(add_comment_pic);
+             // add_comment_wrapper.append(add_comment_pic);
               add_comment_wrapper.append(add_comment_box);
+              //add_comment_wrapper.append(additional_save_comment_btn);
+              
+              //ensures only the owner of the highlight can delete it
+              var highlightOwner = $('.highlight-annote').attr('is_owner');
+              if ( highlightOwner == "true") {
+                add_comment_wrapper.append(delete_btn);
+              }
+
+             
 
               if (count === 0) {
                 // $(comment_hider).html("")
@@ -835,7 +979,7 @@ function highlighting(user, baseUrl) {
                 // comment_wrapper.append(add_comment_hider);
               }
             } else {
-              add_valuetags_subheader.html("Contribute to the framing of this highlight to participate in the discussion");
+              add_valuetags_subheader.html("Contribute to this annotation to participate in the discussion");
               add_comment_wrapper.append(add_valuetags_subheader);
               comment_wrapper.append(add_comment_wrapper);
             }
@@ -844,169 +988,7 @@ function highlighting(user, baseUrl) {
           });
         });
       
-        // // Get tag information for this highlight
-        // $.get(baseUrl + "/tags/tags/highlight", {
-        //   "highlight": highlight,
-        //   "url": url,
-        // }).done(function(res) {
-        //   var vote_counts = {}
-        //   var vts = res.tags
-
-        //   removeTemporaryHighlight();
-
-        //   if (window.getSelection) {
-        //     removeAddHighlightButton();
-        //   }
-
-        //   // Clear annotation box from previous content
-        //   $('.annote-text').html('');
-        //   // $('.annote-header').html(decodeURIComponent(res.highlight));
-
-        //   // If no value tags for this highlight, display helper text
-        //   if (vts.length === 0) {
-        //     var empty_message = $("<div>", {"class": "empty-valuetags"})
-        //     empty_message.append("No tags to show :(");
-        //     $('.annote-text').append(empty_message);
-        //   }
-
-        //   var tag_area = $("<div>", {"class": "tag_area"});
-        //   var add_tag_area = $("<div>", {"class": "add_tag_area"});
-        //   tag_area.append("<div class='annote-tag-header'>Tags</div>")
-
-        //   $('.annote-text').append(tag_area);
-        //   $('.annote-text').append(add_tag_area);
-
-        //   // Add value tags to DOM
-        //   $.each(vts, function(item) {
-        //     var tag_attrs = vts[item];
-        //     var tag_wrapper = $("<div>", {"class": "tag-wrapper", "id": tag_attrs.name});
-        //     var annote_valuetag = $("<div>", {"class": "annote-valuetag", "id": tag_attrs.name});
-
-        //     annote_valuetag.html(tag_attrs.name);
-        //     annote_valuetag.css({
-        //       'background-color': tag_attrs.color,
-        //     });
-
-        //     if (tag_attrs.is_owner) {
-        //       annote_valuetag.append("<span class='delete-tag-btn' tag=" + tag_attrs.name + "><i class='fa fa-trash' aria-hidden='true'></i></span>")
-        //     }
-
-        //     tag_area.append(annote_valuetag);
-
-        //     // var tag_attrs = vts[item];
-        //     // var annote_text_wrapper = $("<div>", {"class": "annote-text-wrapper", "id": tag_attrs.name});
-        //     // var annote_valuetag = $("<div>", {"class": "annote-valuetag", "id": tag_attrs.name});
-        //     // var annote_vote = $("<div>", {"class": "annote-vote", "id": tag_attrs.name});
-        //     // var annote_voters = $("<div>", {"class": "annote-voters", "id": tag_attrs.name});
-        //     // var annote_valuetag_desc = $("<div>", {"class": "annote-valuetag-desc", "id": tag_attrs.name});
-
-        //     // annote_valuetag.html(tag_attrs.name);
-        //     // annote_valuetag.css({
-        //     //   'background-color': tag_attrs.color,
-        //     // });
-
-        //     // if (tag_attrs.is_owner) {
-        //     //   annote_valuetag.append("<span class='delete-tag-btn' tag=" + tag_attrs.name + "><i class='fa fa-trash' aria-hidden='true'></i></span>")
-        //     // }
-
-        //     // var vote_count = 0
-        //     // var extra_votes = null;
-
-        //     // // Add voter icons
-        //     // $.each(tag_attrs.votes, function(vote) {
-        //     //   vote_count += 1;
-
-        //     //   if (vote_count > 2) {
-        //     //     extra_votes = '<span class="votes-byuser extra-votes-count" name="' + tag_attrs.name + '" votes=' + (vote_count - 2).toString() + ' id="+' + (vote_count - 2).toString() + ' more"><div class="votes-icon"><span class="plus_symbol"> +' + (vote_count - 2).toString() + '</span></div></span>'
-        //     //   } else {
-        //     //     var pic_url = tag_attrs.votes[vote].pic;
-
-        //     //     annote_voters.append(
-        //     //       '<span class="votes-byuser" name="' + tag_attrs.name + '" id="' + tag_attrs.votes[vote].name + '"><a target="_blank" href="' + baseUrl + "/users/" + tag_attrs.votes[vote].name + '"><img class="votes-icon" src="' + pic_url + '"/></a></span>'
-        //     //     );
-        //     //   }
-        //     // });
-
-        //     // if (extra_votes) {
-        //     //   annote_voters.append(extra_votes);
-        //     // }
-
-        //     // // Add vote button
-        //     // vote_counts[tag_attrs.name] = tag_attrs.votes.length;
-        //     // var vote_button = getVoteButton(tag_attrs.name, tag_attrs.user_voted, highlight);
-
-        //     // annote_vote.html(
-        //     //   "<div class='annote-votebutton' id='" + tag_attrs.name + "'>"
-        //     //   + vote_button
-        //     //   + "</div>"
-        //     //   + "<div class='annote-votecount' id='" + tag_attrs.name + "'>" 
-        //     //   + vote_counts[tag_attrs.name] 
-        //     //   + "</div>");
-
-        //     // annote_valuetag_desc.html(formatDescription(tag_attrs.description));
-        //     // var annote_left_box = $("<div>", {"class": "annote-left", "id": tag_attrs.name});
-        //     // annote_left_box.append(annote_valuetag);
-        //     // annote_left_box.append(annote_vote);
-
-            
-          // });
-
-        //   var add_tag_existing = $("<div>", {"class": "highlight-add-custom-tag existing"});
-        //   var add_tag_existing_tags = $("<div>", {"class": "highlight-add-custom-tag-tags"});
-        //   var vertical_space = $("<div>", {"class": "vertical-space"});
-        //   add_tag_existing.html("<i class='fa fa-tags' aria-hidden='true'></i> Add additional tags");
-        //   add_tag_existing_tags.css("display", "none");
-
-        //   for (var t in all_tags) {
-        //     var already_exists = false;
-        //     for (var item in vts) {
-        //       if (t === vts[item].name) {
-        //         already_exists = true;
-        //       }
-        //     }
-
-        //     if (!already_exists) {
-        //       var add_valuetag_tag = $("<div>", {
-        //         "class": "add-valuetag-tag deselected",
-        //         "name": t,
-        //         "bgColor": all_tags[t.toLowerCase()].color
-        //       });
-
-        //       add_valuetag_tag.html(t);
-        //       add_tag_existing_tags.append(add_valuetag_tag);
-        //     }
-        //   }
-
-        //   if (add_tag_existing_tags.children().length > 0) {
-        //     var add_tag_existing_submit = $("<div>", {"class": "highlight-add-valuetag-submit", "highlight_id": highlight});
-        //     add_tag_existing_submit.addClass("custom-btn");
-        //     add_tag_existing_submit.html("Save");
-        //   }
-
-        //   text = $(e.target).attr("highlight");
-        //   $('.annote-text').append(add_tag_existing);
-
-        //   // TODO: add comment section here
-
-
-
-
-        //   if ($(obj).attr('is_owner') === 'true') {
-        //     var hl_error = $("<div>", {"class": "highlight-error"});
-        //     var delete_highlight = $("<div>", {"class": "delete-highlight"});
-        //     delete_highlight.html("<i class='fa fa-trash' aria-hidden='true'></i>  Delete this highlight");            
-        //     add_tag_existing_tags.append(hl_error);
-        //   }
-
-        //   add_tag_existing_tags.append(add_tag_existing_submit);
-        //   $('.annote-text').append(add_tag_existing_tags);
-        //   $('.annote-text').append(delete_highlight);
-        //   $('.annote-text').append(vertical_space);
-        // });
-
-        // // Get position to display annotation box in
-        // var top = $(e.target).offset().top - $(window).scrollTop() + $(e.target).height() + 5;
-        // var left = $(e.target).offset().left - $(window).scrollLeft() + $(e.target).width() / 2;
+      
         showSidePanel();
       }
     }
@@ -1031,7 +1013,7 @@ function highlighting(user, baseUrl) {
         annote_valuetag.css({
           'background-color': tags[tag].color,
         });
-        comment_tags.append(annote_valuetag);
+        //comment_tags.append(annote_valuetag); //recent, taking out the tag that shows in comments
       }
 
       comment_right.append(comment_tags);
@@ -1045,7 +1027,10 @@ function highlighting(user, baseUrl) {
 
       if (comment.user === user.username) {
         comment_box.append("<div class='comment-icons'><i class='fa fa-pencil comment-edit' aria-hidden='true'></i></div>");
+        comment_box.append("<div class='comment-icons'><i class='fa fa-trash-o comment-delete' aria-hidden='true'></i></div>");
+        
       }
+    
 
       return comment_box;
     }
@@ -1057,7 +1042,7 @@ function highlighting(user, baseUrl) {
         'highlight': highlight,
         'tags': JSON.stringify(tags),
         'parent_comment': parent_comment,
-        'csrfmiddlewaretoken': user.csrf,
+        'csrfmiddlewaretoken': user.csrf, //'CdGNT1xzUvtUVcFYUJmH1idQEGZ9wnXS'
       }).done(function(res, status, xhr) {
         var location = xhr.getResponseHeader("Location")
         callback(res);
@@ -1082,7 +1067,7 @@ function highlighting(user, baseUrl) {
         //   });
           
         // });
-        
+        window.location.reload();
       });
     }
 
@@ -1110,53 +1095,55 @@ function highlighting(user, baseUrl) {
     //   });
     // }
 
+
+
     $('body').on('mouseenter', '.comment-box', function(e) {
       var comment_id = $(e.target).attr('comment_id');
       if (!$('.update-comment-box[comment_id=' + comment_id + ']').is(':visible')) {
         $(this).find('.comment-edit').show();
-        // $(this).find('.comment-delete').show();
+        $(this).find('.comment-delete').show();
       }
     });
 
     $('body').on('mouseleave', '.comment-box', function(e) {
       $(this).find('.comment-edit').hide();
-      // $(this).find('.comment-delete').hide();
+      $(this).find('.comment-delete').hide();
     });
 
-    // $('body').on('click', '.comment-delete', function(e) {
-    //   var delete_confirm = $("<div>", {"class": "delete-confirm"});
-    //   var top = $(this).offset().top - $('.annotation').offset().top;
-    //   var left = $(this).offset().left - $('.annotation').offset().left;
-    //   delete_confirm.html("Are you sure you want to delete this comment?");
-    //   delete_confirm.append("<p><span class='delete-box delete-cancel'>Cancel</span><span class='delete-box delete-comment'>Delete</span></p>")
-    //   delete_confirm.css({
-    //     "position": "absolute",
-    //     "top": top + 25,
-    //     "left": left - 80,
-    //   });
-    //   $(e.target).parent().parent().append(delete_confirm);
-    // });
+    $('body').on('click', '.comment-delete', function(e) {
+       var delete_confirm = $("<div>", {"class": "delete-confirm"});
+       var top = $(this).offset().top - $('.annotation').top;
+       var left = $(this).offset().left - $('.annotation').left;
+       delete_confirm.html("Are you sure you want to delete this comment?");
+       delete_confirm.append("<p><span class='delete-box delete-cancel'>Cancel</span><span class='delete-box delete-comment'>Delete</span></p>")
+       delete_confirm.css({
+         "position": "absolute",
+         "top": top + 25,
+         "left": left - 80,
+       });
+       $(e.target).parent().parent().append(delete_confirm);
+     });
 
-    // $('body').on('click', '.delete-cancel', function(e) {
-    //   $('.delete-confirm').remove();
-    // });
+     $('body').on('click', '.delete-cancel', function(e) {
+       $('.delete-confirm').remove();
+     });
 
-    // $('body').on('click', '.delete-comment', function(e) {
-    //   var comment_id = $(this).parent().parent().parent().attr("comment_id");
-    //   $.post(baseUrl + "/tags/comment/remove", {
-    //     "comment_id": comment_id,
-    //     "csrfmiddlewaretoken": user.csrf,
-    //   }).done(function(res) {
-    //     if (res.success) {
-    //       $('.delete-confirm').remove();
-    //       $('.comment-box[comment_id=' + comment_id + ']').html('<i style="padding: 7px 0" class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>')
-    //       $('.comment-box[comment_id=' + comment_id + ']').css('text-align', 'center');
-    //       setTimeout(function() {
-    //         $('.comment-box[comment_id=' + comment_id + ']').remove();
-    //       }, 500);
-    //     }
-    //   });
-    // });
+     $('body').on('click', '.delete-comment', function(e) {
+       var comment_id = $(this).parent().parent().parent().attr("comment_id");
+       $.post(baseUrl + "/tags/comment/remove", {
+         "comment_id": comment_id,
+        "csrfmiddlewaretoken": user.csrf,
+       }).done(function(res) {
+         if (res.success) {
+           $('.delete-confirm').remove();
+           $('.comment-box[comment_id=' + comment_id + ']').html('<i style="padding: 7px 0" class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>')
+           $('.comment-box[comment_id=' + comment_id + ']').css('text-align', 'center');
+           setTimeout(function() {
+             $('.comment-box[comment_id=' + comment_id + ']').remove();
+           }, 500);
+         }
+       });
+     });
 
     $('body').on('click', '.comment-edit', function(e) {
       $(this).parent().hide();
@@ -1187,6 +1174,9 @@ function highlighting(user, baseUrl) {
       //   addComment(url, tag_name, comment, highlight);
       // }
 
+
+
+      //this is edit your comment once posted
       if (e.keyCode === 13 && $('.update-comment-box').is(':focus')) {
         var comment_id = $(e.target).parent().parent().parent().attr('comment_id');
         var new_comment = $(e.target).val();
@@ -1199,9 +1189,39 @@ function highlighting(user, baseUrl) {
         }).done(function(res) {
           text_box.parent().parent().children('.comment-icons').show();
           text_box.html(new_comment);
+          window.location.reload();
         });
       }
 
+      //additional comment button for adding to discussion using save button
+      $('body').on('click','.additional-save-comment-btn', function(e){
+        var target = $(e.target).siblings(".add-comment-box");
+        if (addCommentFlag == 1){
+          addCommentFlag = 0;
+          return;
+        }
+        var parent_comment = target.attr("comment_id");
+        var highlight = target.attr('highlight');
+
+        var callback = function(res) {
+          makeAnnotationBox($('.add-comment-box').attr("highlight"), $(".highlight-itself").attr("color"));
+          // $('.add-comment-box').blur();
+          // $('.add-comment-box').html('');
+          // console.log(res);
+          // var comment = createComment(res.comment);
+          // $('.comments-wrapper').append(comment);
+          resetTagsToSave();
+          $('.add-valuetag-tag').removeClass("selected").addClass("deselected").css("background-color", "#f7f7f7");
+        }
+        if(addCommentFlag == 0){
+          addComment(url, comment, highlight, tags_to_save.comment, callback, parent_comment);    
+          addCommentFlag = 1;          
+          
+        }
+        
+      });
+
+      //enter comment to discussion by hitting enter - add comment box - enter key code = 13
       if (e.keyCode === 13 && $(document.activeElement).hasClass('add-comment-box')) {
         var comment = $(e.target).text();
 
@@ -1254,29 +1274,57 @@ function highlighting(user, baseUrl) {
       $('.delete-tag-btn[tag=' + tag + ']').hide();
     });
 
+
+
+
+    //delete highlight code / delete annotation
+    
     $('body').on('click', '.delete-highlight', function(e) {
+      var highlight = $(this).highlight_id;
+
+       var delete_confirm = $("<div>", {"class": "delete-highlight-confirm-box"});
+       var top = $(this).offset().top - $('.annotation').top;
+       var left = $(this).offset().left - $('.annotation').left;
+       delete_confirm.html("<div style='margin-bottom:10px'>Are you sure you want to delete this highlight?</div>");
+       delete_confirm.append("<p><span class='delete-box delete-highlight-cancel'>Cancel</span><span class='delete-box delete-highlight-btn'>Delete</span></p>")
+       delete_confirm.css({
+         "position": "absolute",
+         "top": top + 25,
+         "left": left - 80,
+       });
+       $(e.target).append(delete_confirm);
+
+      //the animate causes an issue where the html doesn't fully reappear
+      /*
       $('.annote-text').animate({
-        height: '60px',
-      });
-      $('.annote-header').html("Are you sure you want to delete this highlight?");
-      $('.annote-text').html("<div class='delete-highlight-btn custom-btn'>Delete</div>")
+        height: '50px',
+      });*/
+
+    });
+  
+
+
+    $('body').on('click', '.delete-highlight-cancel', function(e) {
+      hideSidePanel();      
     });
 
     $('body').on('click', '.delete-highlight-btn', function(e) {
       e.preventDefault();
-      var highlight_id = $('.annotation').attr('highlight');
-      $('.delete-highlight-btn').html('<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>');
+      var highlight_id = $(this).parent().parent().parent().attr("highlight_id")
+      $('.delete-highlight-confirm-box').html('<i class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>');
       $.post(baseUrl + "/tags/highlight/delete", {
         "highlight": highlight_id,
         "csrfmiddlewaretoken": user.csrf,
       }).done(function(res) {
         if (res.success) {
           setTimeout(function() {
+            /* this animate also messed up the html
             $('.annote-text').animate({
               height: '0px',
-            });
-            $('.annote-header').html("Highlight deleted!");
-            $('.annote-text').html("");
+            });*/
+            $('.annote-header').html("<span class='pano'>Margins</span>");
+            $('.annote-text').html("Highlight deleted!");
+            
 
             var parent = $('.highlight-annote').parent();
             $('.highlight-annote[highlight=' + highlight_id + ']').contents().unwrap();
@@ -1379,6 +1427,18 @@ function highlighting(user, baseUrl) {
     // TOOLTIP LISTENERS
     // ****
 
+
+
+    $("body").on("mouseenter",".highlight-annote",function(e) { 
+      var hover_message = parseInt($(this).attr("comment_count")).toString() + " <i class='fa fa-comments' aria-hidden='true'></i>";
+      addTooltip(e,$(this) ,hover_message, 0, -30); 
+      //parseInt($(this).attr("comment_count")).toString() + " comment(s)"
+    });
+
+    $("body").on("mouseleave",".highlight-annote",function(e) { 
+      removeTooltip(); 
+    });
+
     // Add remove tooltip listener to elements 
     $("body").on("mouseleave", ".votes-byuser, #add-highlight-button, .valuetag_rmvote, .valuetag_vote, .delete-tag-btn, .comment-edit", function() { 
       removeTooltip(); 
@@ -1386,6 +1446,7 @@ function highlighting(user, baseUrl) {
 
     // Display username upon hover on user icon
     $("body").on("mouseenter", ".votes-byuser", function(e) { addTooltip(e, $(this), $(this).attr("id"), 0, -10); });
+    //$("body").on("mouseenter", ".custom-tag-plus", function(e) { addTooltip(e, $(this), $(this).attr("Add a custom tag"), 0, -10); });
     $("body").on("mouseenter", ".delete-tag-btn", function(e) { addTooltip(e, $(this), "Delete this tag", 0, -12); });
     $("body").on("mouseenter", ".valuetag_rmvote", function(e) { addTooltip(e, $(this), "Remove your upvote", 5, -11); });
     $("body").on("mouseenter", ".valuetag_vote", function(e) { addTooltip(e, $(this), "Upvote this tag", 5, -11); });
@@ -1395,7 +1456,8 @@ function highlighting(user, baseUrl) {
       var desc = all_tags[$(this).attr("name")].description;
       if (desc !== "") {
         $(".highlight-add-valuetag-desc").html(desc);
-        $(".highlight-add-valuetag-desc").css("height", "30px");
+        $(".highlight-add-valuetag-desc").css("height", "30px"); 
+        $(".highlight-add-valuetag-desc").css("font-size","12px");
         // addTooltip(e, $(this), desc, 0, 8, 700);
       }
     });
@@ -1406,7 +1468,7 @@ function highlighting(user, baseUrl) {
 // *** MORE HELPER FUNCTIONS *** //
 // ***
 
-// Fetch highlights on page load
+// load highlights on page load 
 function getHighlights(url) {
   $.get(baseUrl + "/tags/highlights", {
     "url": url,
@@ -1423,6 +1485,7 @@ function getHighlights(url) {
 
         var all_eligible = $.merge($("p"), $("div"));
         var last = null;
+        var tooltipDelay;
 
         if ($("body").html().indexOf(hl) === -1) {
           all_eligible.filter(function () {
@@ -1449,10 +1512,13 @@ function getHighlights(url) {
         highlight_colors[hl_id] = muteColor(max_tag[1]);
 
         $(".highlight-annote").attr("is_owner", is_owner);
+        $(".highlight-annote[highlight='"+hl_id+"']").attr("comment_count",res.highlights[h].comment_count);
       }
     } 
   });
 }
+
+
 
 function formatDescription(desc) {
   var formattedString = "<strong>";
@@ -1524,4 +1590,5 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       }
     });
   }
+  
 });
