@@ -220,16 +220,16 @@ function highlighting(user, baseUrl) {
 
       highlight_add_valuetag_header.html("Would you like to tag your highlight?");
       //var highlight_add_valuetag_suggested = $("<div>", {"class": "highlight-add-valuetag-suggested light"});
-      //highlight_add_valuetag_suggested.html("Suggested tags"); I commented this out
+      //highlight_add_valuetag_suggested.html("Suggested tags"); 
       highlight_add_valuetag.append(highlight_itself_wrapper);
       highlight_add_valuetag.append(highlight_add_valuetag_header);
-      //highlight_add_valuetag.append(highlight_add_valuetag_suggested); I commented this out
+      //highlight_add_valuetag.append(highlight_add_valuetag_suggested); 
 
       add_custom_tag.html("Tags");
       add_custom_tag_tags.attr("tag-status", "less");
       add_custom_tag_tags.css("display", "block");
 
-      /* I commented this out 
+      /*  
       if (Object.keys(generated_tags).length === 0) {
         add_valuetag_tags.html("No suggested tags to show.");
         add_valuetag_tags.css({
