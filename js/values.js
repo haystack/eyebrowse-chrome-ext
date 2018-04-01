@@ -50,11 +50,12 @@ function highlighting(user, baseUrl) {
     var injectSetup = function() {
       console.log("Injecting setup");
       if (!$(".side-panel").length) {
-      //  $("body").append("<div id='add-highlight-button'><div id='add-symbol'>+</div></div>"
-        //  + "<div class='side-panel'><div class='annote-header'><img src='https://i.imgur.com/DxyYPfZ.png' class='pano-logo'><span class='pano'>PANO</span></div><div class='annote-text'></div></div>");
         $("body").append("<div id='add-highlight-button'><div id='add-symbol'>+</div></div>"
           + "<div class='side-panel'><div class='annote-header'><span class='pano'>Margins</span></div><div class='annote-text'></div></div>");
-      } 
+      }
+
+      //save = new button
+      //comment bubble = mapping of the old b/c you want the side panel to open
 
       // $("body").append("<div id='side-panel-button'><img src='http://i.imgur.com/DxyYPfZ.png' class='pano-logo'></div>")
 
@@ -136,6 +137,8 @@ function highlighting(user, baseUrl) {
         comment: {},
       }
     }
+
+
 
     // Helper function to remove temporary highlighting from front end
     // TODO: figure out why this sometimes messes up
@@ -383,26 +386,28 @@ function highlighting(user, baseUrl) {
             should_highlight = false;
           }
 
-          // Ensure only trying to highlight in a text block
+          // Ensure only trying to highlight in a text block - may need to comment this out
           if (!$(e.target).is("p") && !$(e.target).is("div")) {
             if ($(e.target).is("em, strong, li, ul, ol, b, span")) {
               if (!$(e.target).parent().is("p, div")) {
-                should_highlight = false;
+                should_highlight = false; //
               }
             } else {
-              should_highlight = false;
+              should_highlight = false; //
             }
           }
 
+          
           $.each($("textarea").get(), function(i) {
             if ($.contains($("textarea").get(i), e.target)) {
-              should_highlight = false;
+              should_highlight = false; //
             }
           });
 
+         
           $.each($("input").get(), function(i) {
             if ($.contains($("input").get(i), e.target)) {
-              should_highlight = false;
+              should_highlight = false; //
             }
           });
 
@@ -504,7 +509,7 @@ function highlighting(user, baseUrl) {
     // *** ADD HIGHLIGHT INTERFACE LISTENERS *** //
     // ***
 
-    /* 
+    /* removing the icons for tags
     $("body").on("click", ".highlight-add-custom-tag", function() {
       var less_message = "Tags <i class='fa fa-caret-up' aria-hidden='true'></i>";
       var more_message = "Tags <i class='fa fa-caret-down' aria-hidden='true'></i>"
@@ -544,7 +549,7 @@ function highlighting(user, baseUrl) {
             'color': all_tags[tag].color,
           }; 
 
-          //recent:combining comment tags with highlight
+          //combining comment tags with highlight
           comment_tags_exist = true;
           tags_with_comment[tag] = {
             'description': all_tags[tag].description,
@@ -691,38 +696,6 @@ function highlighting(user, baseUrl) {
         console.log(tags_to_save);
       }
     });
-
-    /*
-    //function for clicking on custom tag plus
-    $("body").on("click",".custom-tag-plus", function(e){
-       console.log("clicking add custom tag");
-      //TODO 1) create a custom box with a text box 2) save or cancel buttons 3) save adds to the list of value tags and new post request
-      //TODO 3) need a way to delete a tag?
-
-      //TODO 1) or box appears and you change the text of the + box and when you click save it adds the new tag?
-
-       var add_tag_confirm = $("<div>", {"class": "tag-box"});
-       var top = $(this).offset().top - $('.annotation').top;
-       var left = $(this).offset().left - $('.annotation').left;
-       add_tag_confirm.html("<div style='margin-bottom:10px'><p>What would you like to call this tag?</p><span><input type='text' class='tag-name-field'></input></span></div>");
-       add_tag_confirm.append("<div><span class='tag-btn-prop tag-cancel'>Cancel</span><span class='tag-btn-prop tag-submit'>Submit Tag</span></div>")
-       add_tag_confirm.css({
-         "position": "absolute",
-         "top": top + 25,
-         "left": left - 80,
-       });
-       $(e.target).parent().parent().append(add_tag_confirm);
-     });
-
-
-     $('body').on('click', '.tag-cancel', function(e) {
-       $('.tag-box').remove();
-     });
-     
-     $('body').on('click','.tag-delete',function(e) {
-
-     });
-    */
 
     // ***
     // *** HIGHLIGHT ANNOTATION INTERFACE LISTENERS *** //
@@ -905,7 +878,7 @@ function highlighting(user, baseUrl) {
             add_valuetag_submit.html("Add Tag to Highlight");
             delete_btn.html("Delete Highlight");
 
-            //highlight_add_valuetag.append(add_valuetag_tags); //recent: wtf is this
+            //highlight_add_valuetag.append(add_valuetag_tags); 
             highlight_add_valuetag.append(add_custom_tag);
             add_custom_tag_tags.append(add_valuetag_submit);
             highlight_add_valuetag.append(add_custom_tag_tags);
@@ -962,7 +935,8 @@ function highlighting(user, baseUrl) {
               add_comment_wrapper.append(add_comment_box);
               //add_comment_wrapper.append(additional_save_comment_btn);
               
-              //ensures only the owner of the highlight can delete it
+              
+              //ensures only the owner of the highlight can delete it and see the delete button
               var highlightOwner = $('.highlight-annote').attr('is_owner');
               if ( highlightOwner == "true") {
                 add_comment_wrapper.append(delete_btn);
@@ -1042,7 +1016,7 @@ function highlighting(user, baseUrl) {
         'highlight': highlight,
         'tags': JSON.stringify(tags),
         'parent_comment': parent_comment,
-        'csrfmiddlewaretoken': user.csrf, //'CdGNT1xzUvtUVcFYUJmH1idQEGZ9wnXS'
+        'csrfmiddlewaretoken': user.csrf, 
       }).done(function(res, status, xhr) {
         var location = xhr.getResponseHeader("Location")
         callback(res);
@@ -1450,7 +1424,7 @@ function highlighting(user, baseUrl) {
     $("body").on("mouseenter", ".delete-tag-btn", function(e) { addTooltip(e, $(this), "Delete this tag", 0, -12); });
     $("body").on("mouseenter", ".valuetag_rmvote", function(e) { addTooltip(e, $(this), "Remove your upvote", 5, -11); });
     $("body").on("mouseenter", ".valuetag_vote", function(e) { addTooltip(e, $(this), "Upvote this tag", 5, -11); });
-    $("body").on("mouseenter", "#add-highlight-button", function(e) { addTooltip(e, $(this), "Highlight this text", 0, -11); });
+    $("body").on("mouseenter", "#add-highlight-button", function(e) { addTooltip(e, $(this), "Add Highlight", 0, -11); });
     $("body").on("mouseenter", ".comment-edit", function(e) { addTooltip(e, $(this), "Edit your comment", 0, -30); });
     $("body").on("mouseenter", ".add-valuetag-tag", function(e) {
       var desc = all_tags[$(this).attr("name")].description;

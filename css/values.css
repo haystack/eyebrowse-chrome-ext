@@ -237,23 +237,6 @@
   vertical-align: middle;
 }
 
-/*.highlight-add-valuetag-submit {
-  margin-top: 10px;
-  background-color: #fff;
-  padding: 8px 15px;
-  border-radius: 500px;
-  color: #00cc89;
-  text-align: center;
-  border: 2px solid #00cc89;
-  transition: background-color 0.3s ease-in;
-}
-
-.highlight-add-valuetag-submit:hover {
-  background-color: #00cc89;
-  color: #fff;
-  cursor: pointer;
-}*/
-
 .highlight-add-valuetag-submit {
   width: 100px;
   margin-top: 20px;
@@ -280,6 +263,7 @@
 .selected:hover {
   cursor: pointer;
 }
+
 
 #add-highlight-button {
   cursor: pointer;
