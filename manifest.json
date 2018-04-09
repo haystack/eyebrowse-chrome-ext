@@ -17,6 +17,7 @@
                 "libs/mustache.min.js", 
                 "libs/underscore.min.js", 
                 "libs/jquery.idle.js", 
+                "libs/jquery.scrolldepth.js",
                 "js/common.js", 
                 "js/prompt.js", 
                 "js/idle-detection.js", 

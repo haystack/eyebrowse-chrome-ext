@@ -59,16 +59,29 @@ function highlighting(user, baseUrl) {
 
       // $("body").append("<div id='side-panel-button'><img src='http://i.imgur.com/DxyYPfZ.png' class='pano-logo'></div>")
 
-      $('head').append("<script type='text/javascript' src='https://use.fontawesome.com/8c63cff961.js'>"
+      $("head").append("<script type='text/javascript' src='https://use.fontawesome.com/8c63cff961.js'>"
         + "<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>");
+        // + "<script src='https://code.jquery.com/jquery-1.8.0.min.js'></script>"
+        // + "<script>$(function() { $.scrollDepth();});</script>");
     
+
+        // + "<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-scrolldepth/1.0.0/jquery.scrolldepth.js'></script>" 
+        //         + "<script>$(function() { $.scrollDepth();});</script>");
+
       if (highlighting_enabled) {
         reenable_highlighting();
       }
-
       // showAllComments();
     }();
 
+  //kept giving me scroll depth function not found
+  // $.scrollDepth({ 
+  //   function(data) {
+  //     console.log(data)
+  //     console.log("test");
+  //   }
+  // });
+  
  // was commented out before when trying to remove generated tags
     $.get(baseUrl + "/tags/tags/page", {
       url: url,
@@ -299,6 +312,20 @@ function highlighting(user, baseUrl) {
     $(window).scroll(function(e) {
       var top = annote_position.top - ($(window).scrollTop() - annote_position.anchor_top);
       var left = annote_position.left - ($(window).scrollLeft() - annote_position.anchor_left);
+      
+      //this gets how far down the page you've gone - 
+      //TODO: need to save this number, maybe create a global variable and save it in that, then include it in a post? 
+      // console.log($(window).scrollTop());
+      // console.log($(window).height());
+      // console.log($(document).height());
+      
+      var scrolledDistance = $(window).scrollTop();
+      var windowHeight = $(window).height();
+      var totalHeight = $(document).height();
+
+      var totalScrolledPercent = (scrolledDistance / (totalHeight - windowHeight) ) *100;
+
+      console.log("% scrolled:" + totalScrolledPercent)
 
       if ($('.annotation').is(':visible')) {
         $('.annotation').css({
