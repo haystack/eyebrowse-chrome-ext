@@ -54,19 +54,9 @@ function highlighting(user, baseUrl) {
           + "<div class='side-panel'><div class='annote-header'><span class='pano'>Margins</span></div><div class='annote-text'></div></div>");
       }
 
-      //save = new button
-      //comment bubble = mapping of the old b/c you want the side panel to open
-
-      // $("body").append("<div id='side-panel-button'><img src='http://i.imgur.com/DxyYPfZ.png' class='pano-logo'></div>")
-
       $("head").append("<script type='text/javascript' src='https://use.fontawesome.com/8c63cff961.js'>"
-        + "<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>");
-        // + "<script src='https://code.jquery.com/jquery-1.8.0.min.js'></script>"
-        // + "<script>$(function() { $.scrollDepth();});</script>");
-    
-
-        // + "<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-scrolldepth/1.0.0/jquery.scrolldepth.js'></script>" 
-        //         + "<script>$(function() { $.scrollDepth();});</script>");
+        + "<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>"
+        + "<script type='text/javascript'> TimeMe.initialize({ currentPageName: 'news-page', idleTimeoutInSeconds: 30 }); </script>");
 
       if (highlighting_enabled) {
         reenable_highlighting();
@@ -74,15 +64,7 @@ function highlighting(user, baseUrl) {
       // showAllComments();
     }();
 
-  //kept giving me scroll depth function not found
-  // $.scrollDepth({ 
-  //   function(data) {
-  //     console.log(data)
-  //     console.log("test");
-  //   }
-  // });
   
- // was commented out before when trying to remove generated tags
     $.get(baseUrl + "/tags/tags/page", {
       url: url,
     }).done(function(res) {
@@ -176,7 +158,6 @@ function highlighting(user, baseUrl) {
     // Show add tags interface
     var showAnnotationOnHighlight = function() {
       $('.annote-text').html("");
-      // $('.annote-header').html("What framing(s) does this statement support?");
 
       var highlight_add_valuetag = $("<div>", {"class": "highlight-add-valuetag"});
       var highlight_add_valuetag_header = $("<div>", {"class": "highlight-add-valuetag-header bold"});
@@ -193,23 +174,7 @@ function highlighting(user, baseUrl) {
       highlight_itself.html(text);
       highlight_itself_wrapper.append(highlight_itself)
 
-      /* recent: the extra list of tags, don't need this, only need custom
-      for (var t in generated_tags) {
-        //added this so notag doesn't show up in lists
-        if (t != "notag"){
-          add_valuetag_tag = $("<div>", {
-          "class": "add-valuetag-tag deselected highlight-tag",
-          "name": t,
-          "bgColor": all_tags[t.toLowerCase()].color
-          });
-          add_valuetag_tag.html(t);
-          add_valuetag_tags.append(add_valuetag_tag);
-        }
-
-      }
-      */
       for (var t in all_tags) {
-        //if (!(t in generated_tags)) {
           
           //added this so notag doesn't show up in lists, no tag meaning when there is a tag called 'notag' that gets assigned
           //when a user doens't select a tag when creating a highlight
@@ -222,37 +187,18 @@ function highlighting(user, baseUrl) {
             add_valuetag_tag.html(t);
             add_custom_tag_tags.append(add_valuetag_tag);
           }
-
-        //} recent: don't need this if i'm taking out generated
       }
 
-      //var custom_tag_plus = $("<div>",{"class":"custom-tag-plus deselected highlight-tag","title":"Add a custom tag."});
-      //custom_tag_plus.html("<i class='fa fa-plus'></i>");
-
-      //add_custom_tag_tags.append(custom_tag_plus);
-
       highlight_add_valuetag_header.html("Would you like to tag your highlight?");
-      //var highlight_add_valuetag_suggested = $("<div>", {"class": "highlight-add-valuetag-suggested light"});
-      //highlight_add_valuetag_suggested.html("Suggested tags"); 
+      
       highlight_add_valuetag.append(highlight_itself_wrapper);
       highlight_add_valuetag.append(highlight_add_valuetag_header);
-      //highlight_add_valuetag.append(highlight_add_valuetag_suggested); 
 
       add_custom_tag.html("Tags");
       add_custom_tag_tags.attr("tag-status", "less");
       add_custom_tag_tags.css("display", "block");
 
-      /*  
-      if (Object.keys(generated_tags).length === 0) {
-        add_valuetag_tags.html("No suggested tags to show.");
-        add_valuetag_tags.css({
-          "color": "#999",
-          "font-size": "11px",
-          "text-align": "center",
-        });
-        // add_custom_tag_tags.attr("tag-status", "less");
-      }
-       */    
+      
       add_valuetag_submit.html("Add Highlight");
       highlight_add_valuetag.append(add_valuetag_tags);
       highlight_add_valuetag.append(add_custom_tag);
@@ -260,7 +206,7 @@ function highlighting(user, baseUrl) {
 
       var add_valuetags_helper = $("<div>", {"class": "highlight-add-valuetag-helper light"});
       var add_valuetags_desc = $("<div>", {"class": "highlight-add-valuetag-desc"});
-      //add_valuetags_helper.html("<i class='fa fa-info-circle' aria-hidden='true'></i> What are these tags? They are ways for you to further classify your annotation.")
+
       highlight_add_valuetag.append(add_valuetags_helper);
       highlight_add_valuetag.append(add_valuetags_desc);
     
@@ -292,11 +238,6 @@ function highlighting(user, baseUrl) {
       highlight_add_comment.append(highlight_add_comment_header);
       highlight_add_comment.append(highlight_add_comment_box);
 
-      //recent: this removes the comment tags
-      //highlight_add_comment.append(highlight_add_comment_tags); 
-      
-      //removes tag section
-      //$('.annote-text').html(highlight_add_valuetag);
 
       $('.annote-text').html(highlight_itself_wrapper);
       $('.annote-text').append(highlight_add_comment);
@@ -309,23 +250,6 @@ function highlighting(user, baseUrl) {
     // ***
 
     // Keeps annotation items sticky on page scroll
-    $(window).scroll(function(e) {
-      var top = annote_position.top - ($(window).scrollTop() - annote_position.anchor_top);
-      var left = annote_position.left - ($(window).scrollLeft() - annote_position.anchor_left);
-      
-      //this gets how far down the page you've gone - 
-      //TODO: need to save this number, maybe create a global variable and save it in that, then include it in a post? 
-      // console.log($(window).scrollTop());
-      // console.log($(window).height());
-      // console.log($(document).height());
-      
-      var scrolledDistance = $(window).scrollTop();
-      var windowHeight = $(window).height();
-      var totalHeight = $(document).height();
-
-      var totalScrolledPercent = (scrolledDistance / (totalHeight - windowHeight) ) *100;
-
-      console.log("% scrolled:" + totalScrolledPercent)
 
       if ($('.annotation').is(':visible')) {
         $('.annotation').css({
@@ -417,24 +341,24 @@ function highlighting(user, baseUrl) {
           if (!$(e.target).is("p") && !$(e.target).is("div")) {
             if ($(e.target).is("em, strong, li, ul, ol, b, span")) {
               if (!$(e.target).parent().is("p, div")) {
-                should_highlight = false; //
+                should_highlight = false; 
               }
             } else {
-              should_highlight = false; //
+              should_highlight = false; 
             }
           }
 
           
           $.each($("textarea").get(), function(i) {
             if ($.contains($("textarea").get(i), e.target)) {
-              should_highlight = false; //
+              should_highlight = false; 
             }
           });
 
          
           $.each($("input").get(), function(i) {
             if ($.contains($("input").get(i), e.target)) {
-              should_highlight = false; //
+              should_highlight = false; 
             }
           });
 
@@ -536,27 +460,6 @@ function highlighting(user, baseUrl) {
     // *** ADD HIGHLIGHT INTERFACE LISTENERS *** //
     // ***
 
-    /* removing the icons for tags
-    $("body").on("click", ".highlight-add-custom-tag", function() {
-      var less_message = "Tags <i class='fa fa-caret-up' aria-hidden='true'></i>";
-      var more_message = "Tags <i class='fa fa-caret-down' aria-hidden='true'></i>"
-      if ($(this).hasClass('existing')) {
-        less_message = "<i class='fa fa-tags' aria-hidden='true'></i>  Hide additional tags";
-        more_message = "<i class='fa fa-tags' aria-hidden='true'></i>  Add additional tags";
-      }
-      if ($('.highlight-add-custom-tag-tags').attr("tag-status") === "less") {
-        $('.highlight-add-custom-tag-tags').attr("tag-status", "more");
-        $('.highlight-add-custom-tag').html(more_message);
-      } else {
-        $('.highlight-add-custom-tag-tags').attr("tag-status", "less");
-        $('.highlight-add-custom-tag').html(less_message);
-      }
-      
-      $('.highlight-add-custom-tag-tags').animate({
-        'height': 'toggle'
-      });
-    });
-   */
     // Create new highlight
     $("body").on("click", ".highlight-add-valuetag-submit", function() {
       // Create new highlight
@@ -586,29 +489,15 @@ function highlighting(user, baseUrl) {
 
         }
       }
-
-/*
-      for (var tag in tags_to_save['comment']) {
-        if (tags_to_save['comment'][tag]) {
-          comment_tags_exist = true;
-          tags_with_comment[tag] = {
-            'description': all_tags[tag].description,
-            'color': all_tags[tag].color,
-          };
-        }
-      }
-*/  
+  
       //i added this to have a default tag
       if (!highlight_tags_exist) {
-        //$(".highlight-error").html("Error: You must tag your highlight.");
         highlight_tags_exist = true;
         tags_with_highlight["notag"] = {
           'description': all_tags["notag"].description,
           'color':all_tags["notag"].color
         };
 
-       // $(".highlight-add-valuetag-submit").html('Save');
-        //return;
       }
 
       /* making commenting not required 
@@ -626,10 +515,6 @@ function highlighting(user, baseUrl) {
           'color':all_tags["notag"].color
         };
 
-        
-        //$(".highlight-error").html("Error: You must tag your comment.");
-        //$(".highlight-add-valuetag-submit").html('Save');
-        //return;
       }
       
       var domain_name = $("meta[property='og:site_name']").attr("content") ? $("meta[property='og:site_name']").attr("content") : "";
@@ -860,7 +745,6 @@ function highlighting(user, baseUrl) {
 
             var highlight_add_valuetag = $("<div>", {"class": "highlight-add-valuetag"});
 
-            //TODO: make button disabled when a tag is not selected 
             var add_valuetag_submit = $("<button>", {"class": "highlight-add-valuetag-submit", "highlight_id": highlight, "additional_tag": true});
             add_valuetag_submit.addClass("custom-btn-longer");
 
@@ -889,19 +773,9 @@ function highlighting(user, baseUrl) {
             }
 
             add_custom_tag.html("Tags <i class='fa fa-caret-up' aria-hidden='false'></i>");
-            //add_custom_tag_tags.attr("tag-status", "less");
             add_custom_tag_tags.css("display", "none");
 
-            // if (Object.keys(generated_tags).length === 0) {
-            //   highlight_tags.html("No suggested tags to show.");
-            //   highlight_tags.css({
-            //     "color": "#999",
-            //     "font-size": "11px",
-            //     "text-align": "center",
-            //   });
-            //    add_custom_tag_tags.attr("tag-status", "less");
-            // }
-            
+
             add_valuetag_submit.html("Add Tag to Highlight");
             delete_btn.html("Delete Highlight");
 
@@ -927,7 +801,6 @@ function highlighting(user, baseUrl) {
             var add_valuetags_helper = $("<div>", {"class": "highlight-add-valuetag-helper light"});
             var add_valuetags_desc = $("<div>", {"class": "highlight-add-valuetag-desc"});
             add_valuetags_header.html("Add to the discussion"); // This is the addtl comments one
-            //add_valuetags_helper.html("<i class='fa fa-info-circle' aria-hidden='true'></i> What are these tags? They are moral frames that can represent various perspectives.")
             
            //var additional_save_comment_btn = $("<div>", {"class": "additional-save-comment-btn custom-btn"});
            //additional_save_comment_btn.html("Add Comment");
@@ -950,15 +823,6 @@ function highlighting(user, baseUrl) {
 
               }
 
-              //recent
-              //add_comment_wrapper.append(add_valuetags_header);
-              //add_comment_wrapper.append(add_valuetags_subheader);
-              //add_comment_wrapper.append(add_valuetag_tags);
-
-              //add_comment_wrapper.append(add_valuetags_helper);
-              //add_comment_wrapper.append(add_valuetags_desc);
-
-             // add_comment_wrapper.append(add_comment_pic);
               add_comment_wrapper.append(add_comment_box);
               //add_comment_wrapper.append(additional_save_comment_btn);
               
@@ -1014,7 +878,7 @@ function highlighting(user, baseUrl) {
         annote_valuetag.css({
           'background-color': tags[tag].color,
         });
-        //comment_tags.append(annote_valuetag); //recent, taking out the tag that shows in comments
+        //comment_tags.append(annote_valuetag); //taking out the tag that shows in comments
       }
 
       comment_right.append(comment_tags);
@@ -1206,11 +1070,6 @@ function highlighting(user, baseUrl) {
 
         var callback = function(res) {
           makeAnnotationBox($('.add-comment-box').attr("highlight"), $(".highlight-itself").attr("color"));
-          // $('.add-comment-box').blur();
-          // $('.add-comment-box').html('');
-          // console.log(res);
-          // var comment = createComment(res.comment);
-          // $('.comments-wrapper').append(comment);
           resetTagsToSave();
           $('.add-valuetag-tag').removeClass("selected").addClass("deselected").css("background-color", "#f7f7f7");
         }

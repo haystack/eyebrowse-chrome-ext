@@ -536,7 +536,7 @@ function highlight() {
     called after a prompt is allowed or timecheck passes
 */
 function finishOpen(tabId, url, favIconUrl, title, event_type, time) {
-
+    //TODO add scroll depth here
     activeItem = {
         "tabId": tabId,
         "url": url,
@@ -571,7 +571,7 @@ function closeItem(tabId, url, event_type, time) {
     if (activeItem.tabId === tabId && !user.inBlackList(url) && total_time > 5000) {
         // write to local storage
         var item = $.extend({}, activeItem); // copy activeItem
-
+        //TODO: add scroll depth here
         item.end_event = event_type;
         item.end_time = time;
         item.total_time = total_time;
@@ -728,6 +728,7 @@ function sendInitialData(tabId) {
                 if (total_time > 5000) {
                     var url = getAPIUrl("history-data");
 
+                    //TODO: add scrolldepth here?
                     var item = $.extend({}, activeItem); //copy activeItem
                     item.end_event = "";
                     item.end_time = end_time;
