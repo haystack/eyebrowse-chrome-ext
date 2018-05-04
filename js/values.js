@@ -55,8 +55,8 @@ function highlighting(user, baseUrl) {
       }
 
       $("head").append("<script type='text/javascript' src='https://use.fontawesome.com/8c63cff961.js'>"
-        + "<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>"
-        + "<script type='text/javascript'> TimeMe.initialize({ currentPageName: 'news-page', idleTimeoutInSeconds: 30 }); </script>");
+        + "<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>");
+      
 
       if (highlighting_enabled) {
         reenable_highlighting();
@@ -199,7 +199,7 @@ function highlighting(user, baseUrl) {
       add_custom_tag_tags.css("display", "block");
 
       
-      add_valuetag_submit.html("Add Highlight");
+      add_valuetag_submit.html("Add Annotation");
       highlight_add_valuetag.append(add_valuetag_tags);
       highlight_add_valuetag.append(add_custom_tag);
       highlight_add_valuetag.append(add_custom_tag_tags);
@@ -266,7 +266,7 @@ function highlighting(user, baseUrl) {
       }
 
       removeTooltip();
-    });
+    
 
     // Close annotation box if click outside of:
     //  - annotation box
@@ -558,7 +558,7 @@ function highlighting(user, baseUrl) {
               } else {
                 $('.annote-text').html("<div class='annotation-helper-text'>"
                   + '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>'
-                  + "Success - highlight added!</div>")
+                  + "Success - annotation added!</div>")
               }
 
               setTimeout(function() {
@@ -777,7 +777,7 @@ function highlighting(user, baseUrl) {
 
 
             add_valuetag_submit.html("Add Tag to Highlight");
-            delete_btn.html("Delete Highlight");
+            delete_btn.html("Delete Annotation");
 
             //highlight_add_valuetag.append(add_valuetag_tags); 
             highlight_add_valuetag.append(add_custom_tag);
