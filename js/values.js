@@ -56,7 +56,7 @@ function highlighting(user, baseUrl) {
 
       $("head").append("<script type='text/javascript' src='https://use.fontawesome.com/8c63cff961.js'>"
         + "<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>");
-      
+
 
       if (highlighting_enabled) {
         reenable_highlighting();
@@ -698,7 +698,7 @@ function highlighting(user, baseUrl) {
 
             var highlight_itself_creator = $("$<div>",{"class":"highlight-creator"});
             var highlight_owner_val = res.highlight_owner.toString();
-            highlight_owner_val = "Highlight created by: " + highlight_owner_val;
+            highlight_owner_val = "Annotation created by: " + highlight_owner_val;
             highlight_itself_creator.html(highlight_owner_val);
             highlight_itself_wrapper.append(highlight_itself_creator);
 
