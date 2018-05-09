@@ -1145,7 +1145,7 @@ function highlighting(user, baseUrl) {
        var delete_confirm = $("<div>", {"class": "delete-highlight-confirm-box"});
        var top = $(this).offset().top - $('.annotation').top;
        var left = $(this).offset().left - $('.annotation').left;
-       delete_confirm.html("<div style='margin-bottom:10px'>Are you sure you want to delete this highlight?</div>");
+       delete_confirm.html("<div style='margin-bottom:10px'>Are you sure you want to delete this annotation?</div>");
        delete_confirm.append("<p><span class='delete-box delete-highlight-cancel'>Cancel</span><span class='delete-box delete-highlight-btn'>Delete</span></p>")
        delete_confirm.css({
          "position": "absolute",
@@ -1183,7 +1183,7 @@ function highlighting(user, baseUrl) {
               height: '0px',
             });*/
             $('.annote-header').html("<span class='pano'>Margins</span>");
-            $('.annote-text').html("Highlight deleted!");
+            $('.annote-text').html("Annotation deleted!");
             
 
             var parent = $('.highlight-annote').parent();
