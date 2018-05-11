@@ -178,7 +178,7 @@ function highlighting(user, baseUrl) {
           
           //added this so notag doesn't show up in lists, no tag meaning when there is a tag called 'notag' that gets assigned
           //when a user doens't select a tag when creating a highlight
-          if (t != "notag"){
+          if (t != "default"){
             add_valuetag_tag = $("<div>", {
             "class": "add-valuetag-tag deselected highlight-tag",
             "name": t,
@@ -221,7 +221,7 @@ function highlighting(user, baseUrl) {
       //comment tags
       for (var t in all_tags) {
         //removing notag from comment tags too
-        if( t != "notag"){
+        if( t != "default"){
           add_valuetag_tag = $("<div>", {
           "class": "add-valuetag-tag deselected comment-tag",
           "name": t,
@@ -493,9 +493,9 @@ function highlighting(user, baseUrl) {
       //i added this to have a default tag
       if (!highlight_tags_exist) {
         highlight_tags_exist = true;
-        tags_with_highlight["notag"] = {
-          'description': all_tags["notag"].description,
-          'color':all_tags["notag"].color
+        tags_with_highlight["default"] = {
+          'description': all_tags["default"].description,
+          'color':all_tags["default"].color
         };
 
       }
@@ -510,9 +510,9 @@ function highlighting(user, baseUrl) {
 
       if (!comment_tags_exist && $('.highlight-add-comment-box').text().length > 0) {
         comment_tags_exist = true;
-        tags_with_comment["notag"] = {
-          'description': all_tags["notag"].description,
-          'color':all_tags["notag"].color
+        tags_with_comment["default"] = {
+          'description': all_tags["default"].description,
+          'color':all_tags["default"].color
         };
 
       }
@@ -708,7 +708,7 @@ function highlighting(user, baseUrl) {
             for (var i = 0; i < res.tags.length; i++) {
               var tag = res.tags[i].name;
               existing_tags[tag] = true;
-              if(tag != "notag"){
+              if(tag != "default"){
                 
                 var annote_valuetag = $("<div>", {"class": "annote-valuetag highlight-valuetag", "name": tag});
                 var vote_btn = getVoteButton(tag, res.tags[i].id, res.tags[i].user_voted, highlight);
@@ -757,8 +757,8 @@ function highlighting(user, baseUrl) {
 
             for (var t in all_tags) {
               if (!(t in existing_tags)) {
-                //removing no tag when adding a second tag
-                if(t != "notag"){
+                //removing default tag when adding a second tag
+                if(t != "default"){
                   add_valuetag_tag = $("<div>", {
                   "class": "add-valuetag-tag deselected highlight-tag",
                   "name": t,
@@ -810,7 +810,7 @@ function highlighting(user, baseUrl) {
 
               
               for (var t in all_tags) {
-                if(t != "notag"){
+                if(t != "default"){
                   var add_valuetag_tag = $("<div>", {
                   "class": "add-valuetag-tag deselected comment-tag",
                   "name": t,
