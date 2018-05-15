@@ -57,25 +57,12 @@ function highlighting(user, baseUrl) {
       $("head").append("<script type='text/javascript' src='https://use.fontawesome.com/8c63cff961.js'>"
         + "<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>");
 
-
       if (highlighting_enabled) {
         reenable_highlighting();
       }
       // showAllComments();
     }();
 
-  
-    $.get(baseUrl + "/tags/tags/page", {
-      url: url,
-    }).done(function(res) {
-      if (res.success) {
-        generated_tags = res.tags;
-      }
-    });
-
-    $.get(baseUrl + "/tags/common_tags").done(function(res) {
-      all_tags = res.common_tags;
-    });
 
     $('body').on('mouseenter', '.side-panel', function() {
       $('body').css('overflow', 'hidden');
@@ -133,10 +120,7 @@ function highlighting(user, baseUrl) {
       }
     }
 
-
-
     // Helper function to remove temporary highlighting from front end
-    // TODO: figure out why this sometimes messes up
     var removeTemporaryHighlight = function() {
       if ($('.temp-highlight').length !== 0) {
         var parent = $('.temp-highlight').parent();
@@ -172,22 +156,7 @@ function highlighting(user, baseUrl) {
       var highlight_itself = $("<div>", {"class": "highlight-itself temp"});
       
       highlight_itself.html(text);
-      highlight_itself_wrapper.append(highlight_itself)
-
-      for (var t in all_tags) {
-          
-          //added this so notag doesn't show up in lists, no tag meaning when there is a tag called 'notag' that gets assigned
-          //when a user doens't select a tag when creating a highlight
-          if (t != "default"){
-            add_valuetag_tag = $("<div>", {
-            "class": "add-valuetag-tag deselected highlight-tag",
-            "name": t,
-            "bgColor": all_tags[t.toLowerCase()].color
-            });
-            add_valuetag_tag.html(t);
-            add_custom_tag_tags.append(add_valuetag_tag);
-          }
-      }
+      highlight_itself_wrapper.append(highlight_itself);
 
       highlight_add_valuetag_header.html("Would you like to tag your highlight?");
       
@@ -212,27 +181,12 @@ function highlighting(user, baseUrl) {
     
       var highlight_add_comment = $("<div>", {"class": "highlight-add-comment"});
       var highlight_add_comment_header = $("<div>", {"class": "highlight-add-comment-header bold"});
-      var highlight_add_comment_box = $("<div>", {"class": "highlight-add-comment-box", "contenteditable": true, "placeholder": "Write text here..."});
+      var highlight_add_comment_box = $("<div>", {"class": "highlight-add-comment-box", "contenteditable": true, "placeholder": "Write comment here..."});
       var highlight_add_comment_tags = $("<div>", {"class": "highlight-add-comment-tags"});
       var highlight_add_comment_tags_header = $("<div>", {"class": "highlight-add-comment-tags-header light"});
       highlight_add_comment_tags_header.html("Tag your comment");
       highlight_add_comment_tags.append(highlight_add_comment_tags_header);
 
-      //comment tags
-      for (var t in all_tags) {
-        //removing notag from comment tags too
-        if( t != "default"){
-          add_valuetag_tag = $("<div>", {
-          "class": "add-valuetag-tag deselected comment-tag",
-          "name": t,
-          "bgColor": all_tags[t.toLowerCase()].color
-        });
-
-        add_valuetag_tag.html(t);
-        highlight_add_comment_tags.append(add_valuetag_tag);
-        }
-
-      }
     
       highlight_add_comment_header.html("<div>If you'd like to add a comment about your highlight, use the box below.</div>");
       highlight_add_comment.append(highlight_add_comment_header);
@@ -470,52 +424,6 @@ function highlighting(user, baseUrl) {
       var highlight_tags_exist = false;
       var comment_tags_exist = false;
       var is_additional_tag = $(this).attr("additional_tag");
-
-      for (var tag in tags_to_save['highlight']) {
-        if (tags_to_save['highlight'][tag]) {
-          highlight_tags_exist = true;
-          tags_with_highlight[tag] = {
-            'description': all_tags[tag].description,
-            'color': all_tags[tag].color,
-          }; 
-
-          //combining comment tags with highlight
-          comment_tags_exist = true;
-          tags_with_comment[tag] = {
-            'description': all_tags[tag].description,
-            'color': all_tags[tag].color,
-          };
-
-
-        }
-      }
-  
-      //i added this to have a default tag
-      if (!highlight_tags_exist) {
-        highlight_tags_exist = true;
-        tags_with_highlight["default"] = {
-          'description': all_tags["default"].description,
-          'color':all_tags["default"].color
-        };
-
-      }
-
-      /* making commenting not required 
-      if($('.highlight-add-comment-box').text().length == 0){
-        $(".highlight-error").html("Error: You must write a comment.");
-        $(".highlight-add-valuetag-submit").html('Save');
-        return;
-      }
-      */
-
-      if (!comment_tags_exist && $('.highlight-add-comment-box').text().length > 0) {
-        comment_tags_exist = true;
-        tags_with_comment["default"] = {
-          'description': all_tags["default"].description,
-          'color':all_tags["default"].color
-        };
-
-      }
       
       var domain_name = $("meta[property='og:site_name']").attr("content") ? $("meta[property='og:site_name']").attr("content") : "";
       var title = $("meta[property='og:title']").attr("content") ? $("meta[property='og:title']").attr("content") : "";
@@ -527,17 +435,15 @@ function highlighting(user, baseUrl) {
         "domain_name": domain_name,
         "title": title,
         "favIconUrl": "",
-        "add_usertags": "true",
         "csrfmiddlewaretoken": user.csrf,
       }).done(function(res) {
         $.post(baseUrl + "/tags/highlight", {
           "url": url,
-          "tags": JSON.stringify(tags_with_highlight),
           "highlight_id": hl_id,
           "highlight": encodeURIComponent(text),
           "csrfmiddlewaretoken": user.csrf,
         }).done(function(res) {
-          resetTagsToSave();
+          // resetTagsToSave();
           var callback = function(d) {
             var highlight_id = res.data.highlight_id;
             setTimeout(function() {
@@ -551,16 +457,6 @@ function highlighting(user, baseUrl) {
 
               var hl_color = $(".highlight-itself").attr("color") || "#ccc";
 
-              if (is_additional_tag) {
-                $('.annote-text').html("<div class='annotation-helper-text'>"
-                  + '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>'
-                  + "Success - additional tag added!</div>")
-              } else {
-                $('.annote-text').html("<div class='annotation-helper-text'>"
-                  + '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>'
-                  + "Success - annotation added!</div>")
-              }
-
               setTimeout(function() {
                 // hideSidePanel();
                 makeAnnotationBox(highlight_id, hl_color);
@@ -571,7 +467,8 @@ function highlighting(user, baseUrl) {
 
           if (comment.length > 0) {
             console.log("Comment being made")
-            addComment(url, comment, res.data.highlight_id, tags_with_comment, callback);
+            addComment(url, comment, res.data.highlight_id, callback);
+
           } else {
             callback();
           }
@@ -702,46 +599,17 @@ function highlighting(user, baseUrl) {
             highlight_itself_creator.html(highlight_owner_val);
             highlight_itself_wrapper.append(highlight_itself_creator);
 
-            highlight_tags_header.html("Tags in this highlight");
+            //highlight_tags_header.html("Tags in this highlight");
             var existing_tags = {}
-
-            for (var i = 0; i < res.tags.length; i++) {
-              var tag = res.tags[i].name;
-              existing_tags[tag] = true;
-              if(tag != "default"){
-                
-                var annote_valuetag = $("<div>", {"class": "annote-valuetag highlight-valuetag", "name": tag});
-                var vote_btn = getVoteButton(tag, res.tags[i].id, res.tags[i].user_voted, highlight);
-                var annote_vote_count = $("<div>", {"class": "annote-votecount", "id": res.tags[i].name});
-                var annote_value_tag_creator = $("<div>", {"class":"annote-valuetag-creator"});
-                var tag_creator_val = res.tags[i].owner.toString();
-                tag_creator_val = "Added by: " + tag_creator_val;
-                annote_value_tag_creator.html(tag_creator_val);
-                annote_vote_count.html(res.tags[i].vote_count);
-                annote_valuetag.append(annote_vote_count);
-                annote_valuetag.append(vote_btn);
-                annote_valuetag.append(tag);
-                annote_valuetag.append(annote_value_tag_creator);
-                // annote_valuetag.html(tag);
-                annote_valuetag.css({
-                  'background-color': res.tags[i].color,
-                });
-                
-                // highlight_tags.append(annote_vote_count);
-                // highlight_tags.append(vote_btn);
-                highlight_tags.append(annote_valuetag);
-              } 
-  
-            }
 
             highlight_tags_wrapper.append(highlight_itself_wrapper);
             highlight_tags_wrapper.append(highlight_tags_header);
-            if (res.tags.length === 0) {
-              var highlight_tags_empty = $("<div>", {"class": "highlight-tags-empty light"});
-              highlight_tags_empty.html("No tags to display");
-              highlight_tags_wrapper.append(highlight_tags_empty);
-            }
-            highlight_tags_wrapper.append(highlight_tags);
+            // if (res.tags.length === 0) {
+            //   var highlight_tags_empty = $("<div>", {"class": "highlight-tags-empty light"});
+            //   highlight_tags_empty.html("No tags to display");
+            //   highlight_tags_wrapper.append(highlight_tags_empty);
+            // }
+            // highlight_tags_wrapper.append(highlight_tags);
 
             var highlight_add_valuetag = $("<div>", {"class": "highlight-add-valuetag"});
 
@@ -754,23 +622,6 @@ function highlighting(user, baseUrl) {
             var add_custom_tag = $("<div>", {"class": "highlight-add-custom-tag light"});
             var add_custom_tag_tags = $("<div>", {"class": "highlight-add-custom-tag-tags"});
             var add_valuetag_tag;
-
-            for (var t in all_tags) {
-              if (!(t in existing_tags)) {
-                //removing default tag when adding a second tag
-                if(t != "default"){
-                  add_valuetag_tag = $("<div>", {
-                  "class": "add-valuetag-tag deselected highlight-tag",
-                  "name": t,
-                  "bgColor": all_tags[t.toLowerCase()].color
-                });
-
-                add_valuetag_tag.html(t);
-                add_custom_tag_tags.append(add_valuetag_tag);
-                }
-
-              }
-            }
 
             add_custom_tag.html("Tags <i class='fa fa-caret-up' aria-hidden='false'></i>");
             add_custom_tag_tags.css("display", "none");
@@ -806,25 +657,7 @@ function highlighting(user, baseUrl) {
            //additional_save_comment_btn.html("Add Comment");
 
             if (contributed) {
-              add_valuetags_subheader.html("Tag Your Comment");
-
-              
-              for (var t in all_tags) {
-                if(t != "default"){
-                  var add_valuetag_tag = $("<div>", {
-                  "class": "add-valuetag-tag deselected comment-tag",
-                  "name": t,
-                  "bgColor": all_tags[t.toLowerCase()].color
-                });
-
-                add_valuetag_tag.html(t);
-                add_valuetag_tags.append(add_valuetag_tag);
-                }
-
-              }
-
               add_comment_wrapper.append(add_comment_box);
-              //add_comment_wrapper.append(additional_save_comment_btn);
               
               
               //ensures only the owner of the highlight can delete it and see the delete button
@@ -832,8 +665,6 @@ function highlighting(user, baseUrl) {
               if ( highlightOwner == "true") {
                 add_comment_wrapper.append(delete_btn);
               }
-
-             
 
               if (count === 0) {
                 // $(comment_hider).html("")
@@ -843,10 +674,18 @@ function highlighting(user, baseUrl) {
                 comment_wrapper.append(add_comment_wrapper);
                 // comment_wrapper.append(add_comment_hider);
               }
+
+
             } else {
-              add_valuetags_subheader.html("Contribute to this annotation to participate in the discussion");
-              add_comment_wrapper.append(add_valuetags_subheader);
+              // add_valuetags_subheader.html("Contribute to this annotation to participate in the discussion");
+              add_comment_wrapper.append(add_comment_box);
+              // add_comment_wrapper.append(add_valuetags_subheader);
               comment_wrapper.append(add_comment_wrapper);
+              var highlightOwner = $('.highlight-annote').attr('is_owner');
+              if ( highlightOwner == "true") {
+                add_comment_wrapper.append(delete_btn);
+              }
+
             }
 
             $(".annote-text").append(annote_text_wrapper);
@@ -878,7 +717,6 @@ function highlighting(user, baseUrl) {
         annote_valuetag.css({
           'background-color': tags[tag].color,
         });
-        //comment_tags.append(annote_valuetag); //taking out the tag that shows in comments
       }
 
       comment_right.append(comment_tags);
@@ -899,67 +737,19 @@ function highlighting(user, baseUrl) {
 
       return comment_box;
     }
-
-    function addComment(url, comment, highlight, tags, callback, parent_comment) {
+    function addComment(url, comment, highlight, callback, parent_comment) {
       $.post(baseUrl + "/api/v1/history-data", {
         'url': url,
         'message': comment,
         'highlight': highlight,
-        'tags': JSON.stringify(tags),
         'parent_comment': parent_comment,
         'csrfmiddlewaretoken': user.csrf, 
       }).done(function(res, status, xhr) {
         var location = xhr.getResponseHeader("Location")
         callback(res);
-        // $.get(location, {}).done(function(res) {
-        //   $.get(baseUrl + "/tags/tags/comment", {
-        //     'eyehistory': res.id,
-        //   }).done(function(tags) {
-        //     console.log(tags.tags);
-        //     console.log(res);
-
-        //     var data = {
-        //       'comment': {
-        //         'id': res.message[0].id,
-        //         'comment': res.message[0].message,
-        //         'date': res.message[0].post_time,
-        //         'user': res.username,
-        //         'prof_pic': res.pic_url,
-        //         'tags': tags.tags,
-        //       }
-        //     }
-        //     callback(data);
-        //   });
-          
-        // });
         window.location.reload();
       });
     }
-
-    // function addComment(url, tag_name, comment, highlight) {
-    //   $.post(baseUrl + "/tags/comment/add", {
-    //     'url': url,
-    //     'comment': comment,
-    //     'tag_name': tag_name,
-    //     'highlight': highlight,
-    //     "csrfmiddlewaretoken": user.csrf,
-    //   }).done(function(res) {
-    //     if (res.success) {
-    //       var new_comment = createComment(res.comment);
-    //       var new_count = parseInt($('.comment-hider[tag_name=' + tag_name + ']').attr("count")) + 1;
-    //       $('.comment-hider[tag_name=' + tag_name + ']').attr("count", new_count);
-    //       $('.comment-wrapper[tag_name=' + tag_name + ']').show();
-    //       var comment = " comments";
-    //       if (new_count === 1) {
-    //         comment = " comment";
-    //       }
-    //       $('.comment-hider[tag_name=' + tag_name + ']').html("Hide " + new_count + comment);
-    //       $('.comments-wrapper[tag_name=' + tag_name + ']').append(new_comment);
-    //       $('.add-comment-box[tag_name=' + tag_name + ']').val('');
-    //     }
-    //   });
-    // }
-
 
 
     $('body').on('mouseenter', '.comment-box', function(e) {
@@ -1019,12 +809,21 @@ function highlighting(user, baseUrl) {
       current_comment.html(add_comment_box);
     });
 
+    $('body').on('mouseenter', '.add-comment-box', function(e) {
+      $('.add-comment-box').css('cursor', 'text');
+    });
+
+    $('body').on('mouseenter', '.highlight-add-comment-box', function(e){
+      $('highlight-add-comment-box').css('cursor','text');
+    });
+
     $('body').on('click', '.add-comment-submit', function(e) {
       e.preventDefault();
       var tag_name = $(this).attr('tag_name')
       var comment = $('.add-comment-box[tag_name=' + tag_name + ']').val();
       var highlight = $(this).attr('highlight');
-      addComment(url, tag_name, comment, highlight);
+      addComment(url, comment, highlight);
+
     });
 
     // $('body').on('click', '.highlight-add-valuetag-submit', function(e) {
@@ -1074,7 +873,7 @@ function highlighting(user, baseUrl) {
           $('.add-valuetag-tag').removeClass("selected").addClass("deselected").css("background-color", "#f7f7f7");
         }
         if(addCommentFlag == 0){
-          addComment(url, comment, highlight, tags_to_save.comment, callback, parent_comment);    
+          addComment(url, comment, highlight, callback, parent_comment);    
           addCommentFlag = 1;          
           
         }
@@ -1102,7 +901,7 @@ function highlighting(user, baseUrl) {
           resetTagsToSave();
           $('.add-valuetag-tag').removeClass("selected").addClass("deselected").css("background-color", "#f7f7f7");
         }
-        addComment(url, comment, highlight, tags_to_save.comment, callback, parent_comment);
+        addComment(url, comment, highlight, callback, parent_comment);
       }
     });
 
@@ -1310,7 +1109,7 @@ function highlighting(user, baseUrl) {
     $("body").on("mouseenter", ".delete-tag-btn", function(e) { addTooltip(e, $(this), "Delete this tag", 0, -12); });
     $("body").on("mouseenter", ".valuetag_rmvote", function(e) { addTooltip(e, $(this), "Remove your upvote", 5, -11); });
     $("body").on("mouseenter", ".valuetag_vote", function(e) { addTooltip(e, $(this), "Upvote this tag", 5, -11); });
-    $("body").on("mouseenter", "#add-highlight-button", function(e) { addTooltip(e, $(this), "Add Highlight", 0, -11); });
+    $("body").on("mouseenter", "#add-highlight-button", function(e) { addTooltip(e, $(this), "Highlight", 0, -11); });
     $("body").on("mouseenter", ".comment-edit", function(e) { addTooltip(e, $(this), "Edit your comment", 0, -30); });
     $("body").on("mouseenter", ".add-valuetag-tag", function(e) {
       var desc = all_tags[$(this).attr("name")].description;
@@ -1338,7 +1137,7 @@ function getHighlights(url) {
         var hl = decodeURIComponent(h);
         var hl_id = res.highlights[h].id;
 
-        var max_tag = res.highlights[h].max_tag;
+        var max_tag = [0,'#d5ffbc'];
         var is_owner = res.highlights[h].is_owner;
         var entire_highlight_present = true;
         var html = $.parseHTML(hl);
@@ -1440,15 +1239,5 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     //   reenable_highlighting();
     // }
   }
-
-  if (request.type === "initialize_page") {
-    $.get(baseUrl + "/tags/tags/page", {
-      url: request.page_url,
-    }).done(function(res) {
-      if (res.success) {
-        generated_tags = res.tags;
-      }
-    });
-  }
-  
+ 
 });
