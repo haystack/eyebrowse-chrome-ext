@@ -440,8 +440,8 @@
 }
 
 .add-comment-box {
-  min-height: 30px;
-  max-height: 100px;
+  min-height: 50px;
+  max-height: 200px;
   overflow: scroll;
   font-size: 13px;
   line-height: 17px;
