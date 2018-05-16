@@ -525,6 +525,7 @@ function highlighting(user, baseUrl) {
         "domain_name": domain_name,
         "title": title,
         "favIconUrl": "",
+        //"add_usertags": "true",
         "csrfmiddlewaretoken": user.csrf,
       }).done(function(res) {
         $.post(baseUrl + "/tags/highlight", {
@@ -568,6 +569,7 @@ function highlighting(user, baseUrl) {
 
           if (comment.length > 0) {
             console.log("Comment being made")
+            //addComment(url, comment, res.data.highlight_id, tags_with_comment, callback);
             addComment(url, comment, res.data.highlight_id, callback);
 
           } else {
