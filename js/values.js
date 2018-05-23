@@ -40,18 +40,18 @@ function highlighting(user, baseUrl) {
     // *** INITIAL SETUP FUNCTIONS *** //
     // ***
 
-    var showSidePanel = function() { $('.side-panel').animate({'right': '0px'}, 200); }
-    var hideSidePanel = function() { $('.side-panel').animate({'right': '-450px'}, 200); }
+    var showSidePanel = function() { $('.pano-ext-side-panel').animate({'right': '0px'}, 200); }
+    var hideSidePanel = function() { $('.pano-ext-side-panel').animate({'right': '-450px'}, 200); }
 
     // Inject scripts and elements into page
     var injectSetup = function() {
       console.log("Injecting setup");
-      if (!$(".side-panel").length) {
+      if (!$(".pano-ext-side-panel").length) {
         $("body").append("<div id='add-highlight-button'><div id='add-symbol'>+</div></div>"
-          + "<div class='side-panel'><div class='annote-header'><img src='https://i.imgur.com/DxyYPfZ.png' class='pano-logo'><span class='pano'>PANO</span></div><div class='annote-text'></div></div>");
+          + "<div class='pano-ext-side-panel'><div class='annote-header'><img src='https://i.imgur.com/DxyYPfZ.png' class='pano-logo'><span class='pano'>PANO</span></div><div class='annote-text'></div></div>");
       } 
 
-      // $("body").append("<div id='side-panel-button'><img src='http://i.imgur.com/DxyYPfZ.png' class='pano-logo'></div>")
+      // $("body").append("<div id='pano-ext-side-panel-button'><img src='http://i.imgur.com/DxyYPfZ.png' class='pano-logo'></div>")
 
       $('head').append("<script type='text/javascript' src='https://use.fontawesome.com/8c63cff961.js'>"
         + "<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>");
@@ -75,11 +75,11 @@ function highlighting(user, baseUrl) {
       all_tags = res.common_tags;
     });
 
-    $('body').on('mouseenter', '.side-panel', function() {
+    $('body').on('mouseenter', '.pano-ext-side-panel', function() {
       $('body').css('overflow', 'hidden');
     });
 
-    $('body').on('mouseleave', '.side-panel', function() {
+    $('body').on('mouseleave', '.pano-ext-side-panel', function() {
       $('body').css('overflow', 'auto');
     });
 
@@ -294,8 +294,8 @@ function highlighting(user, baseUrl) {
 
       if ($(e.target).attr("id") != ("add-highlight-button") 
         && $(e.target).attr("id") != ("add-symbol")) {
-        if ($('.side-panel').is(":visible")) {
-          if (!$.contains($('.side-panel').get(0), e.target) 
+        if ($('.pano-ext-side-panel').is(":visible")) {
+          if (!$.contains($('.pano-ext-side-panel').get(0), e.target) 
             && !$(e.target).hasClass('temp-highlight') 
             && !$(e.target).hasClass('highlight-annote')) {
             if (!$(e.target).hasClass('delete-highlight')) {
@@ -311,7 +311,7 @@ function highlighting(user, baseUrl) {
 
       if ($(e.target).attr("id") != "add-highlight-button"
         && $(e.target).attr("id") != "add-symbol"
-        && !$.contains($('.side-panel').get(0), e.target)) {
+        && !$.contains($('.pano-ext-side-panel').get(0), e.target)) {
         removeTemporaryHighlight();   
       }
 
@@ -350,7 +350,7 @@ function highlighting(user, baseUrl) {
           } 
 
           // Ensure not trying to highlight on annotation
-          if ($.contains($('.side-panel').get(0), e.target)) {
+          if ($.contains($('.pano-ext-side-panel').get(0), e.target)) {
             should_highlight = false;
           }
 
