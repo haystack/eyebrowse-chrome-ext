@@ -53,6 +53,8 @@ var Stats = Backbone.Model.extend({
         my_dcount: 0,
         total_dtime: 0,
         total_dcount: 0,
+        score: 0,
+        domain_score: 0
     }
 });
 
@@ -191,7 +193,7 @@ var StatsView = Backbone.View.extend({
             "my_dcount": this.model.get("my_dcount"),
             "my_dtime": this.model.get("my_dtime"),
             "total_dcount": this.model.get("total_dcount"),
-            "total_dtime": this.model.get("total_dtime"),
+            "total_dtime": this.model.get("total_dtime")
         });
         this.$el.html(template);
         return this;
@@ -253,7 +255,7 @@ var LoginView = Backbone.View.extend({
             if (user.getCSRF() !== "") {
                 self.postLogin(user.getCSRF(), username, password);
             } else {
-                $.get(getLoginUrl(), function(data) {
+                $.get(getCSRFLoginUrl(), function(data) {
                     var csrf = parseCSRFToken(data);
                     if (csrf) {
                         user.setCSRF(csrf);
@@ -281,9 +283,8 @@ var LoginView = Backbone.View.extend({
                 if (data.status === 401) {
                     self.displayErrors("Invalid username or password");
                 } else {
-                    self.displayErrors("Unable to connect, try again later."); 
-                }
-                
+                    self.displayErrors("Unable to connect, try again later.");
+              }
             }
         })
     },
@@ -365,7 +366,7 @@ var ValueView = Backbone.View.extend({
 
                 if (url.length > 50) {
                     name = url.substring(0, 50) + "...";
-                } 
+                }
 
                 if (page_info.domain) {
                     if (page_info.domain.name !== "") {
@@ -390,7 +391,7 @@ var ValueView = Backbone.View.extend({
                 vsView = new ValueSummaryView(url, loggedIn, summary);
 
                 vdView.render();
-                
+
                 var tags_by_page_url = sprintf("%s/tags/tags/page", baseUrl);
                 $.get(tags_by_page_url, {
                   "url": url,
@@ -434,7 +435,7 @@ var ValueDisplayView = Backbone.View.extend({
             var auto_tags = {}
 
             if (Object.keys(valueTags).length > 0) {
-                subtitle = "This page is framed under the following tags:"; 
+                subtitle = "This page is framed under the following tags:";
             } else {
                 subtitle = "No tags to display :(";
             }
@@ -474,7 +475,7 @@ var ValueDisplayView = Backbone.View.extend({
 
                     if (count === 0) {
                         $('.usergenerated_values').html('');
-                    } 
+                    }
                     $.each(res.highlights, function(hl, hl_info) {
                         console.log(hl_info.id);
                         $.get(tags_by_highlight, {
@@ -500,7 +501,7 @@ var ValueDisplayView = Backbone.View.extend({
                             if (!--count) {
                                 if (_.size(user_tags) === 0) {
                                     $('.usergenerated_values').html('');
-                                } 
+                                }
                                 for (var val in user_tags) {
                                     var tag_info = user_tags[val];
                                     tag_info.name = tag_info.name[0].toUpperCase() + tag_info.name.substring(1, tag_info.name.length)
@@ -542,7 +543,7 @@ var ValueCompView = Backbone.View.extend({
 
         var value_comp_template = _.template($("#value_comp_template").html());
         $(".value_content").html(value_comp_template);
-        $(".value_comps").html('<i style="margin-top: 30px;" class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>' 
+        $(".value_comps").html('<i style="margin-top: 30px;" class="fa fa-spinner fa-pulse fa-lg fa-fw"></i>'
             + '<div class="comp_wait_message" style="margin-top: 10px; margin-bottom: 30px; font-size: 12px;">Hang tight... fetching recommended pages</div>');
 
         var related_stories_url = sprintf("%s/tags/page/related_stories", baseUrl);
@@ -562,7 +563,7 @@ var ValueCompView = Backbone.View.extend({
             if (summary.length > 150) {
                 summary = summary.substring(0, 150);
                 summary += "..."
-            } 
+            }
 
             var initialize_page_url = sprintf("%s/tags/initialize_page", baseUrl);
             $.post(initialize_page_url, {
@@ -737,7 +738,7 @@ var ValueSummaryView = Backbone.View.extend({
             $(".value_summary_text").get(0).focus();
             $(".value_summary_edit").addClass("edit-mode");
             $(".value_summary_edit").html("<div class='summary_reset disabled'>Reset</div><div class='summary_exit_edit'>Exit edit mode</div><div class='summary_submit'>Submit this summary</div>");
-        } 
+        }
     },
 
     exitEditMode: function(e) {
@@ -830,10 +831,8 @@ var ValueSummaryView = Backbone.View.extend({
                             $('.value_summary_helpertext').removeClass("danger");
                         }, 2000);
                     }
-                    
                 });
             }
-            
         }
     }
 })
@@ -851,7 +850,6 @@ var HighlightToggleView = Backbone.View.extend({
             "state": state_text,
             "class_name": class_name,
         });
-        
         $(".value_highlight_btn").html(highlight_template);
     }
 });
@@ -874,7 +872,6 @@ var HomeView = Backbone.View.extend({
             window.g_url = tabs[0].url;
             window.g_title = tabs[0].title;
             populateSubNav();
-            
             populateStats();
             window.g_favIcon = tabs[0].favIconUrl;
             populateActiveUsers();
@@ -1060,19 +1057,25 @@ function populateSubNav() {
             var whitelist = user.getWhitelist();
             var uri = new URI(window.g_url);
             var hostname = uri.hostname;
-
             if (!user.inWhitelist(hostname)) {
-                whitelist.create({
-                    "url": hostname,
-                    "user": user.getResourceURI(),
+              $.ajax({
+                "url": sprintf("%s/api/whitelist/add", baseUrl),
+                "type": "POST",
+                "data": {"url": hostname,
+                         "user": user.getResourceURI()}}
+              ).done(function(data){
+                whitelist.add({
+                      "url": hostname,
+                      "user": user.getResourceURI(),
+                  });
+                postMessage(null, window.g_url, function() {
+                    $("#whitelist").text("Domain is shared");
+                    $("#whitelist").css("cursor", "default");
+                    $("#whitelist").css("color", "#000000");
                 });
+                getStats(window.g_url);
+              });
             }
-
-            postMessage(null, window.g_url, function() {
-                $("#whitelist").text("Domain is shared");
-                $("#whitelist").css("cursor", "default");
-                $("#whitelist").css("color", "#000000");
-            });
         }
     });
 
@@ -1116,8 +1119,8 @@ function clickHandle(e) {
         return;
     } else {
         url = url.split("#")[1];
-        user.setTab(url);
-        subNavView.render();
+        //user.setTab(url);
+        //subNavView.render();
     }
 }
 
@@ -1147,6 +1150,7 @@ function sameOrigin(url) {
 }
 
 function ajaxSetup(csrftoken) {
+    user.setCSRF(csrftoken);
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
             if (!csrfSafeMethod(settings.type)) {
@@ -1211,13 +1215,13 @@ function getActiveUsers(url) {
 	    $.each(users, function(index, value) {
 	        active_users.push(value);
 	    });
-	
+
 	    var dusers = parsed.result.domain;
 	    var active_dusers = [];
 	    $.each(dusers, function(index, value) {
 	        active_dusers.push(value);
 	    });
-	
+
 	    if (active_users.length === 0 && active_dusers.length === 0) {
 	        $("#chatuserbox").empty().append("No one's been here recently");
 	        window.selected_user = null;
@@ -1233,7 +1237,7 @@ function getActiveUsers(url) {
 	        } else {
 	            page = "";
 	        }
-	
+
 	        if (active_dusers.length !== 0) {
 	            user_coll = new ChatUserCollection(active_dusers);
 	            user_view = new ChatCollectionView({
@@ -1244,34 +1248,66 @@ function getActiveUsers(url) {
 	        } else {
 	            domain = "";
 	        }
-	
+
 	        $("#chatuserbox").empty().append(page).append(domain);
 	    }
-	    	
-    	
+
+
     });
 }
 
 /*
  * Get stats from server
  */
-function getStats(url) {
-    var encoded_url = encodeURIComponent(url);
-    var req_url = sprintf("%s/ext/getStats?url=%s", baseUrl, encoded_url);
-    return $.ajax({
-        type: "GET",
-        url: req_url,
-        dataType: "json"
-    }).done(function(parsed) {
-    	var title = window.g_title;
-	    var values = parsed.result;
-	    var stats = new Stats(values);
-	    var statview = new StatsView({
-	        model: stats
-	    });
-	    var c = statview.render().el;
-	    $("#stats").empty().append(c);
-    });
+ function getStats(url) {
+   var encoded_url = encodeURIComponent(url);
+   var req_url = sprintf("%s/ext/getStats?url=%s", baseUrl, encoded_url);
+   var values;
+   $.ajax({
+     type: "GET",
+     url: req_url,
+     dataType: "json"
+   }).done(function(parsed) {
+     var title = window.g_title;
+     values = parsed.result;
+     var uri = new URI(window.g_url);
+     var hostname = uri.hostname;
+     var params = {url: window.g_url, domain: hostname};
+     var stats = new Stats(values);
+     var statsview = new StatsView({
+       model: stats
+     });
+     var c = statsview.render().el;
+
+     setTimeout(function(){
+       $("#stats").empty().append(c);
+       if (user.inWhitelist(window.g_url)){
+         var score = stats.get("score");
+         var domain_score = stats.get("domain_score");
+
+         $("#domain-rating").raty({starOff:"/img/star-off-disabled.png",
+         starOn:"/img/star-on.png",
+         starHalf:"/img/star-half.png",
+         readOnly:true,
+         score: domain_score});
+
+         $("#page-rating").raty({starOff:"/img/star-off.png",
+         starOn:"/img/star-on.png",
+         starHalf:"/img/star-half.png",
+         score: score,
+         click: function(score){
+           $.ajax({
+             type: "PUT",
+             url: getRatingUrl("update",params),
+             data: {score: score}
+           }).done(function(parsed){
+             console.log(parsed);
+           });
+         }
+       });
+     }
+   }, 100);
+ });
 }
 
 
@@ -1289,7 +1325,7 @@ function postMessage(message, url, successCallback) {
     }
     var data = JSON.stringify(active_tab);
 
-    console.log(data);
+    //console.log(data);
 
     $.ajax({
         type: "POST",
@@ -1412,17 +1448,13 @@ function getMessages(url, first) {
 	        var messages_view = new ChatMessageCollectionView({
 	            collection: messages_coll
 	        });
-	
 	        var c = messages_view.render().el;
 	        $("#chatmessage").empty().append(c);
 	    } else {
 	        $("#chatmessage").empty().append("No Chat Messages on this page.");
 	    }
-	
-	
 	    if (first === 0) {
 	        $("#chatmessage").scrollTop($("#chatmessage")[0].scrollHeight);
-	
 	        $("#textbox").bind("enterKey", function(e) {
 	            var text = $("#lowerarea .mentions").text();
 	            postChatMessage(text, window.g_url);
@@ -1433,8 +1465,6 @@ function getMessages(url, first) {
 	            }
 	        });
 	    }
-    	
-    	
     });
 }
 
@@ -1508,8 +1538,8 @@ $(document).ready(function() {
             "baseUrl": baseUrl,
           });
         });
-
-        htView.render();
+        htview.render();
+        //subNavView.render();
     });
 
     $("body").on("click", ".story_container", function() {

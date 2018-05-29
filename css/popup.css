@@ -377,7 +377,7 @@ a:focus {
     color: #aaa;
     transition: background 0.3s ease-in-out;
     text-shadow: none;
-} 
+}
 
 /*#submitmessage {
     margin-top: 15px;
@@ -493,10 +493,14 @@ input[type="checkbox"] {
 #stats {
     width: 100%;
     display: block;
-    height: 45px;
+    //height: 80px;
     font-size: 0.8em;
     margin-bottom: 16px;
     line-height: 1.1em;
+}
+
+#domain-rating img {
+  color: black;
 }
 
 #btitle {

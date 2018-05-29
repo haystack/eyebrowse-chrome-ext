@@ -64,8 +64,6 @@ var FilterList = Backbone.Collection.extend({
         });
     },
 });
-
-
 /*
     User object holds the status of the user, the cookie from the server,
     preferences for eyebrowse, whitelist, blacklist, etc.
@@ -528,7 +526,7 @@ function highlight() {
                 });
             }
         });
-    }); 
+    });
 }
 
 /*
@@ -857,26 +855,6 @@ function convertImgToBase64URL(url, callback, outputFormat) {
         canvas = null;
     };
     img.src = url;
-}
-
-/*
-    build an API url for the given inputs
-*/
-function getAPIUrl(resource, id, params) {
-    params = params || {};
-    var apiBase = sprintf("%s/api/v1/%s", baseUrl, resource);
-    var getParams = "";
-    for (var key in params) {
-        getParams += sprintf("&%s=%s", key, params[key]);
-    }
-
-    if (getParams !== "") {
-        apiBase += "?" + getParams.slice(1);
-    }
-    if (id !== undefined) {
-        apiBase += "/" + id;
-    }
-    return apiBase;
 }
 
 /*

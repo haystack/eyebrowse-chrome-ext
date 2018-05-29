@@ -27,6 +27,46 @@ function getUserUrl(username) {
     return baseUrl + "/users/" + username;
 }
 
+
+/*
+    build an API url for the given inputs
+*/
+function getAPIUrl(resource, id, params) {
+    params = params || {};
+    var apiBase = sprintf("%s/api/v1/%s", baseUrl, resource);
+    var getParams = "";
+    for (var key in params) {
+        getParams += sprintf("&%s=%s", key, params[key]);
+    }
+
+    if (getParams !== "") {
+        apiBase += "?" + getParams.slice(1);
+    }
+    if (id !== undefined) {
+        apiBase += "/" + id;
+    }
+    return apiBase;
+}
+
+/*
+  build a url for retrieving/updating rating for the given inputs
+*/
+
+function getRatingUrl(method, params) {
+    params = params || {};
+    var apiBase = sprintf("%s/api/rating/%s", baseUrl, method);
+    var getParams = "";
+    for (var key in params) {
+        getParams += sprintf("&%s=%s", key, params[key]);
+    }
+
+    if (getParams !== "") {
+        apiBase += "?" + getParams.slice(1);
+    }
+    return apiBase;
+}
+
+
 /*
  * Given the response text of a webpage
  * try to parse the CSRF token out.
@@ -177,7 +217,6 @@ function muteColor(colorString) {
     var rgb = hexToRgb(colorString);
     rgbString = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
   }
-  
   return rgbString;
 }
 
