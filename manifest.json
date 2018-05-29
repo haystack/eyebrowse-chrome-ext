@@ -45,8 +45,8 @@
         "cookies",
         "tabs",
         "webNavigation"
-    ],
-    "version": "0.0.118",
+    ], 
+    "version": "0.0.120",
     "web_accessible_resources": [
         "css/prompt.css",
         "html/prompt.html",
