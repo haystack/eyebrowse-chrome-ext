@@ -1,0 +1,3 @@
+[submodule "libs/raty"]
+	path = libs/raty
+	url = https://github.com/wbotelhos/raty
