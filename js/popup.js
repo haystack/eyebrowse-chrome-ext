@@ -900,9 +900,11 @@ var HomeView = Backbone.View.extend({
 });
 
 function setupMentionAutocomplete() {
+    var active_tab = getActiveTab();
+    var encoded_url = encodeURIComponent(active_tab.url);
     $("textarea.mention").mentionsInput({
         onDataRequest: function(mode, query, callback) {
-            var req_url = sprintf("%s/ext/getFriends?query=%s", baseUrl, query);
+            var req_url = sprintf("%s/ext/getFriends?query=%s&url=%s", baseUrl, query, encoded_url);
             $.getJSON(req_url, function(responseData) {
                 callback.call(this, responseData.res);
             });
